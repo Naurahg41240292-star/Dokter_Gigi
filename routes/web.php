@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Pasien\PembayaranController;
-use App\Http\Controllers\AppointmentController; // <-- 1. TAMBAHKAN INI
+use App\Http\Controllers\Pasien\AppointmentController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LandingPageController;
 
