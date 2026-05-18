@@ -117,28 +117,18 @@ class AuthController extends Controller
             ]
         );
 
-        $resetLink = route('password.reset', [
-            'token' => $token,
-            'email' => $user->email,
-        ]);
+        Mail::to($user->email)->send( 
+            new ResetPasswordMail($token, $user->email) 
+        ); 
 
-        Mail::to($user->email)->send(
-            new ResetPasswordMail($resetLink)
-        );
-
-
-        return back()->with
-        (
-            'status',
-            'Link reset password telah dikirim ke email Anda.'
-        );
+        return redirect()->route('password.request')->with('status', 'Link reset password telah dikirim ke email Anda. Silakan cek email untuk melanjutkan.');
     }
 
     public function showResetPassword(Request $request, $token)
     {
-       return view('auth.reset-password', [
-        'token' => $token,
-        'email' => $request->email,
+        return view('auth.reset-password', [
+            'token' => $token,
+            'email' => $request->query('email'),
         ]);
     }
 

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Pasien\PembayaranController;
+use App\Http\Controllers\AppointmentController; // <-- 1. TAMBAHKAN INI
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LandingPageController;
 
@@ -26,14 +27,20 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middl
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
 
-    // Pasien Routes
-    Route::get('/dashboardpasien', function () {
-        return view('pasien.dashboardpasien');
-    })->name('pasien.dashboard');
+    // ==========================================
+    // REVISI: Dashboard Pasien sekarang memanggil Controller
+    // ==========================================
+    Route::get('/dashboardpasien', [AppointmentController::class, 'dashboard'])->name('pasien.dashboard');
+    // ==========================================
 
-    Route::get('/appointment', function () {
-        return view('pasien.appointment');
-    });
+    // ==========================================
+    // ROUTE APPOINTMENT
+    // ==========================================
+    Route::get('/appointment', [AppointmentController::class, 'index'])->name('appointment.index');
+    Route::post('/appointment', [AppointmentController::class, 'store'])->name('appointment.store');
+    // Ubah nama route dari appointment.cancel jadi appointment.update biar nyambung sama kode blade sebelumnya
+    Route::put('/appointment/{id}', [AppointmentController::class, 'update'])->name('appointment.update');
+    // ==========================================
 
     Route::get('/riwayat-perawatan', function () {
         return view('pasien.riwayatperawatan');

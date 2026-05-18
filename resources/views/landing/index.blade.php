@@ -379,9 +379,9 @@
             <div class="row g-4 justify-content-center mb-4">
                 <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
                     <div class="doctor-card">
-                        <div style="overflow: hidden;"><img src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?q=80&w=600&auto=format&fit=crop" class="doctor-img" alt="Drg. Andi"></div>
+                        <div style="overflow: hidden;"><img src = "images/dokter1.png" class="doctor-img" alt="Drg. Ahmad Eunwoo Ramdhan"></div>
                         <div class="doctor-content">
-                            <h5 class="mb-1 fw-bold">Drg. Andi Pratama, Sp.Ort</h5>
+                            <h5 class="mb-1 fw-bold">Drg. Ahmad Eunwoo Ramdhan, Sp.Ort</h5>
                             <span class="text-muted small">Spesialis Ortodonti</span>
                         </div>
                     </div>
