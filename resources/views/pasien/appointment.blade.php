@@ -3,18 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Appointment & Riwayat - D'Smile</title>
+    <title>Appointment & Riwayat - D'Smile Dental Clinic</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <!-- Tambahkan Library QR Code -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
                     colors: {
-                        primary: { 50:'#eff6ff', 100:'#dbeafe', 200:'#bfdbfe', 300:'#93c5fd', 400:'#60a5fa', 500:'#3b82f6', 600:'#2563eb', 700:'#1d4ed8', 800:'#1e40af' }
+                        primary: { 50: '#eff6ff', 100: '#dbeafe', 200: '#bfdbfe', 300: '#93c5fd', 400: '#60a5fa', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8', 800: '#1e40af', 900: '#1e3a8a' },
+                        accent: '#2563eb', surface: '#eff6ff', sidebar: '#FFFFFF',
                     }
                 }
             }
@@ -22,133 +26,150 @@
     </script>
 
     <style>
-        :root { --bg:#f0f5fb; --fg:#1e293b; --muted:#64748b; --accent:#2563eb; --card:#FFFFFF; --border:#e2e8f0; --sidebar:#FFFFFF; }
-        * { margin:0; padding:0; box-sizing:border-box; }
-        body { font-family:'Plus Jakarta Sans',sans-serif; background:var(--bg); color:var(--fg); overflow-x:hidden; }
-        .main-content { margin-left:260px; min-height:100vh; transition:margin-left 0.3s ease; }
-        .main-content header { background:rgba(255,255,255,0.92); backdrop-filter:blur(16px); border-bottom:1px solid var(--border); padding:14px 28px; position:sticky; top:0; z-index:40; }
-        .main-content main { padding:28px 32px; background:var(--bg); }
-        ::-webkit-scrollbar { width:5px; } ::-webkit-scrollbar-track { background:transparent; } ::-webkit-scrollbar-thumb { background:#c7d2e0; border-radius:3px; }
-        .sidebar { width:260px; min-height:100vh; background:var(--sidebar); border-right:1px solid var(--border); position:fixed; left:0; top:0; z-index:50; transition:transform 0.3s cubic-bezier(0.4,0,0.2,1); box-shadow:4px 0 24px rgba(0,0,0,0.03); overflow-y:auto; }
-        .sidebar-link { display:flex; align-items:center; gap:12px; padding:11px 20px; border-radius:10px; color:var(--muted); font-size:14px; font-weight:500; transition:all 0.2s ease; cursor:pointer; position:relative; margin:2px 12px; text-decoration:none; }
-        .sidebar-link:hover { color:var(--accent); background:#eff6ff; }
-        .sidebar-link.active { color:var(--accent); background:#eff6ff; font-weight:600; }
-        .sidebar-link.active::before { content:''; position:absolute; left:-12px; top:50%; transform:translateY(-50%); width:4px; height:22px; background:var(--accent); border-radius:0 4px 4px 0; }
-        .sidebar-link i { width:20px; text-align:center; font-size:15px; }
-        .sidebar-title { color:#94a3b8; font-size:10px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; padding:20px 20px 8px 20px; margin:0 12px; }
-        .badge-confirmed { background-color:#dcfce7; color:#166534; border:1px solid #bbf7d0; }
-        .badge-pending { background-color:#fef9c3; color:#854d0e; border:1px solid #fde047; }
-        .badge-completed { background-color:#e0e7ff; color:#3730a3; border:1px solid #c7d2fe; }
-        .badge-cancelled { background-color:#fee2e2; color:#991b1b; border:1px solid #fecaca; }
-        .list-item-hover { transition:all 0.25s ease; }
-        .list-item-hover:hover { transform:translateY(-2px); box-shadow:0 12px 28px -6px rgba(37,99,235,0.08),0 4px 10px -4px rgba(0,0,0,0.04); border-color:#bfdbfe; }
-        .form-input { width:100%; padding:10px 14px; border:1.5px solid #e2e8f0; border-radius:10px; font-size:14px; font-family:'Plus Jakarta Sans',sans-serif; color:var(--fg); background:#fff; transition:all 0.2s ease; outline:none; }
+        :root { --bg: #eff6ff; --fg: #1e293b; --muted: #64748b; --accent: #2563eb; --card: #FFFFFF; --border: #dbeafe; --sidebar: #FFFFFF; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--fg); overflow-x: hidden; }
+        ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: #bfdbfe; border-radius: 3px; }
+        
+        .sidebar { width: 260px; min-height: 100vh; background: var(--sidebar); border-right: 1px solid var(--border); position: fixed; left: 0; top: 0; z-index: 50; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 4px 0 24px rgba(59, 130, 246, 0.03); }
+        .main-content { margin-left: 260px; min-height: 100vh; padding: 0; }
+        .topbar { background: rgba(255,255,255,0.9); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 40; }
+        
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; transition: box-shadow 0.25s ease, transform 0.25s ease, border-color 0.25s ease; cursor: pointer; }
+        .card:hover { box-shadow: 0 12px 40px rgba(37, 99, 235, 0.08); border-color: #bfdbfe; transform: translateY(-2px); }
+        
+        .notif-dropdown, .profile-dropdown { position: absolute; top: calc(100% + 8px); right: 0; background: #fff; border: 1px solid var(--border); opacity: 0; visibility: hidden; transform: translateY(-8px); transition: all 0.25s ease; z-index: 60; }
+        .notif-dropdown { width: 340px; border-radius: 16px; box-shadow: 0 20px 50px rgba(37, 99, 235, 0.1); }
+        .profile-dropdown { width: 200px; border-radius: 12px; box-shadow: 0 12px 36px rgba(37, 99, 235, 0.08); }
+        .notif-dropdown.open, .profile-dropdown.open { opacity: 1; visibility: visible; transform: translateY(0); }
+        .profile-dropdown a { display: flex; align-items: center; gap: 10px; padding: 10px 16px; font-size: 13px; color: var(--fg); transition: background 0.15s; text-decoration: none; }
+        .profile-dropdown a:hover { background: #eff6ff; } .profile-dropdown a.danger { color: #EF4444; }
+        .online-dot { width: 8px; height: 8px; background: #22C55E; border-radius: 50%; border: 2px solid #fff; position: absolute; bottom: 0; right: 0; }
+
+        .badge-confirmed { background-color: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+        .badge-pending { background-color: #fef9c3; color: #854d0e; border: 1px solid #fde047; }
+        .badge-completed { background-color: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe; }
+        .badge-cancelled { background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+        
+        .form-input { width:100%; padding:10px 14px; border:1.5px solid var(--border); border-radius:10px; font-size:14px; font-family:'Plus Jakarta Sans',sans-serif; color:var(--fg); background:#fff; transition:all 0.2s ease; outline:none; }
         .form-input:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(37,99,235,0.1); }
         .form-input::placeholder { color:#a0aec0; }
         .form-label { display:block; font-size:13px; font-weight:600; color:#475569; margin-bottom:6px; }
         .form-label .required { color:#ef4444; margin-left:2px; }
         select.form-input { appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 14px center; padding-right:36px; }
         textarea.form-input { resize:vertical; min-height:80px; }
-        .section-card { background:#fff; border-radius:16px; border:1px solid #e2e8f0; overflow:hidden; transition:all 0.2s ease; }
-        .section-card:hover { box-shadow:0 4px 16px rgba(37,99,235,0.05); }
-        .section-header { display:flex; align-items:center; gap:12px; padding:18px 24px; background:linear-gradient(135deg,#eff6ff 0%,#f8fafc 100%); border-bottom:1px solid #e2e8f0; }
+        
+        .section-card { background:#fff; border-radius:16px; border:1px solid var(--border); overflow:hidden; transition:all 0.2s ease; }
+        .section-header { display:flex; align-items:center; gap:12px; padding:18px 24px; background:linear-gradient(135deg,#eff6ff 0%,#f8fafc 100%); border-bottom:1px solid var(--border); }
         .section-header .icon-box { width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
         .section-body { padding:24px; }
+        
         .tab-btn { padding:9px 20px; border-radius:10px; font-size:13px; font-weight:600; cursor:pointer; transition:all 0.2s ease; border:1.5px solid transparent; white-space:nowrap; }
         .tab-btn.active { background:var(--accent); color:#fff; box-shadow:0 4px 12px rgba(37,99,235,0.25); }
-        .tab-btn:not(.active) { background:#fff; color:#64748b; border-color:#e2e8f0; }
-        .tab-btn:not(.active):hover { background:#f8fafc; color:var(--accent); border-color:#bfdbfe; }
+        .tab-btn:not(.active) { background:#fff; color:#64748b; border-color:var(--border); }
+        .tab-btn:not(.active):hover { background:#eff6ff; color:var(--accent); border-color:#bfdbfe; }
+        
         @keyframes fadeSlideUp { from{opacity:0;transform:translateY(16px);} to{opacity:1;transform:translateY(0);} }
         .animate-fade-up { animation:fadeSlideUp 0.4s ease forwards; }
         .animate-fade-up-delay-1 { animation-delay:0.08s; opacity:0; }
         .animate-fade-up-delay-2 { animation-delay:0.16s; opacity:0; }
         .animate-fade-up-delay-3 { animation-delay:0.24s; opacity:0; }
+        
         .mobile-overlay { display:none; position:fixed; inset:0; background:rgba(30,41,59,0.4); z-index:45; backdrop-filter:blur(2px); }
         .mobile-overlay.show { display:block; }
-        @media(max-width:1024px) { .sidebar{transform:translateX(-100%);} .sidebar.open{transform:translateX(0);} .main-content{margin-left:0;} .main-content main{padding:20px 16px;} }
-        @media(max-width:640px) { .section-body{padding:16px;} .section-header{padding:14px 16px;} }
+        @media(max-width:1024px) { .sidebar{transform:translateX(-100%);} .sidebar.open{transform:translateX(0);} .main-content{margin-left:0;} }
+
+        .modal-overlay { position: fixed; inset: 0; background: rgba(30, 41, 59, 0.6); backdrop-filter: blur(4px); z-index: 100; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .modal-overlay.open { display: flex; }
+        .modal-content { background: #fff; border-radius: 20px; max-width: 600px; width: 100%; max-height: 90vh; position: relative; animation: fadeSlideUp 0.3s ease; display: flex; flex-direction: column; }
+        .modal-body-scroll::-webkit-scrollbar { width: 6px; } .modal-body-scroll::-webkit-scrollbar-track { background: #f1f5f9; } .modal-body-scroll::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 3px; }
+        
+        /* CSS Khusus E-Ticket */
+        .ticket-tear { border-top: 2px dashed #e2e8f0; position: relative; margin-top: 1.5rem; padding-top: 1.5rem; }
+        .ticket-tear::before, .ticket-tear::after { content: ''; position: absolute; top: -12px; width: 24px; height: 24px; background: rgba(30, 41, 59, 0.6); border-radius: 50%; }
+        .ticket-tear::before { left: -28px; }
+        .ticket-tear::after { right: -28px; }
     </style>
 </head>
 <body>
 
     <div class="mobile-overlay" id="mobileOverlay" onclick="toggleSidebar()"></div>
+    @include('pasien.filesidebarpasien')
 
-    <!-- ===== SIDEBAR ===== -->
-    <aside class="sidebar" id="sidebar">
-        <div class="p-5 border-b border-slate-100">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-primary-600 flex items-center justify-center shadow-md shadow-blue-200">
-                    <i class="fas fa-tooth text-white text-lg"></i>
-                </div>
-                <div>
-                    <h1 class="text-base font-extrabold text-slate-800 tracking-tight">D'Smile</h1>
-                    <p class="text-[10px] text-slate-400 font-semibold tracking-wider uppercase">Dental Clinic</p>
-                </div>
-            </div>
-        </div>
-        <nav class="py-4">
-            <p class="sidebar-title">Menu Utama</p>
-            <a href="#" class="sidebar-link" id="nav-dashboard" onclick="switchView('dashboard')">
-                <i class="fas fa-th-large"></i> Beranda
-            </a>
-            <a href="#" class="sidebar-link active" id="nav-appointment" onclick="switchView('appointment')">
-                <i class="fas fa-calendar-check"></i> Appointment
-            </a>
-            <a href="#" class="sidebar-link" id="nav-history" onclick="switchView('history')">
-                <i class="fas fa-file-medical"></i> Riwayat Perawatan
-            </a>
-            <p class="sidebar-title mt-2">Lainnya</p>
-            <a href="#" class="sidebar-link">
-                <i class="fas fa-cog"></i> Pengaturan
-            </a>
-            <!-- Logout Form -->
-            <a href="#" class="sidebar-link text-red-500" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                <i class="fas fa-sign-out-alt"></i> Keluar
-            </a>
-            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">@csrf</form>
-        </nav>
-    </aside>
-
-    <!-- ===== MAIN CONTENT ===== -->
     <div class="main-content">
 
-        <!-- HEADER -->
-        <header class="flex justify-between items-center">
-            <div class="flex items-center gap-4">
-                <button class="lg:hidden w-9 h-9 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-gray-500 hover:bg-gray-50 transition-colors" onclick="toggleSidebar()">
-                    <i class="fas fa-bars text-sm"></i>
-                </button>
-                <div>
-                    <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-0.5">Pasien</p>
-                    <h2 class="text-lg md:text-xl font-extrabold text-slate-800" id="page-title">Appointment Saya</h2>
-                </div>
-            </div>
-            <div class="flex items-center gap-3 md:gap-4">
-                <div class="flex items-center gap-2 md:gap-3 pl-3 md:pl-4 border-l border-slate-200">
-                    <div class="text-right hidden sm:block">
-                        <p class="text-sm font-bold text-slate-800">{{ Auth::user()->name }}</p>
-                        <p class="text-[11px] text-slate-400">{{ Auth::user()->email }}</p>
+        <!-- TOPBAR -->
+        <header class="topbar px-6 lg:px-8 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <button class="lg:hidden w-9 h-9 rounded-lg bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-50 transition-colors" onclick="toggleSidebar()">
+                        <i class="fas fa-bars text-sm"></i>
+                    </button>
+                    <div>
+                        <h2 class="text-lg font-bold text-gray-800 leading-tight" id="page-title">Appointment Saya</h2>
+                        <p class="text-xs text-gray-400 mt-0.5">Kelola jadwal perawatan gigi Anda</p>
                     </div>
-                    <div class="w-9 h-9 md:w-10 md:h-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-600 font-bold border-2 border-white shadow-sm">
-                        {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <div class="relative">
+                        <button class="w-10 h-10 rounded-xl bg-white border border-gray-100 flex items-center justify-center text-gray-500 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-100 transition-colors relative cursor-pointer" onclick="toggleNotif()" id="notifBtn">
+                            <i class="fas fa-bell text-[15px]"></i>
+                        </button>
+                        <div class="notif-dropdown" id="notifDropdown">
+                            <div class="p-4 border-b border-gray-100">
+                                <div class="flex items-center justify-between">
+                                    <h4 class="font-bold text-sm text-gray-900">Notifikasi</h4>
+                                    <button class="text-xs text-blue-600 font-bold hover:underline cursor-pointer">Tandai semua dibaca</button>
+                                </div>
+                            </div>
+                            <div class="p-6 text-center text-sm text-gray-400">Belum ada notifikasi</div>
+                        </div>
+                    </div>
+
+                    <div class="relative">
+                        <button class="flex items-center gap-3 pl-3 pr-1 py-1 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer" onclick="toggleProfile()" id="profileBtn">
+                            <div class="text-right hidden sm:block">
+                                <p class="text-sm font-bold text-gray-800 leading-tight">{{ auth()->user()->name }}</p>
+                                <p class="text-[11px] text-gray-400">{{ auth()->user()->email }}</p>
+                            </div>
+                            <div class="relative">
+                                <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=2563eb&color=fff" alt="Profil" class="w-9 h-9 rounded-lg object-cover border border-gray-100">
+                                <span class="online-dot"></span>
+                            </div>
+                            <i class="fas fa-chevron-down text-[10px] text-gray-400 mr-2"></i>
+                        </button>
+
+                        <div class="profile-dropdown" id="profileDropdown">
+                            <div class="p-3 border-b border-gray-100">
+                                <p class="text-sm font-bold text-gray-900">{{ auth()->user()->name }}</p>
+                                <p class="text-[11px] text-gray-400">{{ auth()->user()->email }}</p>
+                            </div>
+                            <div class="py-1">
+                                <a href="#"><i class="fas fa-user text-gray-400 text-xs w-4"></i> Profil Saya</a>
+                                <a href="#"><i class="fas fa-cog text-gray-400 text-xs w-4"></i> Pengaturan</a>
+                                <form method="POST" action="{{ route('logout') }}" class="block">
+                                    @csrf
+                                    <button type="submit" class="w-full text-left flex items-center gap-2 px-4 py-2.5 text-[13px] text-red-500 hover:bg-red-50 transition-colors">
+                                        <i class="fas fa-sign-out-alt text-xs w-4"></i> Keluar
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </header>
 
-        <!-- MAIN -->
-        <main>
+        <main class="px-6 lg:px-8 py-6">
 
-            <!-- Flash Message Sukses dari Laravel -->
             @if(session('success'))
                 <div class="bg-green-50 border border-green-200 text-green-700 px-5 py-3 rounded-xl mb-6 flex items-center gap-3 font-semibold text-sm animate-fade-up">
                     <i class="fas fa-check-circle"></i> {{ session('success') }}
                 </div>
             @endif
 
-            <!-- ============================================ -->
-            <!-- VIEW: APPOINTMENT LIST                       -->
-            <!-- ============================================ -->
+            <!-- VIEW: APPOINTMENT LIST -->
             <section id="view-appointment" class="space-y-6 animate-fade-up">
 
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -165,10 +186,23 @@
                 <div class="space-y-4" id="appointment-list">
                     
                     @forelse($appointments as $item)
-                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-col md:flex-row items-center justify-between gap-4 list-item-hover 
+                    <div class="card p-5 flex flex-col md:flex-row items-center justify-between gap-4 
                         {{ $item->status == 'Dibatalkan' ? 'opacity-60' : '' }} 
                         {{ $item->status == 'Selesai' ? 'opacity-75' : '' }}"
-                        data-status="{{ $item->status == 'Terjadwal' || $item->status == 'Menunggu Konfirmasi' ? 'mendatang' : ($item->status == 'Selesai' ? 'selesai' : 'dibatalkan') }}">
+                        data-status="{{ $item->status == 'Terjadwal' || $item->status == 'Menunggu Konfirmasi' ? 'mendatang' : ($item->status == 'Selesai' ? 'selesai' : 'dibatalkan') }}"
+                        onclick="openDetailModal(this)"
+                        data-treatment="{{ $item->jenis_perawatan }}"
+                        data-doctor="{{ $item->dokter }}"
+                        data-date="{{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y') }}"
+                        data-time="{{ $item->waktu }}"
+                        data-status-text="{{ $item->status }}"
+                        data-name="{{ $item->nama_lengkap }}"
+                        data-phone="{{ $item->no_telepon }}"
+                        data-keluhan="{{ $item->keluhan ?? '-' }}"
+                        data-ec-name="{{ $item->kontak_darurat_nama ?? '-' }}"
+                        data-ec-phone="{{ $item->kontak_darurat_telepon ?? '-' }}"
+                        data-queue="A-{{ str_pad($loop->iteration, 3, '0', STR_PAD_LEFT) }}"
+                        data-id="{{ $item->id }}">
                         
                         <div class="flex items-center gap-5 w-full md:w-auto">
                             <div class="@if($item->status=='Terjadwal') bg-primary-50 text-primary-700 border-primary-100 @elseif($item->status=='Menunggu Konfirmasi') bg-amber-50 text-amber-700 border-amber-100 @elseif($item->status=='Dibatalkan') bg-red-50 text-red-400 border-red-100 @else bg-slate-100 text-slate-500 border-slate-200 @endif rounded-xl px-4 py-3 text-center min-w-[72px] border flex-shrink-0">
@@ -176,11 +210,11 @@
                                 <p class="text-2xl font-extrabold leading-none mt-0.5">{{ \Carbon\Carbon::parse($item->tanggal)->format('d') }}</p>
                             </div>
                             <div class="min-w-0">
-                                <h4 class="font-bold text-slate-800 text-[17px] truncate @if($item->status=='Dibatalkan') line-through text-slate-500 @endif">{{ $item->jenis_perawatan }}</h4>
-                                <p class="text-slate-500 text-sm flex items-center gap-2 mt-1">
+                                <h4 class="font-bold text-gray-800 text-[17px] truncate @if($item->status=='Dibatalkan') line-through text-slate-500 @endif">{{ $item->jenis_perawatan }}</h4>
+                                <p class="text-gray-500 text-sm flex items-center gap-2 mt-1">
                                     <i class="fas fa-user-md text-xs text-primary-400"></i> {{ $item->dokter }}
                                 </p>
-                                <p class="text-slate-400 text-xs mt-1 flex items-center gap-2">
+                                <p class="text-gray-400 text-xs mt-1 flex items-center gap-2">
                                     <i class="far fa-clock text-[10px]"></i> {{ $item->waktu }} WIB
                                 </p>
                             </div>
@@ -198,9 +232,9 @@
                             @endif
 
                             @if(in_array($item->status, ['Terjadwal', 'Menunggu Konfirmasi']))
-                            <form action="{{ route('appointment.cancel', $item->id) }}" method="POST">
+                            <form action="{{ route('appointment.cancel', $item->id) }}" method="POST" onclick="event.stopPropagation()">
                                 @csrf @method('PUT')
-                                <button type="submit" class="w-8 h-8 rounded-full bg-slate-50 hover:bg-red-50 hover:text-red-500 text-slate-400 transition flex items-center justify-center border border-slate-200 hover:border-red-200" title="Batalkan" onclick="return confirm('Yakin ingin membatalkan appointment ini?')">
+                                <button type="submit" class="w-8 h-8 rounded-full bg-white hover:bg-red-50 hover:text-red-500 text-gray-400 transition flex items-center justify-center border border-gray-200 hover:border-red-200" title="Batalkan" onclick="return confirm('Yakin ingin membatalkan appointment ini?')">
                                     <i class="fas fa-times text-xs"></i>
                                 </button>
                             </form>
@@ -208,42 +242,41 @@
                         </div>
                     </div>
                     @empty
-                    <div class="bg-white p-10 rounded-2xl shadow-sm border border-slate-200 text-center">
-                        <i class="fas fa-calendar-times text-4xl text-slate-300 mb-3"></i>
-                        <p class="text-slate-500 font-semibold">Belum ada appointment.</p>
-                        <p class="text-slate-400 text-sm">Silakan buat appointment baru.</p>
+                    <div class="card p-10 text-center">
+                        <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4 mx-auto">
+                            <i class="fas fa-calendar-times text-2xl text-blue-300"></i>
+                        </div>
+                        <p class="text-gray-800 font-bold mb-1">Belum Ada Janji Temu</p>
+                        <p class="text-gray-400 text-sm">Silakan buat appointment baru untuk memulai.</p>
                     </div>
                     @endforelse
 
                 </div>
             </section>
 
-            <!-- ============================================ -->
-            <!-- VIEW: FORM APPOINTMENT                       -->
-            <!-- ============================================ -->
+            <!-- VIEW: FORM APPOINTMENT -->
             <section id="view-form-appointment" class="hidden space-y-6 animate-fade-up">
 
                 <div class="flex items-center gap-3">
-                    <button onclick="switchView('appointment')" class="w-9 h-9 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-primary-50 hover:text-primary-600 hover:border-primary-200 transition-all">
+                    <button onclick="switchView('appointment')" class="w-9 h-9 rounded-xl bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-all">
                         <i class="fas fa-arrow-left text-sm"></i>
                     </button>
                     <div>
-                        <p class="text-xs text-slate-400 font-medium">Kembali ke daftar</p>
-                        <h3 class="text-lg font-extrabold text-slate-800">Buat Appointment Baru</h3>
+                        <p class="text-xs text-gray-400 font-medium">Kembali ke daftar</p>
+                        <h3 class="text-lg font-bold text-gray-800">Buat Appointment Baru</h3>
                     </div>
                 </div>
 
-                <!-- FORM DITAMBAHKAN ACTION & METHOD POST -->
                 <form id="appointmentForm" action="{{ route('appointment.store') }}" method="POST">
                     @csrf
 
-                    <!-- ===== SECTION 1: DATA PASIEN ===== -->
+                    <!-- SECTION 1: DATA PASIEN -->
                     <div class="section-card mb-5 animate-fade-up animate-fade-up-delay-1">
                         <div class="section-header">
                             <div class="icon-box bg-primary-100 text-primary-600"><i class="fas fa-user"></i></div>
                             <div>
-                                <h3 class="font-bold text-slate-800 text-[15px]">Data Pasien</h3>
-                                <p class="text-xs text-slate-400 mt-0.5">Informasi lengkap pasien</p>
+                                <h3 class="font-bold text-gray-800 text-[15px]">Data Pasien</h3>
+                                <p class="text-xs text-gray-400 mt-0.5">Informasi lengkap pasien</p>
                             </div>
                         </div>
                         <div class="section-body">
@@ -272,10 +305,6 @@
                                     <label class="form-label">No. Telepon <span class="required">*</span></label>
                                     <input type="tel" name="no_telepon" class="form-input" value="{{ old('no_telepon') }}" placeholder="08xxxxxxxxxx" required>
                                 </div>
-                                <div>
-                                    <label class="form-label">Email</label>
-                                    <input type="email" name="email" class="form-input" value="{{ old('email') }}" placeholder="contoh@email.com">
-                                </div>
                                 <div class="md:col-span-2">
                                     <label class="form-label">Alamat Lengkap <span class="required">*</span></label>
                                     <textarea name="alamat" class="form-input" placeholder="Masukkan alamat lengkap..." rows="2" required>{{ old('alamat') }}</textarea>
@@ -284,58 +313,13 @@
                         </div>
                     </div>
 
-                    <!-- ===== SECTION 2: DATA MEDIS AWAL ===== -->
+                    <!-- SECTION 3: KONTAK DARURAT -->
                     <div class="section-card mb-5 animate-fade-up animate-fade-up-delay-2">
                         <div class="section-header">
-                            <div class="icon-box bg-emerald-100 text-emerald-600"><i class="fas fa-heartbeat"></i></div>
+                            <div class="icon-box bg-amber-50 text-amber-600"><i class="fas fa-phone-alt"></i></div>
                             <div>
-                                <h3 class="font-bold text-slate-800 text-[15px]">Data Medis Awal</h3>
-                                <p class="text-xs text-slate-400 mt-0.5">Riwayat kesehatan & kondisi saat ini</p>
-                            </div>
-                        </div>
-                        <div class="section-body">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
-                                <div>
-                                    <label class="form-label">Golongan Darah</label>
-                                    <select name="golongan_darah" class="form-input">
-                                        <option value="" disabled selected>Pilih golongan darah</option>
-                                        <option value="A" @if(old('golongan_darah')=='A') selected @endif>A</option>
-                                        <option value="B" @if(old('golongan_darah')=='B') selected @endif>B</option>
-                                        <option value="AB" @if(old('golongan_darah')=='AB') selected @endif>AB</option>
-                                        <option value="O" @if(old('golongan_darah')=='O') selected @endif>O</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="form-label">Tekanan Darah</label>
-                                    <input type="text" name="tekanan_darah" class="form-input" value="{{ old('tekanan_darah') }}" placeholder="Contoh: 120/80 mmHg">
-                                </div>
-                                <div>
-                                    <label class="form-label">Alergi Obat</label>
-                                    <input type="text" name="alergi_obat" class="form-input" value="{{ old('alergi_obat') }}" placeholder="Tulis alergi obat, jika ada">
-                                </div>
-                                <div>
-                                    <label class="form-label">Alergi Makanan</label>
-                                    <input type="text" name="alergi_makanan" class="form-input" value="{{ old('alergi_makanan') }}" placeholder="Tulis alergi makanan, jika ada">
-                                </div>
-                                <div class="md:col-span-2">
-                                    <label class="form-label">Riwayat Penyakit</label>
-                                    <textarea name="riwayat_penyakit" class="form-input" placeholder="Diabetes, hipertensi, penyakit jantung, dll..." rows="2">{{ old('riwayat_penyakit') }}</textarea>
-                                </div>
-                                <div class="md:col-span-2">
-                                    <label class="form-label">Obat yang Dikonsumsi Saat Ini</label>
-                                    <textarea name="obat_dikonsumsi" class="form-input" placeholder="Nama obat & dosis yang sedang dikonsumsi..." rows="2">{{ old('obat_dikonsumsi') }}</textarea>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ===== SECTION 3: KONTAK DARURAT ===== -->
-                    <div class="section-card mb-5 animate-fade-up animate-fade-up-delay-3">
-                        <div class="section-header">
-                            <div class="icon-box bg-amber-100 text-amber-600"><i class="fas fa-phone-alt"></i></div>
-                            <div>
-                                <h3 class="font-bold text-slate-800 text-[15px]">Kontak Darurat</h3>
-                                <p class="text-xs text-slate-400 mt-0.5">Kontak yang bisa dihubungi saat darurat</p>
+                                <h3 class="font-bold text-gray-800 text-[15px]">Kontak Darurat</h3>
+                                <p class="text-xs text-gray-400 mt-0.5">Kontak yang bisa dihubungi saat darurat</p>
                             </div>
                         </div>
                         <div class="section-body">
@@ -359,21 +343,17 @@
                                     <label class="form-label">No. Telepon Darurat <span class="required">*</span></label>
                                     <input type="tel" name="kontak_darurat_telepon" class="form-input" value="{{ old('kontak_darurat_telepon') }}" placeholder="08xxxxxxxxxx" required>
                                 </div>
-                                <div>
-                                    <label class="form-label">Alamat Kontak Darurat</label>
-                                    <input type="text" name="kontak_darurat_alamat" class="form-input" value="{{ old('kontak_darurat_alamat') }}" placeholder="Alamat lengkap (opsional)">
-                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- ===== SECTION 4: DETAIL APPOINTMENT ===== -->
+                    <!-- SECTION 4: DETAIL APPOINTMENT -->
                     <div class="section-card mb-5 animate-fade-up animate-fade-up-delay-3">
                         <div class="section-header">
-                            <div class="icon-box bg-violet-100 text-violet-600"><i class="fas fa-calendar-plus"></i></div>
+                            <div class="icon-box bg-violet-50 text-violet-600"><i class="fas fa-calendar-plus"></i></div>
                             <div>
-                                <h3 class="font-bold text-slate-800 text-[15px]">Detail Appointment</h3>
-                                <p class="text-xs text-slate-400 mt-0.5">Pilih jadwal & dokter yang diinginkan</p>
+                                <h3 class="font-bold text-gray-800 text-[15px]">Detail Appointment</h3>
+                                <p class="text-xs text-gray-400 mt-0.5">Pilih jadwal & dokter yang diinginkan</p>
                             </div>
                         </div>
                         <div class="section-body">
@@ -427,10 +407,10 @@
                         </div>
                     </div>
 
-                    <!-- ===== BUTTONS ===== -->
+                    <!-- BUTTONS -->
                     <div class="flex flex-col sm:flex-row items-center justify-end gap-3 pt-2">
-                        <button type="button" onclick="switchView('appointment')" class="w-full sm:w-auto px-6 py-3 bg-white border border-slate-200 text-slate-600 font-bold text-sm rounded-xl hover:bg-slate-50 transition-all">Batal</button>
-                        <button type="submit" class="w-full sm:w-auto px-8 py-3 bg-primary-600 hover:bg-primary-700 text-white font-bold text-sm rounded-xl shadow-lg shadow-blue-200 hover:shadow-xl hover:shadow-blue-200 transition-all active:scale-[0.97] flex items-center justify-center gap-2">
+                        <button type="button" onclick="switchView('appointment')" class="w-full sm:w-auto px-6 py-3 bg-white border border-gray-200 text-gray-600 font-bold text-sm rounded-xl hover:bg-gray-50 transition-all">Batal</button>
+                        <button type="submit" class="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold text-sm rounded-xl shadow-lg shadow-blue-200 hover:shadow-xl hover:shadow-blue-200 transition-all active:scale-[0.97] flex items-center justify-center gap-2">
                             <i class="fas fa-check text-xs"></i> Simpan Appointment
                         </button>
                     </div>
@@ -438,27 +418,83 @@
                 </form>
             </section>
 
-            <!-- ============================================ -->
-            <!-- VIEW: HISTORY                                -->
-            <!-- ============================================ -->
-            <section id="view-history" class="hidden space-y-6 animate-fade-up">
-                <!-- History section tetap statis dulu karena fokus ke Appointment -->
-                <div class="flex items-center justify-between">
-                    <h3 class="font-bold text-slate-800 text-lg">Daftar Riwayat Medis</h3>
-                    <button class="text-primary-600 text-xs font-bold border border-primary-200 bg-primary-50 px-4 py-2 rounded-xl hover:bg-primary-100 transition flex items-center gap-1.5">
-                        <i class="fas fa-download text-[10px]"></i> Download PDF
-                    </button>
-                </div>
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden p-10 text-center text-slate-400">
-                    <p>Fitur Riwayat Perawatan segera hadir.</p>
-                </div>
-            </section>
-
         </main>
     </div>
 
+    <!-- MODAL DETAIL APPOINTMENT (E-TICKET) -->
+    <div class="modal-overlay" id="detailModal">
+        <div class="modal-content">
+            <button onclick="closeDetailModal()" class="absolute top-4 right-4 w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center text-gray-600 transition-colors z-10 cursor-pointer">
+                <i class="fas fa-times text-sm"></i>
+            </button>
+            
+            <div class="p-8 modal-body-scroll overflow-y-auto flex-1">
+                <!-- Header Modal -->
+                <div class="flex items-center justify-between mb-6">
+                    <h2 id="modalTreatment" class="text-2xl font-extrabold text-gray-900"></h2>
+                    <span id="modalStatus" class="px-3.5 py-1.5 rounded-full text-xs font-bold"></span>
+                </div>
+
+                <!-- Info Utama -->
+                <div class="bg-gradient-to-r from-primary-50 to-white p-5 rounded-xl border border-primary-100 mb-6">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-xs text-gray-400 font-medium">Tanggal</p>
+                            <p id="modalDate" class="text-sm font-bold text-gray-800 mt-1"><i class="fas fa-calendar-day text-primary-500 mr-2"></i>-</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-400 font-medium">Waktu</p>
+                            <p id="modalTime" class="text-sm font-bold text-gray-800 mt-1"><i class="fas fa-clock text-primary-500 mr-2"></i>-</p>
+                        </div>
+                        <div class="col-span-2">
+                            <p class="text-xs text-gray-400 font-medium">Dokter</p>
+                            <p id="modalDoctor" class="text-sm font-bold text-gray-800 mt-1"><i class="fas fa-user-md text-primary-500 mr-2"></i>-</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Info Pasien & Keluhan -->
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="font-bold text-gray-800 text-sm mb-2 flex items-center gap-2"><i class="fas fa-user text-primary-500 text-xs"></i> Data Pasien</h4>
+                        <div class="bg-gray-50 p-4 rounded-xl text-sm space-y-2 border border-gray-100">
+                            <p class="text-gray-600"><span class="font-semibold text-gray-800">Nama:</span> <span id="modalName"></span></p>
+                            <p class="text-gray-600"><span class="font-semibold text-gray-800">No. Telepon:</span> <span id="modalPhone"></span></p>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-800 text-sm mb-2 flex items-center gap-2"><i class="fas fa-notes-medical text-primary-500 text-xs"></i> Keluhan</h4>
+                        <div class="bg-gray-50 p-4 rounded-xl text-sm border border-gray-100">
+                            <p id="modalKeluhan" class="text-gray-600 italic">-</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-800 text-sm mb-2 flex items-center gap-2"><i class="fas fa-phone-volume text-red-500 text-xs"></i> Kontak Darurat</h4>
+                        <div class="bg-gray-50 p-4 rounded-xl text-sm space-y-2 border border-gray-100">
+                            <p class="text-gray-600"><span class="font-semibold text-gray-800">Nama:</span> <span id="modalEcName"></span></p>
+                            <p class="text-gray-600"><span class="font-semibold text-gray-800">Telepon:</span> <span id="modalEcPhone"></span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BAGIAN E-TICKET (NOMOR ANTRIAN & BARCODE) -->
+                <div class="ticket-tear">
+                    <div class="flex flex-col items-center text-center">
+                        <p class="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-1">Nomor Antrian Anda</p>
+                        <h2 id="modalQueue" class="text-5xl font-extrabold text-primary-600 mb-5 tracking-wider">A-001</h2>
+                        
+                        <div class="bg-white p-3 rounded-xl border-2 border-primary-100 shadow-md mb-4">
+                            <div id="modalQrCode"></div>
+                        </div>
+                        
+                        <p class="text-[11px] text-gray-400 max-w-[220px] leading-relaxed">Tunjukkan barcode ini ke petugas resepsionis saat tiba di klinik</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Set min date hari ini
         const dateInput = document.getElementById('appointmentDate');
         if(dateInput){
             const today = new Date().toISOString().split('T')[0];
@@ -468,30 +504,14 @@
         function switchView(viewName) {
             document.getElementById('view-appointment').classList.add('hidden');
             document.getElementById('view-form-appointment').classList.add('hidden');
-            document.getElementById('view-history').classList.add('hidden');
-
-            const navIds = ['nav-appointment', 'nav-history', 'nav-dashboard'];
-            navIds.forEach(id => { const el = document.getElementById(id); if(el) el.classList.remove('active'); });
 
             if (viewName === 'appointment') {
                 document.getElementById('view-appointment').classList.remove('hidden');
-                document.getElementById('nav-appointment').classList.add('active');
                 document.getElementById('page-title').innerText = 'Appointment Saya';
             }
             else if (viewName === 'form-appointment') {
                 document.getElementById('view-form-appointment').classList.remove('hidden');
-                document.getElementById('nav-appointment').classList.add('active');
                 document.getElementById('page-title').innerText = 'Buat Appointment';
-            }
-            else if (viewName === 'history') {
-                document.getElementById('view-history').classList.remove('hidden');
-                document.getElementById('nav-history').classList.add('active');
-                document.getElementById('page-title').innerText = 'Riwayat Perawatan';
-            }
-            else if (viewName === 'dashboard') {
-                document.getElementById('view-appointment').classList.remove('hidden');
-                document.getElementById('nav-dashboard').classList.add('active');
-                document.getElementById('page-title').innerText = 'Beranda';
             }
 
             if (window.innerWidth <= 1024) { closeSidebar(); }
@@ -510,14 +530,71 @@
             });
         }
 
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('open');
-            document.getElementById('mobileOverlay').classList.toggle('show');
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('mobileOverlay').classList.toggle('show'); }
+        function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('mobileOverlay').classList.remove('show'); }
+        
+        function toggleNotif() { document.getElementById('notifDropdown').classList.toggle('open'); document.getElementById('profileDropdown').classList.remove('open'); }
+        function toggleProfile() { document.getElementById('profileDropdown').classList.toggle('open'); document.getElementById('notifDropdown').classList.remove('open'); }
+
+        document.addEventListener('click', function(e) {
+            const notifBtn = document.getElementById('notifBtn'); const notifDrop = document.getElementById('notifDropdown');
+            const profileBtn = document.getElementById('profileBtn'); const profileDrop = document.getElementById('profileDropdown');
+            if (!notifBtn.contains(e.target) && !notifDrop.contains(e.target)) notifDrop.classList.remove('open');
+            if (!profileBtn.contains(e.target) && !profileDrop.contains(e.target)) profileDrop.classList.remove('open');
+        });
+
+        // SCRIPT UNTUK MODAL DETAIL & QR CODE
+        function openDetailModal(element) {
+            document.getElementById('modalTreatment').innerText = element.dataset.treatment;
+            document.getElementById('modalDate').innerHTML = `<i class="fas fa-calendar-day text-primary-500 mr-2"></i>${element.dataset.date}`;
+            document.getElementById('modalTime').innerHTML = `<i class="fas fa-clock text-primary-500 mr-2"></i>${element.dataset.time} WIB`;
+            document.getElementById('modalDoctor').innerHTML = `<i class="fas fa-user-md text-primary-500 mr-2"></i>${element.dataset.doctor}`;
+            document.getElementById('modalName').innerText = element.dataset.name;
+            document.getElementById('modalPhone').innerText = element.dataset.phone;
+            document.getElementById('modalKeluhan').innerText = element.dataset.keluhan;
+            document.getElementById('modalEcName').innerText = element.dataset.ecName;
+            document.getElementById('modalEcPhone').innerText = element.dataset.ecPhone;
+            
+            // Set Nomor Antrian
+            const queueNum = element.dataset.queue;
+            document.getElementById('modalQueue').innerText = queueNum;
+
+            // Atur Warna Badge Status
+            const statusText = element.dataset.statusText;
+            const statusEl = document.getElementById('modalStatus');
+            statusEl.innerText = statusText;
+            statusEl.className = "px-3.5 py-1.5 rounded-full text-xs font-bold "; // reset class
+            if(statusText === 'Terjadwal') statusEl.classList.add('badge-confirmed');
+            else if(statusText === 'Menunggu Konfirmasi') statusEl.classList.add('badge-pending');
+            else if(statusText === 'Selesai') statusEl.classList.add('badge-completed');
+            else statusEl.classList.add('badge-cancelled');
+
+            // Generate QR Code
+            const qrContainer = document.getElementById('modalQrCode');
+            qrContainer.innerHTML = ""; // Kosongkan dulu biar gak numpuk QR code pas dibuka tutup berkali-kali
+            
+            // Data yang akan dimasukkan ke dalam QR Code (Isinya Nomor Antrian langsung)
+            const qrData = queueNum;
+            
+            new QRCode(qrContainer, {
+                text: qrData,
+                width: 140,
+                height: 140,
+                colorDark : "#1e3a8a", // Warna biru gelap D'Smile
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+
+            document.getElementById('detailModal').classList.add('open');
+            document.body.style.overflow = 'hidden';
         }
-        function closeSidebar() {
-            document.getElementById('sidebar').classList.remove('open');
-            document.getElementById('mobileOverlay').classList.remove('show');
+
+        function closeDetailModal() {
+            document.getElementById('detailModal').classList.remove('open');
+            document.body.style.overflow = 'auto';
         }
+
+        document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeDetailModal(); });
     </script>
 </body>
-</html>
+</html> 

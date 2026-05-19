@@ -289,7 +289,7 @@
                     </div>
 
                     <div class="card article-card overflow-hidden cursor-pointer group sm:col-span-2 lg:col-span-1" onclick="openArticle('Benarkah Veneer Aman untuk Gigi?','https://picsum.photos/seed/whiteteeth/800/400.jpg','<p class=\'mb-4\'>Veneer menjadi salah satu prosedur kosmetik gigi paling populer saat ini. Namun, apakah prosedur ini aman?</p><p class=\'mb-4\'><strong>Apa itu Veneer?</strong><br>Veneer adalah cangkang tipis berwarna gigi yang menutupi permukaan depan gigi.</p><p class=\'mb-4\'><strong>Keamanan:</strong><br>Secara medis, veneer sangat aman jika dilakukan oleh dokter gigi profesional. Material yang digunakan biocompatible.</p><p class=\'mb-4\'><strong>Perawatan:</strong><br>Veneer porselen tahan noda dan bisa bertahan hingga 10-15 tahun dengan perawatan yang baik.</p>','drg. Andi Wijaya','8 Apr 2025','4 min baca')">
-                        <div class="overflow-hidden h-44"><img src="https://picsum.photos/seed/whiteteeth/600/400.jpg" alt="Gigi putih" class="w-full h-full object-cover"></div>
+                        <img src="images/veener.png" class="doctor-img" alt="Gigi putih" class="w-full h-full object-cover">
                         <div class="p-5">
                             <div class="flex items-center gap-2 mb-2.5"><span class="tag bg-purple-50 text-purple-700">Perawatan</span><span class="text-[11px] text-gray-400">4 min baca</span></div>
                             <h4 class="font-bold text-sm text-gray-800 leading-snug group-hover:text-blue-600 transition-colors">Benarkah Veneer Aman untuk Gigi?</h4>

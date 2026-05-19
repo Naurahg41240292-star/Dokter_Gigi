@@ -67,12 +67,12 @@ class AppointmentController extends Controller
     }
 
     // Update status (misal pasien ngeklik batal)
-    public function update(Request $request, $id)
-    {
-        $appointment = Appointment::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
-        
-        $appointment->update(['status' => 'Dibatalkan']);
+    public function cancel($id)
+{
+    $appointment = Appointment::where('user_id', Auth::id())->findOrFail($id);
+    $appointment->status = 'Dibatalkan'; // Sesuaikan dengan status di database kamu
+    $appointment->save();
 
-        return redirect()->route('pasien.dashboard')->with('success', 'Appointment berhasil dibatalkan.');
-    }
+    return redirect()->route('appointment.index')->with('success', 'Appointment berhasil dibatalkan.');
+}
 }
