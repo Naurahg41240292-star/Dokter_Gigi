@@ -191,7 +191,24 @@
                 </div>
 
                 <!-- Role: registration is for Pasien only (hidden) -->
-                <input type="hidden" name="role" value="pasien">
+                {{-- <input type="hidden" name="role" value="pasien"> --}}
+
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-slate-600 uppercase ml-1 tracking-wide">Daftar Sebagai</label>
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-dsmile-main transition-colors">
+                            <i class="fas fa-id-badge text-sm" aria-hidden="true"></i>
+                        </div>
+                        <select name="role" class="w-full pl-11 pr-10 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-base text-slate-700 focus:bg-white focus:border-dsmile-main focus:ring-2 focus:ring-dsmile-main/20 outline-none transition-all font-medium appearance-none cursor-pointer">
+                            <option value="pasien">Pasien</option>
+                            <option value="dokter">Dokter (Butuh Persetujuan Admin)</option>
+                            <option value="petugas">Petugas (Butuh Persetujuan Admin)</option>
+                        </select>
+                        <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-slate-400">
+                            <i class="fas fa-chevron-down text-sm"></i>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- Terms -->
                 <div class="flex items-start gap-3 mt-2">

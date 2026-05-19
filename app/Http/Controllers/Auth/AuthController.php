@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
-use Illuminate\Support\Facades\Mail; 
+use Illuminate\Support\Facades\Mail;
 use App\Mail\ResetPasswordMail;
 
 class AuthController extends Controller
@@ -80,17 +80,23 @@ class AuthController extends Controller
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
+        $statusAkun = ($request->role === 'pasien') ? 'aktif' : 'pending';
+
         $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'phone' => $validated['phone'],
-            'role' => Role::PASIEN,
-            'status' => Status::APPROVED,
-            'password' => Hash::make($validated['password']),
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'password' => Hash::make($request->password),
+            'role' => $request->role,
+            'status' => $statusAkun,
         ]);
 
-        // Don't auto-login. Redirect back to login with a success flash so UI can show a popup.
-        return redirect()->route('login')->with('registered', true);
+        if ($user->status === 'pending') {
+            return redirect()->route('login')->with('success', 'Pendaftaran berhasil! Akun Anda sedang menunggu persetujuan Admin.');
+        }
+
+        Auth::login($user);
+        return redirect()->route('pasien.dashboard');
     }
 
     public function sendForgotPassword(Request $request)
@@ -117,9 +123,9 @@ class AuthController extends Controller
             ]
         );
 
-        Mail::to($user->email)->send( 
-            new ResetPasswordMail($token, $user->email) 
-        ); 
+        Mail::to($user->email)->send(
+            new ResetPasswordMail($token, $user->email)
+        );
 
         return redirect()->route('password.request')->with('status', 'Link reset password telah dikirim ke email Anda. Silakan cek email untuk melanjutkan.');
     }
