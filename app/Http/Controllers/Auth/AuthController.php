@@ -37,38 +37,60 @@ class AuthController extends Controller
      */
     public function homeRedirect()
     {
-        return Auth::check() ? redirect()->route('dashboard') : redirect()->route('login');
+        $user = Auth::user();
+
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        if ($user->status === 'pending') {
+            Auth::logout();
+            return redirect()->route('login')->withErrors([
+                'email' => 'Akun Anda belum disetujui oleh Admin.',
+            ]);
+        }
+
+        if ($user->role === 'dokter') {
+            return redirect()->route('dokter.dashboard');
+        } elseif ($user->role === 'petugas') {
+            return redirect()->route('petugas.dashboard');
+        }
+
+        return redirect()->route('pasien.dashboard');
     }
 
     public function login(Request $request)
     {
-        $validated = $request->validate([
-            'email' => ['required', 'string', 'max:255'],
+        $credentials = $request->validate([
+            'email' => ['required', 'email'],
             'password' => ['required', 'string'],
         ]);
 
-        $loginValue = trim($validated['email']);
-        $loginField = filter_var($loginValue, FILTER_VALIDATE_EMAIL) ? 'email' : 'phone';
+        if (Auth::attempt($credentials, $request->remember)) {
+            $user = Auth::user();
 
-        $user = User::where($loginField, $loginValue)->first();
+            if ($user->status === 'pending') {
+                Auth::logout();
 
-        if (! $user || ! Hash::check($validated['password'], $user->password)) {
-            throw ValidationException::withMessages([
-                'email' => 'Email atau kata sandi tidak cocok.',
-            ]);
+                return redirect()->route('login')->withErrors([
+                    'email' => 'Akun Anda belum disetujui oleh Admin Petugas.',
+                ]);
+            }
+
+            $request->session()->regenerate();
+
+            if ($user->role === 'dokter') {
+                return redirect()->route('dokter.dashboard');
+            } elseif ($user->role === 'petugas') {
+                return redirect()->route('petugas.dashboard');
+            } else {
+                return redirect()->route('pasien.dashboard');
+            }
         }
 
-        if ($user->status !== Status::APPROVED) {
-            throw ValidationException::withMessages([
-                'email' => 'Akun Anda belum disetujui petugas.',
-            ]);
-        }
-
-        Auth::login($user, $request->boolean('remember'));
-
-        $request->session()->regenerate();
-
-        return redirect()->route('dashboard');
+        return back()->withErrors([
+            'email' => 'Email atau kata sandi yang Anda masukkan salah.',
+        ])->onlyInput('email');
     }
 
     public function register(Request $request)
