@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Pasien\PembayaranController;
 use App\Http\Controllers\Pasien\AppointmentController;
+use App\Http\Controllers\PetugasController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LandingPageController;
 
@@ -30,7 +31,7 @@ Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('
 // ROUTE AUTH (Wajib Login)
 // ==========================================
 Route::middleware('auth')->group(function () {
-    
+
     // Logout
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
@@ -78,7 +79,7 @@ Route::middleware('auth')->group(function () {
     // Input Data Pasien
     Route::get('/input-data-pasien', [PetugasController::class, 'create'])->name('petugas.input-data');
     Route::post('/input-data-pasien', [PetugasController::class, 'store'])->name('petugas.input-data.store');
-    
+
     // Data Pasien
     Route::get('/data-pasien', [PetugasController::class, 'index'])->name('petugas.data-pasien');
     Route::get('/edit-pasien/{pasien}', [PetugasController::class, 'edit'])->name('petugas.edit-pasien');
