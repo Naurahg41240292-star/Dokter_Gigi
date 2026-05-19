@@ -22,7 +22,7 @@ return new class extends Migration
             // Relasi ke pasien (karena petugas yang mendaftarkan)
             $table->foreignId('pasien_id')->nullable()->after('user_id')->constrained()->nullOnDelete();
             // Kolom waktu (jam kunjungan)
-            $table->time('waktu')->nullable()->after('tanggal'); 
+           //$table->time('waktu')->nullable()->after('tanggal');
         });
     }
 
@@ -34,7 +34,7 @@ return new class extends Migration
 
         Schema::table('appointments', function (Blueprint $table) {
             $table->dropForeign(['pasien_id']);
-            $table->dropColumn(['pasien_id', 'waktu']);
+            $table->dropColumn(['pasien_id']);
         });
     }
 };
