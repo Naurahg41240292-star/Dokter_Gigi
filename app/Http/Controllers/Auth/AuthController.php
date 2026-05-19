@@ -66,15 +66,13 @@ class AuthController extends Controller
             'password' => ['required', 'string'],
         ]);
 
-        if (Auth::attempt($credentials, $request->remember)) {
+        if (Auth::attempt($credentials)) {
             $user = Auth::user();
 
             if ($user->status === 'pending') {
                 Auth::logout();
 
-                return redirect()->route('login')->withErrors([
-                    'email' => 'Akun Anda belum disetujui oleh Admin Petugas.',
-                ]);
+                return redirect()->route('login')->with('error', 'Akses Ditolak! Akun Dokter/Petugas Anda belum disetujui oleh Admin.');
             }
 
             $request->session()->regenerate();
@@ -100,6 +98,7 @@ class AuthController extends Controller
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'phone' => ['required', 'string', 'max:20', 'unique:users,phone'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'role' => ['required', 'in:pasien,dokter,petugas'],
         ]);
 
         $statusAkun = ($request->role === 'pasien') ? 'aktif' : 'pending';
@@ -115,10 +114,9 @@ class AuthController extends Controller
 
         if ($user->status === 'pending') {
             return redirect()->route('login')->with('success', 'Pendaftaran berhasil! Akun Anda sedang menunggu persetujuan Admin.');
+        } else {
+            return redirect()->route('login')->with('success', 'Pendaftaran berhasil! Silakan masuk menggunakan email dan kata sandi Anda.');
         }
-
-        Auth::login($user);
-        return redirect()->route('pasien.dashboard');
     }
 
     public function sendForgotPassword(Request $request)

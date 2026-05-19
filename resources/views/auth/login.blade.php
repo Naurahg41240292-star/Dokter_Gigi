@@ -92,8 +92,21 @@
             </div>
 
             @if (session('status'))
-                <div class="mb-6 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700">
-                    {{ session('status') }}
+                <div class="mb-6 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700 font-medium">
+                    <i class="fas fa-check-circle mr-1"></i> {{ session('status') }}
+                </div>
+            @endif
+
+            @if (session('success'))
+                <div class="mb-6 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700 font-medium">
+                    <i class="fas fa-info-circle mr-1"></i> {{ session('success') }}
+                </div>
+            @endif
+
+            @if (session('error'))
+                <div class="mb-6 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 font-semibold flex items-center gap-2 animate-fade-in shadow-sm">
+                    <i class="fas fa-exclamation-triangle text-base text-red-500"></i>
+                    <span>{{ session('error') }}</span>
                 </div>
             @endif
 
