@@ -71,19 +71,12 @@ class AuthController extends Controller
 
             if ($user->status === 'pending') {
                 Auth::logout();
-
-                return redirect()->route('login')->with('error', 'Akses Ditolak! Akun Dokter/Petugas Anda belum disetujui oleh Admin.');
+                return redirect()->route('login')->with('error', 'Akun belum disetujui Admin.');
             }
 
             $request->session()->regenerate();
 
-            if ($user->role === 'dokter') {
-                return redirect()->route('dokter.dashboard');
-            } elseif ($user->role === 'petugas') {
-                return redirect()->route('petugas.dashboard');
-            } else {
-                return redirect()->route('pasien.dashboard');
-            }
+            return redirect()->route($this->dashboardRoute($user));
         }
 
         return back()->withErrors([
@@ -212,10 +205,17 @@ class AuthController extends Controller
 
     protected function dashboardRoute(?User $user): string
     {
-        return match ($user?->role) {
-            Role::DOKTER => 'dokter.dashboard',
-            Role::PETUGAS => 'petugas.dashboard',
-            default => 'pasien.dashboard',
-        };
+        // return match ($user?->role) {
+        //     Role::DOKTER => 'dokter.dashboard',
+        //     Role::PETUGAS => 'petugas.dashboard',
+        //     default => 'pasien.dashboard',
+        // };
+        if ($user?->role === 'dokter') {
+            return 'dokter.dashboard';
+        } elseif ($user?->role === 'petugas') {
+            return 'petugas.dashboard';
+        } else {
+            return 'pasien.dashboard';
+        }
     }
 }
