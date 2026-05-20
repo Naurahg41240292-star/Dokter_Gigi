@@ -168,7 +168,7 @@
         #dokter { background: white; }
         .doctor-card { text-align: center; background: var(--light-bg); border-radius: 16px; overflow: hidden; transition: transform 0.3s, box-shadow 0.3s; }
         .doctor-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.08); }
-        .doctor-img { width: 100%; height: 350px; object-fit: cover; transition: transform 0.5s; }
+        .doctor-img { width: 100%; height: 350px; object-fit: cover;  object-position: top; transition: transform 0.5s; }
         .doctor-card:hover .doctor-img { transform: scale(1.05); }
         .doctor-content { padding: 25px; background: white; border-radius: 0 0 16px 16px; }
 
@@ -381,25 +381,25 @@
                     <div class="doctor-card">
                         <div style="overflow: hidden;"><img src = "images/dokter1.png" class="doctor-img" alt="Drg. Ahmad Eunwoo Ramdhan"></div>
                         <div class="doctor-content">
-                            <h5 class="mb-1 fw-bold">Drg. Ahmad Eunwoo Ramdhan, Sp.Ort</h5>
+                            <h5 class="mb-1 fw-bold">drg. Ahmad Eunwoo Ramdhan, Sp.Ort</h5>
                             <span class="text-muted small">Spesialis Ortodonti</span>
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
                     <div class="doctor-card">
-                        <div style="overflow: hidden;"><img src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?q=80&w=600&auto=format&fit=crop" class="doctor-img" alt="Drg. Sari"></div>
+                        <div style="overflow: hidden;"><img src="images/dokter2.jpeg" class="doctor-img" alt="Drg. Naurah Afkarina Ananda"></div>
                         <div class="doctor-content">
-                            <h5 class="mb-1 fw-bold">Drg. Sari Dewi, KG</h5>
+                            <h5 class="mb-1 fw-bold">drg. Naurah Afkarina Ananda, KG</h5>
                             <span class="text-muted small">Perawatan Umum & Estetika</span>
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
                     <div class="doctor-card">
-                        <div style="overflow: hidden;"><img src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?q=80&w=600&auto=format&fit=crop" class="doctor-img" alt="Drg. Budi"></div>
+                        <div style="overflow: hidden;"><img src="images/dokter3.jpeg" class="doctor-img" alt="Drg. Binan Wooseok sagara"></div>
                         <div class="doctor-content">
-                            <h5 class="mb-1 fw-bold">Drg. Budi Santoso, Sp.Pros</h5>
+                            <h5 class="mb-1 fw-bold">drg. Binan Wooseok sagara, Sp. Pros</h5>
                             <span class="text-muted small">Spesialis Gigi Tiruan</span>
                         </div>
                     </div>
@@ -410,27 +410,27 @@
             <div class="row g-4 justify-content-center">
                 <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
                     <div class="doctor-card">
-                        <div style="overflow: hidden;"><img src="https://images.unsplash.com/photo-1614608682850-e0d6ed316d47?q=80&w=600&auto=format&fit=crop" class="doctor-img" alt="Drg. Rina"></div>
+                        <div style="overflow: hidden;"><img src="images/dokter4.jpeg" class="doctor-img" alt="Drg. Intan Novitasari"></div>
                         <div class="doctor-content">
-                            <h5 class="mb-1 fw-bold">Drg. Rina Wati, Sp.Perio</h5>
+                            <h5 class="mb-1 fw-bold">drg. Intan Novitasari, Sp. perio</h5>
                             <span class="text-muted small">Spesialis Penyakit Gusi</span>
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
                     <div class="doctor-card">
-                        <div style="overflow: hidden;"><img src="https://images.unsplash.com/photo-1537368910025-700350fe46c7?q=80&w=600&auto=format&fit=crop" class="doctor-img" alt="Drg. Dimas"></div>
+                        <div style="overflow: hidden;"><img src="images/dokter5.jpeg" class="doctor-img" alt="Drg. Najwa Wahdaniyatul Meilani"></div>
                         <div class="doctor-content">
-                            <h5 class="mb-1 fw-bold">Drg. Dimas Pratama, Sp.BM</h5>
+                            <h5 class="mb-1 fw-bold">drg. Najwa Wahdaniyatul Meilani, Sp. BM</h5>
                             <span class="text-muted small">Spesialis Bedah Mulut</span>
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
                     <div class="doctor-card">
-                        <div style="overflow: hidden;"><img src="https://images.unsplash.com/photo-1551836022-deb4988cc6c0?q=80&w=600&auto=format&fit=crop" class="doctor-img" alt="Drg. Ayu"></div>
+                        <div style="overflow: hidden;"><img src="images/dokter6.jpeg" class="doctor-img" alt="Drg. Aprilia Ajeng Wulandari"></div>
                         <div class="doctor-content">
-                            <h5 class="mb-1 fw-bold">Drg. Ayu Lestari, Sp.KGA</h5>
+                            <h5 class="mb-1 fw-bold">drg. Aprilia Ajeng Wulandari, Sp. KGA</h5>
                             <span class="text-muted small">Dokter Gigi Anak</span>
                         </div>
                     </div>
