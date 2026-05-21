@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\Status;
 use App\Models\Pasien;
 use App\Models\RekamMedis;
 use App\Models\Appointment;
@@ -43,26 +44,28 @@ class PetugasController extends Controller
         ));
     }
 
-  public function jadwalKontrol()
-{
-    $today = Carbon::today();
+    // ================= JADWAL KONTROL =================
+    public function jadwalKontrol()
+    {
+        $today = Carbon::today();
 
-    // Statistik Kartu
-    $totalJanji = Appointment::whereDate('tanggal', $today)->count();
-    $menunggu = Appointment::whereDate('tanggal', $today)->where('status', 'Menunggu')->count();
-    $sedangPeriksa = Appointment::whereDate('tanggal', $today)->where('status', 'Sedang Berjalan')->count();
-    $selesai = Appointment::whereDate('tanggal', $today)->where('status', 'Selesai')->count();
+        // Statistik Kartu
+        $totalJanji = Appointment::whereDate('tanggal', $today)->count();
+        $menunggu = Appointment::whereDate('tanggal', $today)->where('status', 'Menunggu')->count();
+        $sedangPeriksa = Appointment::whereDate('tanggal', $today)->where('status', 'Sedang Berjalan')->count();
+        $selesai = Appointment::whereDate('tanggal', $today)->where('status', 'Selesai')->count();
 
-    // Data Tabel
-    $appointments = Appointment::whereDate('tanggal', $today)
-                        ->with(['pasien', 'user', 'rekamMedis']) // PENTING: Ikut bawa data pasien/user
-                        ->orderBy('waktu', 'asc')
-                        ->paginate(10);
+        // Data Tabel
+        $appointments = Appointment::whereDate('tanggal', $today)
+                            ->with(['pasien', 'user', 'rekamMedis'])
+                            ->orderBy('waktu', 'asc')
+                            ->paginate(10);
 
-    return view('petugas.jadwalkontrol', compact(
-        'totalJanji', 'menunggu', 'sedangPeriksa', 'selesai', 'appointments'
-    ));
-}
+        return view('petugas.jadwalkontrol', compact(
+            'totalJanji', 'menunggu', 'sedangPeriksa', 'selesai', 'appointments'
+        ));
+    }
+
     // ================= DATA PASIEN CRUD =================
     public function create()
     {
@@ -85,10 +88,9 @@ class PetugasController extends Controller
             'kontak_telepon' => 'nullable|string',
         ]);
 
-        // 1. Simpan Data Pasien
         $pasien = Pasien::create($validatedData);
 
-        // 2. BUAT REKAM MEDIS OTOMATIS (INI KUNCINYA AGAR LANGSUNG MUNCUL DI REKAM MEDIS)
+        // Buat Rekam Medis Otomatis saat input pasien baru
         $sudahAdaRM = RekamMedis::where('pasien_id', $pasien->id)
                             ->whereDate('tanggal_kunjungan', now()->toDateString())
                             ->exists();
@@ -120,8 +122,10 @@ class PetugasController extends Controller
         return view('petugas.editpasien', compact('pasien'));
     }
 
+    // REVISI 1: Update Pasien + Rekam Medis digabung
     public function update(Request $request, Pasien $pasien)
     {
+        // Validasi Data Pasien + Data Rekam Medis
         $validatedData = $request->validate([
             'nama' => 'required|string|max:255',
             'nik' => 'required|string|max:50|unique:pasiens,nik,' . $pasien->id,
@@ -134,11 +138,33 @@ class PetugasController extends Controller
             'kontak_nama' => 'nullable|string',
             'kontak_hubungan' => 'nullable|string',
             'kontak_telepon' => 'nullable|string',
+            // Field dari Rekam Medis
+            'diagnosa' => 'nullable|string',
+            'tindakan' => 'nullable|string',
+            'status_perawatan' => 'nullable|string',
+            'catatan' => 'nullable|string',
         ]);
 
-        $pasien->update($validatedData);
+        // 1. Update Data Pasien
+        $pasienData = $request->only([
+            'nama', 'nik', 'tanggal_lahir', 'jenis_kelamin', 'alamat', 
+            'golongan_darah', 'riwayat_alergi', 'riwayat_penyakit', 
+            'kontak_nama', 'kontak_hubungan', 'kontak_telepon'
+        ]);
+        $pasien->update($pasienData);
 
-        return redirect()->route('petugas.data-pasien')->with('success', 'Data pasien berhasil diperbarui!');
+        // 2. Update Rekam Medis Terakhir Pasien
+        $rekamMedis = RekamMedis::where('pasien_id', $pasien->id)->latest()->first();
+        if ($rekamMedis) {
+            $rekamMedis->update([
+                'diagnosa' => $request->diagnosa,
+                'tindakan' => $request->tindakan,
+                'status' => $request->status_perawatan ?? $rekamMedis->status,
+                'catatan' => $request->catatan,
+            ]);
+        }
+
+        return redirect()->route('petugas.data-pasien')->with('success', 'Data pasien & rekam medis berhasil diperbarui!');
     }
 
     public function destroy(Pasien $pasien)
@@ -147,67 +173,29 @@ class PetugasController extends Controller
         return redirect()->route('petugas.data-pasien')->with('success', 'Data pasien berhasil dihapus!');
     }
 
-    // ================= REKAM MEDIS CRUD =================
-    public function rmIndex()
+    // ================= MANAJEMEN USER (REVISI 2) =================
+    public function manajemenUser()
     {
-        $rekamMedis = RekamMedis::with('pasien')->latest()->paginate(10);
-        return view('petugas.rekammedis', compact('rekamMedis'));
+        // Ambil semua user dokter & petugas, urutkan yang pending di atas
+        $users = User::whereIn('role', ['dokter', 'petugas'])
+                    ->orderByRaw("FIELD(status, 'pending') DESC")
+                    ->latest()
+                    ->get();
+
+        return view('petugas.manajemen-user', compact('users'));
     }
 
-    public function rmCreate()
+    public function approveUser(User $user)
     {
-        $pasiens = Pasien::all();
-        return view('petugas.tambah_rekammedis', compact('pasiens'));
+        // ✅ UBAH MENJADI Status::APPROVED sesuai Enum kamu
+        $user->update(['status' => Status::APPROVED]);
+
+        return redirect()->route('petugas.manajemen-user')->with('success', "User {$user->name} berhasil disetujui.");
     }
 
-    public function rmStore(Request $request)
+    // ================= PENGATURAN (REVISI 3) =================
+    public function pengaturan()
     {
-        $validatedData = $request->validate([
-            'pasien_id' => 'required|exists:pasiens,id',
-            'dokter' => 'required|string|max:255',
-            'tanggal_kunjungan' => 'required|date',
-            'keluhan' => 'nullable|string',
-            'diagnosa' => 'nullable|string',
-            'tindakan' => 'nullable|string',
-            'resep_obat' => 'nullable|string',
-            'status' => 'required|in:Dalam Perawatan,Selesai',
-        ]);
-
-        RekamMedis::create($validatedData);
-
-        return redirect()->route('petugas.rekam-medis')
-            ->with('success', 'Rekam medis berhasil ditambahkan!');
-    }
-
-    public function rmEdit(RekamMedis $rekamMedis)
-    {
-        $pasiens = Pasien::all();
-        return view('petugas.edit_rekammedis', compact('rekamMedis', 'pasiens'));
-    }
-
-    public function rmUpdate(Request $request, RekamMedis $rekamMedis)
-    {
-        $validatedData = $request->validate([
-            'pasien_id' => 'required|exists:pasiens,id',
-            'dokter' => 'required|string|max:255',
-            'tanggal_kunjungan' => 'required|date',
-            'keluhan' => 'nullable|string',
-            'diagnosa' => 'nullable|string',
-            'tindakan' => 'nullable|string',
-            'resep_obat' => 'nullable|string',
-            'status' => 'required|in:Dalam Perawatan,Selesai',
-        ]);
-
-        $rekamMedis->update($validatedData);
-
-        return redirect()->route('petugas.rekam-medis')
-            ->with('success', 'Rekam medis berhasil diperbarui!');
-    }
-
-    public function rmDestroy(RekamMedis $rekamMedis)
-    {
-        $rekamMedis->delete();
-        return redirect()->route('petugas.rekam-medis')
-            ->with('success', 'Rekam medis berhasil dihapus!');
+        return view('petugas.pengaturan');
     }
 }
