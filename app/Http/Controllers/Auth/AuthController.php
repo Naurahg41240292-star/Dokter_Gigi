@@ -94,7 +94,9 @@ class AuthController extends Controller
             'role' => ['required', 'in:pasien,dokter,petugas'],
         ]);
 
-        $statusAkun = ($request->role === 'pasien') ? 'aktif' : 'pending';
+        $statusAkun = ($request->role === Role::PASIEN->value)
+            ? Status::AKTIF
+            : Status::PENDING;
 
         $user = User::create([
             'name' => $request->name,
@@ -105,11 +107,17 @@ class AuthController extends Controller
             'status' => $statusAkun,
         ]);
 
-        if ($user->status === 'pending') {
-            return redirect()->route('login')->with('success', 'Pendaftaran berhasil! Akun Anda sedang menunggu persetujuan Admin.');
-        } else {
-            return redirect()->route('login')->with('success', 'Pendaftaran berhasil! Silakan masuk menggunakan email dan kata sandi Anda.');
-        }
+       if ($user->status === Status::PENDING) {
+    return redirect()->route('login')->with(
+        'success',
+        'Pendaftaran berhasil! Akun Anda sedang menunggu persetujuan Petugas.'
+    );
+}
+
+return redirect()->route('login')->with(
+    'success',
+    'Pendaftaran berhasil! Silakan masuk menggunakan email dan kata sandi Anda.'
+);
     }
 
     public function sendForgotPassword(Request $request)
@@ -205,7 +213,7 @@ class AuthController extends Controller
     if ($user->status === Status::PENDING) {
         Auth::logout();
         return redirect()->route('login')->withErrors([
-            'email' => 'Akun Anda belum disetujui oleh Admin.',
+            'email' => 'Akun Anda belum disetujui oleh Petugas.',
         ]);
     }
 

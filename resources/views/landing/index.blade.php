@@ -183,7 +183,7 @@
         }
         .cta-pattern { position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; border: 20px solid rgba(255,255,255,0.1); border-radius: 50%; }
         .btn-white-premium { background: white; color: var(--primary); border-radius: 8px; padding: 15px 40px; font-weight: 800; font-size: 1.1rem; transition: transform 0.3s, box-shadow 0.3s; }
-        .btn-white-premium:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.2); color: var(--primary); }
+        .btn-white-premium:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.2); color: var(--primary); color: #fff; }
 
         /* --- FOOTER --- */
         footer { background: var(--dark); color: #94a3b8; }
@@ -219,7 +219,7 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto align-items-center">
                     <li class="nav-item"><a class="nav-link" href="#layanan">Layanan</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#tentang">Tentang</a></li>
+                    <!-- <li class="nav-item"><a class="nav-link" href="#tentang">Tentang</a></li> -->
                     <li class="nav-item"><a class="nav-link" href="#dokter">Dokter</a></li>
                     <li class="nav-item ms-4">
                         <a href="#appointment-section" class="btn btn-appointment-nav">Appointment</a>
