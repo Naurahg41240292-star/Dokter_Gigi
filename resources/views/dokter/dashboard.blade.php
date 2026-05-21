@@ -151,38 +151,27 @@
 
         <!-- MENU -->
         <nav>
-            <a href="{{ route('dokter.dashboard') }}" class="nav-item active">
+            <!-- 1. Beranda / Dashboard -->
+            <a href="{{ route('dokter.dashboard') }}" class="nav-item {{ request()->routeIs('dokter.dashboard') ? 'active' : '' }}">
                 <i class="fas fa-home w-5 text-center"></i>
                 <span>Beranda</span>
             </a>
 
-            <a href="/jadwal-pasien" class="nav-item">
-                <i class="fas fa-calendar-alt w-5 text-center"></i>
-                <span>Input Data dan Jadwal Dokter</span>
-            </a>
-
-            <a href="/riwayat-pasien" class="nav-item">
-                <i class="fas fa-user-injured w-5 text-center"></i>
+            <!-- 2. Riwayat Pasien (Diagnosa & Resep) -->
+            <a href="{{ route('dokter.riwayat-pasien') }}" class="nav-item {{ request()->routeIs('dokter.riwayat-pasien') ? 'active' : '' }}">
+                <i class="fas fa-notes-medical w-5 text-center"></i>
                 <span>Riwayat Pasien</span>
-            </a>
-
-            <a href="/rekam-medis-dokter" class="nav-item">
-                <i class="fas fa-file-medical-alt w-5 text-center"></i>
-                <span>Rekam Medis</span>
-            </a>
-
-            <a href="/pesan-pasien" class="nav-item">
-                <i class="fas fa-comment-dots w-5 text-center"></i>
-                <span>Pesan Pasien</span>
             </a>
 
             <div class="my-6 px-8 border-t border-gray-100"></div>
 
-            <a href="/pengaturan" class="nav-item">
+            <!-- 3. Pengaturan Akun -->
+            <a href="{{ route('dokter.pengaturan') }}" class="nav-item {{ request()->routeIs('dokter.pengaturan') ? 'active' : '' }}">
                 <i class="fas fa-cog w-5 text-center"></i>
                 <span>Pengaturan Akun</span>
             </a>
 
+            <!-- Logout -->
             <form method="POST" action="{{ route('logout') }}" class="mx-4 mt-2">
                 @csrf
 
