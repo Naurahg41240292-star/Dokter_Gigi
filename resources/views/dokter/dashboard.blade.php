@@ -131,33 +131,13 @@
             </div>
         </div>
 
-        <!-- PROFILE -->
-        <div class="px-6 mb-6 mt-4">
-            <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <img src="https://picsum.photos/seed/drgabriella/100/100"
-                    class="w-10 h-10 rounded-full object-cover border border-white">
-
-                <div>
-                    <p class="text-xs font-bold text-slate-800">
-                        dr. Gabriella Putri
-                    </p>
-
-                    <p class="text-[10px] text-slate-500">
-                        Dokter Gigi
-                    </p>
-                </div>
-            </div>
-        </div>
-
         <!-- MENU -->
-        <nav>
-            <!-- 1. Beranda / Dashboard -->
+        <nav class="mt-4">
             <a href="{{ route('dokter.dashboard') }}" class="nav-item {{ request()->routeIs('dokter.dashboard') ? 'active' : '' }}">
                 <i class="fas fa-home w-5 text-center"></i>
                 <span>Beranda</span>
             </a>
 
-            <!-- 2. Riwayat Pasien (Diagnosa & Resep) -->
             <a href="{{ route('dokter.riwayat-pasien') }}" class="nav-item {{ request()->routeIs('dokter.riwayat-pasien') ? 'active' : '' }}">
                 <i class="fas fa-notes-medical w-5 text-center"></i>
                 <span>Riwayat Pasien</span>
@@ -165,16 +145,14 @@
 
             <div class="my-6 px-8 border-t border-gray-100"></div>
 
-            <!-- 3. Pengaturan Akun -->
             <a href="{{ route('dokter.pengaturan') }}" class="nav-item {{ request()->routeIs('dokter.pengaturan') ? 'active' : '' }}">
                 <i class="fas fa-cog w-5 text-center"></i>
                 <span>Pengaturan Akun</span>
             </a>
 
-            <!-- Logout -->
             <form method="POST" action="{{ route('logout') }}" class="mx-4 mt-2">
-                @csrf
-
+                <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                
                 <button type="submit"
                     class="nav-item w-full text-red-500 hover:text-red-600 hover:bg-red-50">
 
@@ -187,302 +165,273 @@
     </aside>
 
     <!-- MAIN -->
-    <main class="flex-1 ml-[260px] p-6 lg:p-8 overflow-y-auto h-screen">
+    <main class="flex-1 ml-[260px] overflow-y-auto h-screen">
 
-        <!-- HEADER -->
-        <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+        <!-- TOP NAVBAR -->
+        <header class="sticky top-0 z-30 bg-white/80 backdrop-blur-xl border-b border-slate-200 px-6 lg:px-8 py-4 mb-8">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
 
-            <div>
-                <p class="text-slate-400 text-sm font-medium uppercase tracking-wide mb-1">
-                    Dashboard
-                </p>
+                <div>
+                    <p class="text-slate-400 text-sm font-medium uppercase tracking-wide mb-1">
+                        Dashboard
+                    </p>
 
-                <h2 class="text-3xl font-extrabold text-slate-800">
-                    Halo, dr. Gabriella! 👋
-                </h2>
-            </div>
-
-            <div class="flex items-center gap-4 w-full md:w-auto">
-
-                <!-- SEARCH -->
-                <div class="flex items-center bg-white border border-gray-200 rounded-xl px-4 py-2.5 w-full md:w-72 shadow-sm">
-                    <i class="fas fa-search text-gray-400 text-sm"></i>
-
-                    <input type="text"
-                        placeholder="Cari pasien..."
-                        class="ml-2 text-sm outline-none w-full bg-transparent text-slate-600">
+                    <h2 class="text-2xl lg:text-3xl font-extrabold text-slate-800">
+                        Halo, dr. Gabriella! 👋
+                    </h2>
                 </div>
 
-                <!-- NOTIF -->
-                <div class="relative cursor-pointer p-3 bg-white border border-gray-200 rounded-xl shadow-sm hover:bg-gray-50">
-                    <i class="fas fa-bell text-gray-600"></i>
+                <div class="flex items-center gap-4 w-full md:w-auto">
 
-                    <span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+                    <!-- SEARCH -->
+                    <div class="flex items-center bg-white border border-gray-200 rounded-xl px-4 py-2.5 w-full md:w-72 shadow-sm focus-within:ring-2 focus-within:ring-primary-500 transition">
+                        <i class="fas fa-search text-gray-400 text-sm"></i>
+
+                        <input type="text"
+                            placeholder="Cari pasien..."
+                            class="ml-2 text-sm outline-none w-full bg-transparent text-slate-600">
+                    </div>
+
+                    <!-- NOTIF -->
+                    <div class="relative cursor-pointer p-3 bg-white border border-gray-200 rounded-xl shadow-sm hover:bg-gray-50 transition">
+                        <i class="fas fa-bell text-gray-600"></i>
+
+                        <span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+                    </div>
+
+                    <!-- SEPARATOR -->
+                    <div class="h-8 w-px bg-gray-200 hidden md:block"></div>
+
+                    <!-- PROFILE NAVBAR -->
+                    <div class="hidden md:flex items-center gap-3 cursor-pointer hover:bg-gray-50 p-1.5 pr-4 rounded-xl transition border border-transparent hover:border-gray-200">
+                        <img src="https://picsum.photos/seed/drgabriella/100/100" class="w-9 h-9 rounded-full object-cover border-2 border-primary-100">
+                        <div>
+                            <p class="text-sm font-bold text-slate-800 leading-none">dr. Gabriella</p>
+                            <p class="text-[10px] text-slate-400 mt-0.5">Dokter Gigi</p>
+                        </div>
+                        <i class="fas fa-chevron-down text-[10px] text-slate-400"></i>
+                    </div>
+
                 </div>
             </div>
         </header>
 
-                <!-- CARDS -->
-        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
+        <!-- CONTENT AREA -->
+        <div class="px-6 lg:px-8">
 
-            <!-- CARD: Pasien Hari Ini -->
-            <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm hover-card">
-                <div class="flex justify-between items-start mb-5">
-                    <div>
-                        <p class="text-slate-500 text-sm font-medium mb-2">Pasien Hari Ini</p>
-                        <h3 class="text-4xl font-extrabold text-slate-800">3</h3>
+            <!-- CARDS DINAMIS -->
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
+
+                <!-- CARD: Pasien Hari Ini -->
+                <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm hover-card">
+                    <div class="flex justify-between items-start mb-5">
+                        <div>
+                            <p class="text-slate-500 text-sm font-medium mb-2">Pasien Hari Ini</p>
+                            <h3 class="text-4xl font-extrabold text-slate-800">{{ $pasienHariIni ?? 0 }}</h3>
+                        </div>
+                        <div class="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center text-primary-600">
+                            <i class="fas fa-users"></i>
+                        </div>
                     </div>
-                    <div class="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center text-primary-600">
-                        <i class="fas fa-users"></i>
+                    <div class="flex items-center gap-2 text-sm">
+                        <span class="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-bold">Hari ini</span>
+                        <span class="text-slate-400 text-xs">dari jadwal</span>
                     </div>
                 </div>
-                <div class="flex items-center gap-2 text-sm">
-                    <span class="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-bold">+0</span>
-                    <span class="text-slate-400 text-xs">dari kemarin</span>
+
+                <!-- CARD: Janji Temu -->
+                <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm hover-card">
+                    <div class="flex justify-between items-start mb-5">
+                        <div>
+                            <p class="text-slate-500 text-sm font-medium mb-2">Janji Temu</p>
+                            <h3 class="text-4xl font-extrabold text-slate-800">{{ $janjiTemu ?? 0 }}</h3>
+                        </div>
+                        <div class="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 text-sm">
+                        <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-bold">{{ $janjiTemu ?? 0 }}</span>
+                        <span class="text-slate-400 text-xs">jadwal hari ini</span>
+                    </div>
+                </div>
+
+                <!-- CARD: Sedang Diperiksa -->
+                <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm hover-card">
+                    <div class="flex justify-between items-start mb-5">
+                        <div>
+                            <p class="text-slate-500 text-sm font-medium mb-2">Sedang Diperiksa</p>
+                            <h3 class="text-4xl font-extrabold text-slate-800">{{ $sedangDiperiksa ?? 0 }}</h3>
+                        </div>
+                        <div class="w-12 h-12 rounded-2xl bg-teal-50 flex items-center justify-center text-teal-600">
+                            <i class="fas fa-stethoscope"></i>
+                        </div>
+                    </div>
+                    <span class="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-xs font-bold">Aktif sekarang</span>
+                </div>
+
+                <!-- CARD: Total Pasien -->
+                <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm hover-card">
+                    <div class="flex justify-between items-start mb-5">
+                        <div>
+                            <p class="text-slate-500 text-sm font-medium mb-2">Total Pasien</p>
+                            <h3 class="text-4xl font-extrabold text-slate-800">{{ $totalPasien ?? 0 }}</h3>
+                        </div>
+                        <div class="w-12 h-12 rounded-2xl bg-purple-50 flex items-center justify-center text-purple-600">
+                            <i class="fas fa-user-friends"></i>
+                        </div>
+                    </div>
+                    <span class="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-xs font-bold">Keseluruhan</span>
                 </div>
             </div>
 
-            <!-- CARD: Janji Temu -->
-            <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm hover-card">
-                <div class="flex justify-between items-start mb-5">
+            <!-- JADWAL FULL -->
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-100 p-7 mb-8">
+
+                <div class="flex justify-between items-center mb-6">
+
                     <div>
-                        <p class="text-slate-500 text-sm font-medium mb-2">Janji Temu</p>
-                        <h3 class="text-4xl font-extrabold text-slate-800">3</h3>
+                        <h3 class="text-xl font-bold text-slate-800">
+                            Jadwal Hari Ini
+                        </h3>
+
+                        <p class="text-sm text-slate-400 mt-1">
+                            Daftar pemeriksaan pasien hari ini
+                        </p>
                     </div>
-                    <div class="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600">
-                        <i class="fas fa-calendar-check"></i>
-                    </div>
+
+                    <!-- INI YANG SUDAH DIGANTI JADI LINK -->
+                    <a href="{{ route('dokter.riwayat-pasien') }}" class="text-sm font-bold text-primary-600 bg-primary-50 px-4 py-2 rounded-xl hover:bg-primary-100 transition inline-block">
+                        Lihat Semua
+                    </a>
                 </div>
-                <div class="flex items-center gap-2 text-sm">
-                    <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-bold">3</span>
-                    <span class="text-slate-400 text-xs">jadwal hari ini</span>
+
+                <div class="overflow-x-auto">
+
+                    <table class="w-full text-left">
+
+                        <thead>
+                            <tr class="border-b border-slate-100 text-xs uppercase tracking-wider text-slate-400">
+                                <th class="pb-4">Waktu</th>
+                                <th class="pb-4">Nama Pasien</th>
+                                <th class="pb-4">Keluhan</th>
+                                <th class="pb-4">Status</th>
+                                <th class="pb-4 text-center">Aksi</th>
+                            </tr>
+                        </thead>
+
+                        <tbody class="text-sm">
+
+                            <!-- ROW 1 -->
+                            <tr class="border-b border-slate-50 table-row-hover transition">
+                                <td class="py-5 font-semibold text-slate-600">09:00</td>
+                                <td class="py-5">
+                                    <div class="flex items-center gap-3">
+                                        <img src="https://picsum.photos/seed/doc1/100/100" class="w-10 h-10 rounded-full object-cover">
+                                        <div>
+                                            <p class="font-bold text-slate-700">Budi Santoso</p>
+                                            <p class="text-xs text-slate-400">Pasien Lama</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-5 text-slate-500">Scaling Gigi</td>
+                                <td class="py-5">
+                                    <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">Selesai</span>
+                                </td>
+                                <td class="py-5">
+                                    <div class="flex items-center justify-center gap-2">
+                                        <button title="Lihat Detail" class="w-8 h-8 rounded-lg bg-blue-50 hover:bg-blue-100 text-primary-600 flex items-center justify-center transition"><i class="fas fa-eye text-xs"></i></button>
+                                        <button title="Edit Jadwal" class="w-8 h-8 rounded-lg bg-yellow-50 hover:bg-yellow-100 text-yellow-600 flex items-center justify-center transition"><i class="fas fa-edit text-xs"></i></button>
+                                        <button title="Hapus Jadwal" class="w-8 h-8 rounded-lg bg-red-50 hover:bg-red-100 text-red-500 flex items-center justify-center transition"><i class="fas fa-trash text-xs"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- ROW 2 -->
+                            <tr class="border-b border-slate-50 table-row-hover transition">
+                                <td class="py-5 font-semibold text-slate-600">10:30</td>
+                                <td class="py-5">
+                                    <div class="flex items-center gap-3">
+                                        <img src="https://picsum.photos/seed/doc2/100/100" class="w-10 h-10 rounded-full object-cover">
+                                        <div>
+                                            <p class="font-bold text-slate-700">Siti Aminah</p>
+                                            <p class="text-xs text-slate-400">Pasien Baru</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-5 text-slate-500">Cabut Gigi Bungsu</td>
+                                <td class="py-5">
+                                    <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs font-bold">Menunggu</span>
+                                </td>
+                                <td class="py-5">
+                                    <div class="flex items-center justify-center gap-2">
+                                        <button title="Lihat Detail" class="w-8 h-8 rounded-lg bg-blue-50 hover:bg-blue-100 text-primary-600 flex items-center justify-center transition"><i class="fas fa-eye text-xs"></i></button>
+                                        <button title="Edit Jadwal" class="w-8 h-8 rounded-lg bg-yellow-50 hover:bg-yellow-100 text-yellow-600 flex items-center justify-center transition"><i class="fas fa-edit text-xs"></i></button>
+                                        <button title="Hapus Jadwal" class="w-8 h-8 rounded-lg bg-red-50 hover:bg-red-100 text-red-500 flex items-center justify-center transition"><i class="fas fa-trash text-xs"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- ROW 3 -->
+                            <tr class="table-row-hover transition">
+                                <td class="py-5 font-semibold text-slate-600">13:00</td>
+                                <td class="py-5">
+                                    <div class="flex items-center gap-3">
+                                        <img src="https://picsum.photos/seed/doc3/100/100" class="w-10 h-10 rounded-full object-cover">
+                                        <div>
+                                            <p class="font-bold text-slate-700">Reza Rahadian</p>
+                                            <p class="text-xs text-slate-400">Kontrol</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-5 text-slate-500">Konsultasi Ortodonti</td>
+                                <td class="py-5">
+                                    <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold">Diproses</span>
+                                </td>
+                                <td class="py-5">
+                                    <div class="flex items-center justify-center gap-2">
+                                        <button title="Lihat Detail" class="w-8 h-8 rounded-lg bg-blue-50 hover:bg-blue-100 text-primary-600 flex items-center justify-center transition"><i class="fas fa-eye text-xs"></i></button>
+                                        <button title="Edit Jadwal" class="w-8 h-8 rounded-lg bg-yellow-50 hover:bg-yellow-100 text-yellow-600 flex items-center justify-center transition"><i class="fas fa-edit text-xs"></i></button>
+                                        <button title="Hapus Jadwal" class="w-8 h-8 rounded-lg bg-red-50 hover:bg-red-100 text-red-500 flex items-center justify-center transition"><i class="fas fa-trash text-xs"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
-            <!-- CARD: Sedang Diperiksa -->
-            <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm hover-card">
-                <div class="flex justify-between items-start mb-5">
-                    <div>
-                        <p class="text-slate-500 text-sm font-medium mb-2">Sedang Diperiksa</p>
-                        <h3 class="text-4xl font-extrabold text-slate-800">1</h3>
+            <!-- BLUE INFO BOX -->
+            <div class="bg-gradient-to-r from-blue-600 to-blue-700 rounded-3xl p-8 shadow-xl shadow-blue-500/20 flex flex-col lg:flex-row justify-between items-center gap-6 overflow-hidden relative mb-8">
+
+                <div class="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded-full -translate-y-10 translate-x-10"></div>
+
+                <div class="relative z-10">
+
+                    <div class="flex items-center gap-4 mb-3">
+
+                        <div class="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center">
+                            <i class="fas fa-user-plus text-white text-lg"></i>
+                        </div>
+
+                        <h4 class="text-2xl font-bold text-white">
+                            Update Data Pasien Terbaru
+                        </h4>
                     </div>
-                    <div class="w-12 h-12 rounded-2xl bg-teal-50 flex items-center justify-center text-teal-600">
-                        <i class="fas fa-stethoscope"></i>
-                    </div>
-                </div>
-                <span class="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-xs font-bold">Aktif sekarang</span>
-            </div>
 
-            <!-- CARD: Total Pasien -->
-            <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm hover-card">
-                <div class="flex justify-between items-start mb-5">
-                    <div>
-                        <p class="text-slate-500 text-sm font-medium mb-2">Total Pasien</p>
-                        <h3 class="text-4xl font-extrabold text-slate-800">3</h3>
-                    </div>
-                    <div class="w-12 h-12 rounded-2xl bg-purple-50 flex items-center justify-center text-purple-600">
-                        <i class="fas fa-user-friends"></i>
-                    </div>
-                </div>
-                <span class="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-xs font-bold">Dalam jadwal</span>
-            </div>
-        </div>
-
-        <!-- JADWAL FULL -->
-        <div class="bg-white rounded-3xl shadow-sm border border-slate-100 p-7 mb-8">
-
-            <div class="flex justify-between items-center mb-6">
-
-                <div>
-                    <h3 class="text-xl font-bold text-slate-800">
-                        Jadwal Hari Ini
-                    </h3>
-
-                    <p class="text-sm text-slate-400 mt-1">
-                        Daftar pemeriksaan pasien hari ini
+                    <p class="text-blue-100 text-sm leading-relaxed max-w-3xl">
+                        Ada {{ $pasienHariIni ?? 0 }} data pasien baru yang perlu diperiksa lebih lanjut sebelum tindakan dilakukan. 
+                        Pastikan riwayat kesehatan dan rekam medis pasien sudah diperiksa.
                     </p>
                 </div>
 
-                <button class="text-sm font-bold text-primary-600 bg-primary-50 px-4 py-2 rounded-xl hover:bg-primary-100 transition">
-                    Lihat Semua
+                <button class="relative z-10 bg-white text-primary-700 px-7 py-3 rounded-2xl font-bold text-sm hover:bg-blue-50 transition hover:scale-105">
+                    Lihat Data Pasien
                 </button>
             </div>
 
-            <div class="overflow-x-auto">
-
-                <table class="w-full text-left">
-
-                    <thead>
-                        <tr class="border-b border-slate-100 text-xs uppercase tracking-wider text-slate-400">
-                            <th class="pb-4">Waktu</th>
-                            <th class="pb-4">Nama Pasien</th>
-                            <th class="pb-4">Keluhan</th>
-                            <th class="pb-4">Status</th>
-                            <th class="pb-4 text-center">Aksi</th>
-                        </tr>
-                    </thead>
-
-                    <tbody class="text-sm">
-
-                        <!-- ROW -->
-                        <tr class="border-b border-slate-50 table-row-hover transition">
-
-                            <td class="py-5 font-semibold text-slate-600">
-                                09:00
-                            </td>
-
-                            <td class="py-5">
-                                <div class="flex items-center gap-3">
-
-                                    <img src="https://picsum.photos/seed/doc1/100/100"
-                                        class="w-10 h-10 rounded-full object-cover">
-
-                                    <div>
-                                        <p class="font-bold text-slate-700">
-                                            Budi Santoso
-                                        </p>
-
-                                        <p class="text-xs text-slate-400">
-                                            Pasien Lama
-                                        </p>
-                                    </div>
-                                </div>
-                            </td>
-
-                            <td class="py-5 text-slate-500">
-                                Scaling Gigi
-                            </td>
-
-                            <td class="py-5">
-                                <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">
-                                    Selesai
-                                </span>
-                            </td>
-
-                            <td class="py-5 text-center">
-                                <button class="w-10 h-10 rounded-xl bg-slate-50 hover:bg-primary-50 text-slate-400 hover:text-primary-600 transition border border-slate-200">
-                                    <i class="fas fa-arrow-right"></i>
-                                </button>
-                            </td>
-                        </tr>
-
-                        <!-- ROW -->
-                        <tr class="border-b border-slate-50 table-row-hover transition">
-
-                            <td class="py-5 font-semibold text-slate-600">
-                                10:30
-                            </td>
-
-                            <td class="py-5">
-                                <div class="flex items-center gap-3">
-
-                                    <img src="https://picsum.photos/seed/doc2/100/100"
-                                        class="w-10 h-10 rounded-full object-cover">
-
-                                    <div>
-                                        <p class="font-bold text-slate-700">
-                                            Siti Aminah
-                                        </p>
-
-                                        <p class="text-xs text-slate-400">
-                                            Pasien Baru
-                                        </p>
-                                    </div>
-                                </div>
-                            </td>
-
-                            <td class="py-5 text-slate-500">
-                                Cabut Gigi Bungsu
-                            </td>
-
-                            <td class="py-5">
-                                <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs font-bold">
-                                    Menunggu
-                                </span>
-                            </td>
-
-                            <td class="py-5 text-center">
-                                <button class="w-10 h-10 rounded-xl bg-slate-50 hover:bg-primary-50 text-slate-400 hover:text-primary-600 transition border border-slate-200">
-                                    <i class="fas fa-arrow-right"></i>
-                                </button>
-                            </td>
-                        </tr>
-
-                        <!-- ROW -->
-                        <tr class="table-row-hover transition">
-
-                            <td class="py-5 font-semibold text-slate-600">
-                                13:00
-                            </td>
-
-                            <td class="py-5">
-                                <div class="flex items-center gap-3">
-
-                                    <img src="https://picsum.photos/seed/doc3/100/100"
-                                        class="w-10 h-10 rounded-full object-cover">
-
-                                    <div>
-                                        <p class="font-bold text-slate-700">
-                                            Reza Rahadian
-                                        </p>
-
-                                        <p class="text-xs text-slate-400">
-                                            Kontrol
-                                        </p>
-                                    </div>
-                                </div>
-                            </td>
-
-                            <td class="py-5 text-slate-500">
-                                Konsultasi Ortodonti
-                            </td>
-
-                            <td class="py-5">
-                                <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold">
-                                    Diproses
-                                </span>
-                            </td>
-
-                            <td class="py-5 text-center">
-                                <button class="w-10 h-10 rounded-xl bg-slate-50 hover:bg-primary-50 text-slate-400 hover:text-primary-600 transition border border-slate-200">
-                                    <i class="fas fa-arrow-right"></i>
-                                </button>
-                            </td>
-                        </tr>
-
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- BLUE INFO BOX -->
-        <div class="bg-gradient-to-r from-blue-600 to-blue-700 rounded-3xl p-8 shadow-xl shadow-blue-500/20 flex flex-col lg:flex-row justify-between items-center gap-6 overflow-hidden relative">
-
-            <div class="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded-full -translate-y-10 translate-x-10"></div>
-
-            <div class="relative z-10">
-
-                <div class="flex items-center gap-4 mb-3">
-
-                    <div class="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center">
-                        <i class="fas fa-user-plus text-white text-lg"></i>
-                    </div>
-
-                    <h4 class="text-2xl font-bold text-white">
-                        Update Data Pasien Terbaru
-                    </h4>
-                </div>
-
-                <p class="text-blue-100 text-sm leading-relaxed max-w-3xl">
-                    Ada 3 data pasien baru yang perlu diperiksa lebih lanjut sebelum tindakan dilakukan. 
-                    Pastikan riwayat kesehatan dan rekam medis pasien sudah diperiksa.
-                </p>
-            </div>
-
-            <button class="relative z-10 bg-white text-primary-700 px-7 py-3 rounded-2xl font-bold text-sm hover:bg-blue-50 transition hover:scale-105">
-                Lihat Data Pasien
-            </button>
-        </div>
+        </div> <!-- End Content Area -->
 
     </main>
 
