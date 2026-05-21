@@ -14,7 +14,6 @@ use App\Http\Controllers\Dokter\PengaturanDokterController;
 // ==========================================
 Route::get('/', [LandingPageController::class, 'index'])->name('landing');
 Route::get('/layanan/{slug}', [LandingPageController::class, 'showLayanan'])->name('layanan.detail');
-Route::get('/home', [AuthController::class, 'homeRedirect'])->name('home');
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.store');
@@ -33,95 +32,90 @@ Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('
 // ROUTE AUTH (Wajib Login)
 // ==========================================
 Route::middleware('auth')->group(function () {
-
-    // Logout
+    
+    // Logout & Redirect Dashboard Utama
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-
-    // Dashboard Utama (Auth Controller)
     Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
-
-    // ==========================================
-    // ROUTE PASIEN
-    // ==========================================
-    // Dashboard Pasien Khusus
-    Route::get('/dashboardpasien', [AppointmentController::class, 'dashboard'])->name('pasien.dashboard');
-
-    // Appointment
-    Route::get('/appointment', [AppointmentController::class, 'index'])->name('appointment.index');
-    Route::post('/appointment', [AppointmentController::class, 'store'])->name('appointment.store');
-    Route::put('/appointment/{id}/cancel', [AppointmentController::class, 'cancel'])->name('appointment.cancel');
-
-    // Riwayat & Artikel
-    Route::get('/riwayat-perawatan', function () {
-        return view('pasien.riwayatperawatan');
-    })->name('pasien.riwayat');
-
-    Route::get('/artikel', function () {
-        return view('pasien.artikel');
-    })->name('pasien.artikel');
-
-    // Pembayaran
-    Route::get('/pembayaran', [PembayaranController::class, 'index'])->name('pembayaran.index');
-    Route::get('/pembayaran/{id}', [PembayaranController::class, 'show'])->name('pembayaran.show');
+    Route::get('/home', [AuthController::class, 'homeRedirect'])->name('home');
 
 
     // ==========================================
-    // ROUTE DOKTER (FITUR BARU)
+    // ROUTE KHUSUS PASIEN
     // ==========================================
-    // 1. Dashboard
-    Route::get('/dashboarddokter', function () {
-        return view('dokter.dashboard');
-    })->name('dokter.dashboard');
+    Route::middleware('role:pasien')->group(function () {
+        // Dashboard Pasien
+        Route::get('/dashboardpasien', [AppointmentController::class, 'dashboard'])->name('pasien.dashboard');
 
-    // 2. Riwayat Pasien (Diagnosa & Resep Obat)
-    Route::get('/dokter/riwayat-pasien', [RiwayatPasienController::class, 'index'])->name('dokter.riwayat-pasien');
-    Route::get('/dokter/tambah-riwayat', [RiwayatPasienController::class, 'create'])->name('dokter.tambah-riwayat');
-    Route::post('/dokter/simpan-riwayat', [RiwayatPasienController::class, 'store'])->name('dokter.simpan-riwayat');
-    Route::get('/dokter/edit-riwayat/{riwayatPasien}', [RiwayatPasienController::class, 'edit'])->name('dokter.edit-riwayat');
-    Route::put('/dokter/update-riwayat/{riwayatPasien}', [RiwayatPasienController::class, 'update'])->name('dokter.update-riwayat');
-    Route::delete('/dokter/hapus-riwayat/{riwayatPasien}', [RiwayatPasienController::class, 'destroy'])->name('dokter.hapus-riwayat');
+        // Appointment
+        Route::get('/appointment', [AppointmentController::class, 'index'])->name('appointment.index');
+        Route::post('/appointment', [AppointmentController::class, 'store'])->name('appointment.store');
+        Route::put('/appointment/{id}/cancel', [AppointmentController::class, 'cancel'])->name('appointment.cancel');
 
-    // 3. Pengaturan Akun
-    Route::get('/dokter/pengaturan', [PengaturanDokterController::class, 'index'])->name('dokter.pengaturan');
-    Route::put('/dokter/pengaturan/profile', [PengaturanDokterController::class, 'updateProfile'])->name('dokter.pengaturan.profile');
-    Route::put('/dokter/pengaturan/password', [PengaturanDokterController::class, 'updatePassword'])->name('dokter.pengaturan.password');
+        // Riwayat & Artikel
+        Route::get('/riwayat-perawatan', function () {
+            return view('pasien.riwayatperawatan');
+        })->name('pasien.riwayat');
+
+        Route::get('/artikel', function () {
+            return view('pasien.artikel');
+        })->name('pasien.artikel');
+
+        // Pembayaran
+        Route::get('/pembayaran', [PembayaranController::class, 'index'])->name('pembayaran.index');
+        Route::get('/pembayaran/{id}', [PembayaranController::class, 'show'])->name('pembayaran.show');
+    });
 
 
     // ==========================================
-    // ROUTE PETUGAS (TIDAK DIGANGGU)
+    // ROUTE KHUSUS DOKTER
     // ==========================================
-    // Dashboard Petugas
-    Route::get('/dashboardpetugas', [PetugasController::class, 'dashboard'])->name('petugas.dashboard');
+    Route::middleware('role:dokter')->group(function () {
+        // Dashboard
+        Route::get('/dashboarddokter', function () {
+            return view('dokter.dashboard');
+        })->name('dokter.dashboard');
 
-    // Input Data Pasien
-    Route::get('/input-data-pasien', [PetugasController::class, 'create'])->name('petugas.input-data');
-    Route::post('/input-data-pasien', [PetugasController::class, 'store'])->name('petugas.input-data.store');
+        // Riwayat Pasien
+        Route::get('/dokter/riwayat-pasien', [RiwayatPasienController::class, 'index'])->name('dokter.riwayat-pasien');
+        Route::get('/dokter/tambah-riwayat', [RiwayatPasienController::class, 'create'])->name('dokter.tambah-riwayat');
+        Route::post('/dokter/simpan-riwayat', [RiwayatPasienController::class, 'store'])->name('dokter.simpan-riwayat');
+        Route::get('/dokter/edit-riwayat/{riwayatPasien}', [RiwayatPasienController::class, 'edit'])->name('dokter.edit-riwayat');
+        Route::put('/dokter/update-riwayat/{riwayatPasien}', [RiwayatPasienController::class, 'update'])->name('dokter.update-riwayat');
+        Route::delete('/dokter/hapus-riwayat/{riwayatPasien}', [RiwayatPasienController::class, 'destroy'])->name('dokter.hapus-riwayat');
 
-    // Data Pasien
-    Route::get('/data-pasien', [PetugasController::class, 'index'])->name('petugas.data-pasien');
-    Route::get('/edit-pasien/{pasien}', [PetugasController::class, 'edit'])->name('petugas.edit-pasien');
-    Route::put('/update-pasien/{pasien}', [PetugasController::class, 'update'])->name('petugas.update-pasien');
-    Route::delete('/hapus-pasien/{pasien}', [PetugasController::class, 'destroy'])->name('petugas.hapus-pasien');
+        // Pengaturan Akun
+        Route::get('/dokter/pengaturan', [PengaturanDokterController::class, 'index'])->name('dokter.pengaturan');
+        Route::put('/dokter/pengaturan/profile', [PengaturanDokterController::class, 'updateProfile'])->name('dokter.pengaturan.profile');
+        Route::put('/dokter/pengaturan/password', [PengaturanDokterController::class, 'updatePassword'])->name('dokter.pengaturan.password');
+    });
 
-    // Jadwal Kontrol
-    Route::get('/jadwal-kontrol', [PetugasController::class, 'jadwalKontrol'])->name('petugas.jadwal-kontrol');
 
-    // Rekam Medis CRUD
-    Route::get('/rekam-medis-petugas', [PetugasController::class, 'rmIndex'])->name('petugas.rekam-medis');
-    Route::get('/tambah-rekam-medis', [PetugasController::class, 'rmCreate'])->name('petugas.tambah-rm');
-    Route::post('/simpan-rekam-medis', [PetugasController::class, 'rmStore'])->name('petugas.simpan-rm');
-    Route::get('/edit-rekam-medis/{rekamMedis}', [PetugasController::class, 'rmEdit'])->name('petugas.edit-rm');
-    Route::put('/update-rekam-medis/{rekamMedis}', [PetugasController::class, 'rmUpdate'])->name('petugas.update-rm');
-    Route::delete('/hapus-rekam-medis/{rekamMedis}', [PetugasController::class, 'rmDestroy'])->name('petugas.hapus-rm');
+    // ==========================================
+    // ROUTE KHUSUS PETUGAS (REVISI FINAL)
+    // ==========================================
+    Route::middleware('role:petugas')->group(function () {
+        
+        // Dashboard Petugas
+        Route::get('/dashboardpetugas', [PetugasController::class, 'dashboard'])->name('petugas.dashboard');
 
-    // Placeholder Petugas
-    Route::get('/keuangan', function () {
-        return '<h1 class="text-center text-2xl mt-20">Halaman Keuangan (Segera Dibuat)</h1>';
-    })->name('petugas.keuangan');
+        // Data Pasien (Rekam Medis sudah digabung di sini)
+        Route::get('/input-data-pasien', [PetugasController::class, 'create'])->name('petugas.input-data');
+        Route::post('/input-data-pasien', [PetugasController::class, 'store'])->name('petugas.input-data.store');
+        Route::get('/data-pasien', [PetugasController::class, 'index'])->name('petugas.data-pasien');
+        Route::get('/edit-pasien/{pasien}', [PetugasController::class, 'edit'])->name('petugas.edit-pasien');
+        Route::put('/update-pasien/{pasien}', [PetugasController::class, 'update'])->name('petugas.update-pasien');
+        Route::delete('/hapus-pasien/{pasien}', [PetugasController::class, 'destroy'])->name('petugas.hapus-pasien');
 
-    Route::get('/pengaturan', function () {
-        return '<h1 class="text-center text-2xl mt-20">Halaman Pengaturan (Segera Dibuat)</h1>';
-    })->name('petugas.pengaturan');
+        // Jadwal Kontrol
+        Route::get('/jadwal-kontrol', [PetugasController::class, 'jadwalKontrol'])->name('petugas.jadwal-kontrol');
+
+        // REVISI 2: Manajemen User (Menggantikan Keuangan)
+        Route::get('/manajemen-user', [PetugasController::class, 'manajemenUser'])->name('petugas.manajemen-user');
+        Route::put('/manajemen-user/{user}/approve', [PetugasController::class, 'approveUser'])->name('petugas.approve-user');
+
+        // REVISI 3: Pengaturan (Menggunakan Controller)
+        Route::get('/pengaturan', [PetugasController::class, 'pengaturan'])->name('petugas.pengaturan');
+    });
 });
 
 Route::get('/welcome', function () {

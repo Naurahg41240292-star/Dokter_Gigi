@@ -194,6 +194,38 @@
                     </div>
                 </div>
 
+                                <!-- ========================================== -->
+                <!-- Section 4: REKAM MEDIS (REVISI PENAMBAHAN) -->
+                <!-- ========================================== -->
+                <div class="mb-8">
+                    <h3 class="text-lg font-bold text-slate-800 mb-1">REKAM MEDIS & TINDAKAN</h3>
+                    <div class="w-16 h-1 bg-emerald-500 rounded-full mb-6"></div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Diagnosa</label>
+                            <textarea name="diagnosa" rows="3" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none" placeholder="Masukkan diagnosa dokter...">{{ old('diagnosa', $pasien->diagnosa) }}</textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Tindakan / Dalam Perawatan</label>
+                            <input type="text" name="tindakan" value="{{ old('tindakan', $pasien->tindakan) }}" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="Contoh: Cabut Gigi, Perawatan Saluran Akar">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Status Perawatan</label>
+                            <select name="status_perawatan" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white text-slate-600">
+                                <option value="">Pilih Status</option>
+                                <option value="Rawat Jalan" {{ old('status_perawatan', $pasien->status_perawatan) == 'Rawat Jalan' ? 'selected' : '' }}>Rawat Jalan</option>
+                                <option value="Dalam Perawatan" {{ old('status_perawatan', $pasien->status_perawatan) == 'Dalam Perawatan' ? 'selected' : '' }}>Dalam Perawatan</option>
+                                <option value="Selesai" {{ old('status_perawatan', $pasien->status_perawatan) == 'Selesai' ? 'selected' : '' }}>Selesai</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Catatan Tambahan</label>
+                            <textarea name="catatan" rows="2" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none" placeholder="Catatan obat, anjuran kontrol, dll...">{{ old('catatan', $pasien->catatan) }}</textarea>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Form Actions -->
                 <div class="flex justify-end gap-4 pt-6 border-t border-slate-100">
                     <a href="{{ route('petugas.data-pasien') }}" class="px-6 py-2.5 border border-slate-200 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-50 transition flex items-center gap-2">
