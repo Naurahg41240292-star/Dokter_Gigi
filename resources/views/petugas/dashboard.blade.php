@@ -141,14 +141,6 @@
                 <i class="fas fa-calendar-alt w-5 text-center"></i>
                 <span>Jadwal Kontrol</span>
             </a>
-            <a href="/rekam-medis-petugas" class="nav-item">
-                <i class="fas fa-file-medical w-5 text-center"></i>
-                <span>Rekam Medis</span>
-            </a>
-            <a href="/keuangan" class="nav-item">
-                <i class="fas fa-wallet w-5 text-center"></i>
-                <span>Keuangan</span>
-            </a>
 
             <div class="my-6 px-8 border-t border-gray-100"></div>
 
