@@ -161,7 +161,7 @@
             </div>
         </header>
 
-        <main class="px-6 lg:px-8 py-6">
+                <main class="px-6 lg:px-8 py-6">
 
             @if(session('success'))
                 <div class="bg-green-50 border border-green-200 text-green-700 px-5 py-3 rounded-xl mb-6 flex items-center gap-3 font-semibold text-sm animate-fade-up">
@@ -169,20 +169,37 @@
                 </div>
             @endif
 
+            @if($errors->any())
+                <div class="bg-red-50 border border-red-200 text-red-700 px-5 py-3 rounded-xl mb-4 flex items-center gap-3 font-semibold text-sm animate-fade-up">
+                    <i class="fas fa-exclamation-circle"></i> 
+                    <div>
+                        <span class="font-bold">Gagal menyimpan!</span> Silakan periksa kembali data Anda:
+                        <ul class="mt-1 ml-4 list-disc text-xs font-normal">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+            @endif
+
             <!-- VIEW: APPOINTMENT LIST -->
             <section id="view-appointment" class="space-y-6 animate-fade-up">
 
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <!-- Header Filter & Tombol -->
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative z-10">
                     <div class="flex gap-2 overflow-x-auto pb-1">
-                        <button class="tab-btn active" onclick="filterAppointments(this, 'semua')">Semua</button>
-                        <button class="tab-btn" onclick="filterAppointments(this, 'mendatang')">Mendatang</button>
-                        <button class="tab-btn" onclick="filterAppointments(this, 'selesai')">Selesai</button>
+                        <button type="button" class="tab-btn active" onclick="filterAppointments(this, 'semua')">Semua</button>
+                        <button type="button" class="tab-btn" onclick="filterAppointments(this, 'mendatang')">Aktif</button>
+                        <button type="button" class="tab-btn" onclick="filterAppointments(this, 'selesai')">Selesai</button>
+                        <button type="button" class="tab-btn" onclick="filterAppointments(this, 'dibatalkan')">Dibatalkan</button>
                     </div>
-                    <button onclick="switchView('form-appointment')" class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary-600 hover:bg-primary-700 text-white text-sm font-bold rounded-xl shadow-md shadow-blue-200 hover:shadow-lg hover:shadow-blue-200 transition-all duration-200 active:scale-[0.97]">
+                    <button type="button" onclick="switchView('form-appointment')" class="cursor-pointer inline-flex items-center gap-2 px-5 py-2.5 bg-primary-600 hover:bg-primary-700 text-white text-sm font-bold rounded-xl shadow-md shadow-blue-200 hover:shadow-lg hover:shadow-blue-200 transition-all duration-200 active:scale-[0.97]">
                         <i class="fas fa-plus text-xs"></i> Buat Appointment
                     </button>
                 </div>
 
+                <!-- Daftar Appointment -->
                 <div class="space-y-4" id="appointment-list">
                     
                     @forelse($appointments as $item)
@@ -232,33 +249,37 @@
                             @endif
 
                             @if(in_array($item->status, ['Terjadwal', 'Menunggu Konfirmasi']))
-                            <form action="{{ route('appointment.cancel', $item->id) }}" method="POST" onclick="event.stopPropagation()">
-                                @csrf @method('PUT')
-                                <button type="submit" class="w-8 h-8 rounded-full bg-white hover:bg-red-50 hover:text-red-500 text-gray-400 transition flex items-center justify-center border border-gray-200 hover:border-red-200" title="Batalkan" onclick="return confirm('Yakin ingin membatalkan appointment ini?')">
-                                    <i class="fas fa-times text-xs"></i>
-                                </button>
-                            </form>
+                                <form action="{{ route('appointment.cancel', $item->id) }}" method="POST" onclick="event.stopPropagation()">
+                                    @csrf @method('PUT')
+                                    <button type="submit" class="px-3 py-1.5 rounded-lg bg-white hover:bg-red-50 text-red-400 hover:text-red-600 text-xs font-bold transition border border-red-200 hover:border-red-300" onclick="return confirm('Yakin ingin membatalkan janji ini? Tindakan ini tidak bisa dibatalkan.')">
+                                        Batalkan
+                                    </button>
+                                </form>
                             @endif
                         </div>
                     </div>
                     @empty
-                    <div class="card p-10 text-center">
-                        <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4 mx-auto">
-                            <i class="fas fa-calendar-times text-2xl text-blue-300"></i>
+                    
+                    <!-- EMPTY STATE LEBAR FULL-WIDTH -->
+                    <div class="min-h-[50vh] flex items-center justify-center w-full animate-fade-up">
+                        <div class="bg-white border-2 border-dashed border-blue-200 rounded-2xl p-12 md:p-16 w-full text-center shadow-sm">
+                            <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4 mx-auto border border-blue-100">
+                                <i class="fas fa-calendar-plus text-2xl text-primary-400"></i>
+                            </div>
+                            <p class="text-gray-800 font-bold text-base mb-1">Belum Ada Janji Temu</p>
+                            <p class="text-gray-400 text-sm">Silakan buat appointment baru menggunakan tombol di atas.</p>
                         </div>
-                        <p class="text-gray-800 font-bold mb-1">Belum Ada Janji Temu</p>
-                        <p class="text-gray-400 text-sm">Silakan buat appointment baru untuk memulai.</p>
                     </div>
                     @endforelse
 
                 </div>
             </section>
 
-            <!-- VIEW: FORM APPOINTMENT -->
+            <!-- VIEW: FORM APPOINTMENT (YANG KEMARIN KEHAPUS) -->
             <section id="view-form-appointment" class="hidden space-y-6 animate-fade-up">
 
                 <div class="flex items-center gap-3">
-                    <button onclick="switchView('appointment')" class="w-9 h-9 rounded-xl bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-all">
+                    <button type="button" onclick="switchView('appointment')" class="w-9 h-9 rounded-xl bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-all">
                         <i class="fas fa-arrow-left text-sm"></i>
                     </button>
                     <div>
@@ -287,7 +308,8 @@
                                 </div>
                                 <div>
                                     <label class="form-label">NIK / No. KTP <span class="required">*</span></label>
-                                    <input type="text" name="nik" class="form-input" value="{{ old('nik') }}" placeholder="16 digit NIK" maxlength="16" required>
+                                    <input type="text" name="nik" id="inputNik" class="form-input" value="{{ old('nik') }}" placeholder="16 digit NIK" maxlength="16" required oninput="validateNik()">
+                                    <span id="warningNik" class="text-red-500 text-xs mt-1 hidden"></span>
                                 </div>
                                 <div>
                                     <label class="form-label">Tanggal Lahir <span class="required">*</span></label>
@@ -303,7 +325,8 @@
                                 </div>
                                 <div>
                                     <label class="form-label">No. Telepon <span class="required">*</span></label>
-                                    <input type="tel" name="no_telepon" class="form-input" value="{{ old('no_telepon') }}" placeholder="08xxxxxxxxxx" required>
+                                    <input type="tel" name="no_telepon" id="inputTelp" class="form-input" value="{{ old('no_telepon') }}" placeholder="12 digit nomor telepon" maxlength="13" required oninput="validatePhone('inputTelp', 'warningTelp')">
+                                    <span id="warningTelp" class="text-red-500 text-xs mt-1 hidden"></span>
                                 </div>
                                 <div class="md:col-span-2">
                                     <label class="form-label">Alamat Lengkap <span class="required">*</span></label>
@@ -341,7 +364,8 @@
                                 </div>
                                 <div>
                                     <label class="form-label">No. Telepon Darurat <span class="required">*</span></label>
-                                    <input type="tel" name="kontak_darurat_telepon" class="form-input" value="{{ old('kontak_darurat_telepon') }}" placeholder="08xxxxxxxxxx" required>
+                                    <input type="tel" name="kontak_darurat_telepon" id="inputTelpDarurat" class="form-input" value="{{ old('kontak_darurat_telepon') }}" placeholder="12 digit nomor telepon" maxlength="13" required oninput="validatePhone('inputTelpDarurat', 'warningTelpDarurat')">
+                                    <span id="warningTelpDarurat" class="text-red-500 text-xs mt-1 hidden"></span>
                                 </div>
                             </div>
                         </div>
@@ -419,9 +443,8 @@
             </section>
 
         </main>
-    </div>
 
-    <!-- MODAL DETAIL APPOINTMENT (E-TICKET) -->
+    <!-- MODAL DETAIL APPOINTMENT (E-TICKET / STRUK) -->
     <div class="modal-overlay" id="detailModal">
         <div class="modal-content">
             <button onclick="closeDetailModal()" class="absolute top-4 right-4 w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center text-gray-600 transition-colors z-10 cursor-pointer">
@@ -495,23 +518,219 @@
     </div>
 
     <script>
+        // SET MINIMUM DATE HARI INI
         const dateInput = document.getElementById('appointmentDate');
         if(dateInput){
             const today = new Date().toISOString().split('T')[0];
             dateInput.setAttribute('min', today);
         }
 
+        // FUNGSI SWITCH VIEW
         function switchView(viewName) {
-            document.getElementById('view-appointment').classList.add('hidden');
-            document.getElementById('view-form-appointment').classList.add('hidden');
+            const viewList = document.getElementById('view-appointment');
+            const viewForm = document.getElementById('view-form-appointment');
+            const title = document.getElementById('page-title');
+
+            if(viewList) viewList.classList.add('hidden');
+            if(viewForm) viewForm.classList.add('hidden');
 
             if (viewName === 'appointment') {
-                document.getElementById('view-appointment').classList.remove('hidden');
-                document.getElementById('page-title').innerText = 'Appointment Saya';
+                if(viewList) viewList.classList.remove('hidden');
+                if(title) title.innerText = 'Appointment Saya';
             }
             else if (viewName === 'form-appointment') {
-                document.getElementById('view-form-appointment').classList.remove('hidden');
-                document.getElementById('page-title').innerText = 'Buat Appointment';
+                if(viewForm) viewForm.classList.remove('hidden');
+                if(title) title.innerText = 'Buat Appointment';
+            }
+
+            if (window.innerWidth <= 1024) { closeSidebar(); }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // FUNGSI FILTER TAB
+        function filterAppointments(btnEl, filter) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btnEl.classList.add('active');
+            const cards = document.querySelectorAll('#appointment-list > div');
+            cards.forEach(card => {
+                const status = card.getAttribute('data-status');
+                let show = false;
+
+                if (filter === 'semua') {
+                    show = true;
+                } else if (filter === 'mendatang') {
+                    show = (status === 'mendatang');
+                } else if (filter === 'selesai') {
+                    show = (status === 'selesai');
+                } else if (filter === 'dibatalkan') {
+                    show = (status === 'dibatalkan');
+                }
+
+                card.style.display = show ? '' : 'none';
+            });
+        }
+
+        // FUNGSI SIDEBAR & TOPBAR
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('mobileOverlay').classList.toggle('show'); }
+        function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('mobileOverlay').classList.remove('show'); }
+        function toggleNotif() { document.getElementById('notifDropdown').classList.toggle('open'); document.getElementById('profileDropdown').classList.remove('open'); }
+        function toggleProfile() { document.getElementById('profileDropdown').classList.toggle('open'); document.getElementById('notifDropdown').classList.remove('open'); }
+
+        document.addEventListener('click', function(e) {
+            const notifBtn = document.getElementById('notifBtn'); const notifDrop = document.getElementById('notifDropdown');
+            const profileBtn = document.getElementById('profileBtn'); const profileDrop = document.getElementById('profileDropdown');
+            if (!notifBtn.contains(e.target) && !notifDrop.contains(e.target)) notifDrop.classList.remove('open');
+            if (!profileBtn.contains(e.target) && !profileDrop.contains(e.target)) profileDrop.classList.remove('open');
+        });
+
+        // SCRIPT UNTUK MODAL DETAIL & QR CODE
+        function openDetailModal(element) {
+            document.getElementById('modalTreatment').innerText = element.dataset.treatment;
+            document.getElementById('modalDate').innerHTML = `<i class="fas fa-calendar-day text-primary-500 mr-2"></i>${element.dataset.date}`;
+            document.getElementById('modalTime').innerHTML = `<i class="fas fa-clock text-primary-500 mr-2"></i>${element.dataset.time} WIB`;
+            document.getElementById('modalDoctor').innerHTML = `<i class="fas fa-user-md text-primary-500 mr-2"></i>${element.dataset.doctor}`;
+            document.getElementById('modalName').innerText = element.dataset.name;
+            document.getElementById('modalPhone').innerText = element.dataset.phone;
+            document.getElementById('modalKeluhan').innerText = element.dataset.keluhan;
+            document.getElementById('modalEcName').innerText = element.dataset.ecName;
+            document.getElementById('modalEcPhone').innerText = element.dataset.ecPhone;
+            
+            const queueNum = element.dataset.queue;
+            document.getElementById('modalQueue').innerText = queueNum;
+
+            const statusText = element.dataset.statusText;
+            const statusEl = document.getElementById('modalStatus');
+            statusEl.innerText = statusText;
+            statusEl.className = "px-3.5 py-1.5 rounded-full text-xs font-bold ";
+            if(statusText === 'Terjadwal') statusEl.classList.add('badge-confirmed');
+            else if(statusText === 'Menunggu Konfirmasi') statusEl.classList.add('badge-pending');
+            else if(statusText === 'Selesai') statusEl.classList.add('badge-completed');
+            else statusEl.classList.add('badge-cancelled');
+
+            const qrContainer = document.getElementById('modalQrCode');
+            qrContainer.innerHTML = ""; 
+            
+            new QRCode(qrContainer, {
+                text: queueNum,
+                width: 140,
+                height: 140,
+                colorDark : "#1e3a8a",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+
+            document.getElementById('detailModal').classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeDetailModal() {
+            document.getElementById('detailModal').classList.remove('open');
+            document.body.style.overflow = 'auto';
+        }
+
+        document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeDetailModal(); });
+
+        // AUTO SWITCH KE FORM KALO ADA ERROR VALIDASI
+        @if($errors->any() || old('nama_lengkap'))
+            document.addEventListener('DOMContentLoaded', function() {
+                switchView('form-appointment');
+            });
+        @endif
+
+        // VALIDASI REAL-TIME NIK
+        function validateNik() {
+            const input = document.getElementById('inputNik');
+            const warning = document.getElementById('warningNik');
+            const val = input.value;
+
+            if (val.length > 0 && val.length < 16) {
+                warning.textContent = 'NIK harus tepat 16 digit. (Kurang ' + (16 - val.length) + ' digit)';
+                warning.classList.remove('hidden');
+                input.classList.add('border-red-400');
+            } else if (val.length === 16) {
+                warning.classList.add('hidden');
+                input.classList.remove('border-red-400');
+            } else {
+                warning.classList.add('hidden');
+                input.classList.remove('border-red-400');
+            }
+        }
+
+        // VALIDASI REAL-TIME NO. TELEPON
+        function validatePhone(inputId, warningId) {
+            const input = document.getElementById(inputId);
+            const warning = document.getElementById(warningId);
+            const val = input.value;
+
+            if (val.length > 0 && val.length < 12) {
+                warning.textContent = 'No. Telepon harus tepat 12 digit. (Kurang ' + (12 - val.length) + ' digit)';
+                warning.classList.remove('hidden');
+                input.classList.add('border-red-400');
+            } else if (val.length === 12) {
+                warning.classList.add('hidden');
+                input.classList.remove('border-red-400');
+            } else if (val.length > 12) {
+                warning.textContent = 'No. Telepon tidak boleh lebih dari 12 digit.';
+                warning.classList.remove('hidden');
+                input.classList.add('border-red-400');
+            } else {
+                warning.classList.add('hidden');
+                input.classList.remove('border-red-400');
+            }
+        }
+
+        // VALIDASI SAAT FORM DI-SUBMIT
+        const form = document.getElementById('appointmentForm');
+        if(form) {
+            form.addEventListener('submit', function(event) {
+                const nikVal = document.getElementById('inputNik').value;
+                const telpVal = document.getElementById('inputTelp').value;
+                const telpDaruratVal = document.getElementById('inputTelpDarurat').value;
+
+                let errorMsg = [];
+
+                if(nikVal.length !== 16) errorMsg.push('NIK harus tepat 16 digit');
+                if(telpVal.length !== 12) errorMsg.push('No. Telepon harus tepat 12 digit');
+                if(telpDaruratVal.length !== 12) errorMsg.push('No. Telepon Darurat harus tepat 12 digit');
+
+                if (!form.checkValidity()) {
+                    errorMsg.push('Masih ada data wajib isi yang kosong.');
+                }
+
+                if(errorMsg.length > 0) {
+                    event.preventDefault();
+                    alert('GAGAL SIMPAN!\n\n' + errorMsg.join('\n'));
+                }
+            });
+        }
+    </script>
+</body>
+</html>
+
+    <script>
+        const dateInput = document.getElementById('appointmentDate');
+        if(dateInput){
+            const today = new Date().toISOString().split('T')[0];
+            dateInput.setAttribute('min', today);
+        }
+
+                function switchView(viewName) {
+            const viewList = document.getElementById('view-appointment');
+            const viewForm = document.getElementById('view-form-appointment');
+            const title = document.getElementById('page-title');
+
+            // Sembunyikan semua dulu (biar aman)
+            if(viewList) viewList.classList.add('hidden');
+            if(viewForm) viewForm.classList.add('hidden');
+
+            // Tampilkan yang diminta
+            if (viewName === 'appointment') {
+                if(viewList) viewList.classList.remove('hidden');
+                if(title) title.innerText = 'Appointment Saya';
+            }
+            else if (viewName === 'form-appointment') {
+                if(viewForm) viewForm.classList.remove('hidden');
+                if(title) title.innerText = 'Buat Appointment';
             }
 
             if (window.innerWidth <= 1024) { closeSidebar(); }
@@ -519,16 +738,27 @@
         }
 
         function filterAppointments(btnEl, filter) {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            btnEl.classList.add('active');
-            const cards = document.querySelectorAll('#appointment-list > div');
-            cards.forEach(card => {
-                const status = card.getAttribute('data-status');
-                if (filter === 'semua') { card.style.display = ''; } 
-                else if (filter === 'mendatang') { card.style.display = (status === 'mendatang') ? '' : 'none'; } 
-                else if (filter === 'selesai') { card.style.display = (status === 'selesai' || status === 'dibatalkan') ? '' : 'none'; }
-            });
-        }
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btnEl.classList.add('active');
+        const cards = document.querySelectorAll('#appointment-list > div');
+        cards.forEach(card => {
+            const status = card.getAttribute('data-status');
+            let show = false;
+
+            if (filter === 'semua') {
+                show = true;
+            } else if (filter === 'mendatang') {
+            // Tampilkan yang Menunggu Konfirmasi dan Terjadwal saja
+                show = (status === 'mendatang');
+            } else if (filter === 'selesai') {
+                show = (status === 'selesai');
+            } else if (filter === 'dibatalkan') {
+                show = (status === 'dibatalkan');
+            }
+
+            card.style.display = show ? '' : 'none';
+        });
+    }
 
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('mobileOverlay').classList.toggle('show'); }
         function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('mobileOverlay').classList.remove('show'); }
@@ -595,6 +825,84 @@
         }
 
         document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeDetailModal(); });
+
+        // Auto switch ke form jika ada error validasi atau old input
+@if($errors->any() || old('nama_lengkap'))
+    document.addEventListener('DOMContentLoaded', function() {
+        switchView('form-appointment');
+    });
+@endif
+// ===== VALIDASI REAL-TIME NIK =====
+function validateNik() {
+    const input = document.getElementById('inputNik');
+    const warning = document.getElementById('warningNik');
+    const val = input.value;
+
+    if (val.length > 0 && val.length < 16) {
+        warning.textContent = 'NIK harus tepat 16 digit. (Kurang ' + (16 - val.length) + ' digit)';
+        warning.classList.remove('hidden');
+        input.classList.add('border-red-400');
+    } else if (val.length === 16) {
+        warning.classList.add('hidden');
+        input.classList.remove('border-red-400'); // Hapus merah, biar balik ke default
+    } else {
+        warning.classList.add('hidden');
+        input.classList.remove('border-red-400');
+    }
+}
+
+// ===== VALIDASI REAL-TIME NO. TELEPON =====
+function validatePhone(inputId, warningId) {
+    const input = document.getElementById(inputId);
+    const warning = document.getElementById(warningId);
+    const val = input.value;
+
+    if (val.length > 0 && val.length < 12) {
+        warning.textContent = 'No. Telepon harus tepat 12 digit. (Kurang ' + (12 - val.length) + ' digit)';
+        warning.classList.remove('hidden');
+        input.classList.add('border-red-400');
+    } else if (val.length === 12) {
+        warning.classList.add('hidden');
+        input.classList.remove('border-red-400'); // Hapus merah, biar balik ke default
+    } else if (val.length > 12) {
+        warning.textContent = 'No. Telepon tidak boleh lebih dari 12 digit.';
+        warning.classList.remove('hidden');
+        input.classList.add('border-red-400');
+    } else {
+        warning.classList.add('hidden');
+        input.classList.remove('border-red-400');
+    }
+}
+
+// ===== VALIDASI SAAT FORM DI-SUBMIT (CEK KEKOSONGAN) =====
+const form = document.getElementById('appointmentForm');
+if(form) {
+    form.addEventListener('submit', function(event) {
+        
+        // Cek dulu validasi NIK & Telepon
+        const nikVal = document.getElementById('inputNik').value;
+        const telpVal = document.getElementById('inputTelp').value;
+        const telpDaruratVal = document.getElementById('inputTelpDarurat').value;
+
+        let errorMsg = [];
+
+        if(nikVal.length !== 16) errorMsg.push('NIK harus tepat 16 digit');
+        if(telpVal.length !== 12) errorMsg.push('No. Telepon harus tepat 12 digit');
+        if(telpDaruratVal.length !== 12) errorMsg.push('No. Telepon Darurat harus tepat 12 digit');
+
+        // Cek input required yang kosong menggunakan bawaan HTML5
+        if (!form.checkValidity()) {
+            errorMsg.push('Masih ada data wajib isi yang kosong.');
+        }
+
+        // Jika ada error, cegah submit dan tampilkan alert
+        if(errorMsg.length > 0) {
+            event.preventDefault(); // Gagalin submit
+            alert('GAGAL SIMPAN!\n\n' + errorMsg.join('\n'));
+        }
+    });
+}
+
     </script>
 </body>
 </html> 
