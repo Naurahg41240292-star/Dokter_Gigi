@@ -190,7 +190,7 @@
         </form>
     </nav>
 
-    <div class="absolute bottom-6 left-0 right-0 px-6">
+    <!-- <div class="absolute bottom-6 left-0 right-0 px-6">
         <div class="bg-blue-50 border border-blue-100 rounded-xl p-4">
             <div class="flex items-center gap-3 mb-3">
                 <div class="w-9 h-9 rounded-lg bg-white flex items-center justify-center shadow-sm">
@@ -205,5 +205,5 @@
                 Hubungi Kami
             </button>
         </div>
-    </div>
+    </div> -->
 </aside>
