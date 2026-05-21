@@ -12,7 +12,7 @@ class PengaturanDokterController extends Controller
     public function index()
     {
         $dokter = Auth::user();
-        return view('dokter.pengaturan', compact('dokter'));
+        return view('dokter.pengaturan.index', compact('dokter'));
     }
 
     public function updateProfile(Request $request)
