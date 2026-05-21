@@ -94,7 +94,9 @@ class AuthController extends Controller
             'role' => ['required', 'in:pasien,dokter,petugas'],
         ]);
 
-        $statusAkun = ($request->role === 'pasien') ? 'aktif' : 'pending';
+         $statusAkun = ($request->role === Role::PASIEN->value)
+            ? Status::APPROVED   
+            : Status::PENDING;
 
         $user = User::create([
             'name' => $request->name,
