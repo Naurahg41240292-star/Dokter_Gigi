@@ -6,6 +6,8 @@ use App\Http\Controllers\Pasien\AppointmentController;
 use App\Http\Controllers\PetugasController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LandingPageController;
+use App\Http\Controllers\Dokter\RiwayatPasienController;
+use App\Http\Controllers\Dokter\PengaturanDokterController;
 
 // ==========================================
 // ROUTE PUBLIK (Tanpa Login)
@@ -38,17 +40,16 @@ Route::middleware('auth')->group(function () {
     // Dashboard Utama (Auth Controller)
     Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
 
-    // Dashboard Pasien Khusus (Appointment Controller)
+    // ==========================================
+    // ROUTE PASIEN
+    // ==========================================
+    // Dashboard Pasien Khusus
     Route::get('/dashboardpasien', [AppointmentController::class, 'dashboard'])->name('pasien.dashboard');
 
-    // ==========================================
-    // ROUTE APPOINTMENT (SUDAH DIBERSIHKAN)
-    // ==========================================
+    // Appointment
     Route::get('/appointment', [AppointmentController::class, 'index'])->name('appointment.index');
     Route::post('/appointment', [AppointmentController::class, 'store'])->name('appointment.store');
-    // Pakai PUT biar cocok sama @method('PUT') di file blade kamu
     Route::put('/appointment/{id}/cancel', [AppointmentController::class, 'cancel'])->name('appointment.cancel');
-    // ==========================================
 
     // Riwayat & Artikel
     Route::get('/riwayat-perawatan', function () {
@@ -63,15 +64,31 @@ Route::middleware('auth')->group(function () {
     Route::get('/pembayaran', [PembayaranController::class, 'index'])->name('pembayaran.index');
     Route::get('/pembayaran/{id}', [PembayaranController::class, 'show'])->name('pembayaran.show');
 
+
     // ==========================================
-    // ROUTE DOKTER
+    // ROUTE DOKTER (FITUR BARU)
     // ==========================================
+    // 1. Dashboard
     Route::get('/dashboarddokter', function () {
         return view('dokter.dashboard');
     })->name('dokter.dashboard');
 
+    // 2. Riwayat Pasien (Diagnosa & Resep Obat)
+    Route::get('/dokter/riwayat-pasien', [RiwayatPasienController::class, 'index'])->name('dokter.riwayat-pasien');
+    Route::get('/dokter/tambah-riwayat', [RiwayatPasienController::class, 'create'])->name('dokter.tambah-riwayat');
+    Route::post('/dokter/simpan-riwayat', [RiwayatPasienController::class, 'store'])->name('dokter.simpan-riwayat');
+    Route::get('/dokter/edit-riwayat/{riwayatPasien}', [RiwayatPasienController::class, 'edit'])->name('dokter.edit-riwayat');
+    Route::put('/dokter/update-riwayat/{riwayatPasien}', [RiwayatPasienController::class, 'update'])->name('dokter.update-riwayat');
+    Route::delete('/dokter/hapus-riwayat/{riwayatPasien}', [RiwayatPasienController::class, 'destroy'])->name('dokter.hapus-riwayat');
+
+    // 3. Pengaturan Akun
+    Route::get('/dokter/pengaturan', [PengaturanDokterController::class, 'index'])->name('dokter.pengaturan');
+    Route::put('/dokter/pengaturan/profile', [PengaturanDokterController::class, 'updateProfile'])->name('dokter.pengaturan.profile');
+    Route::put('/dokter/pengaturan/password', [PengaturanDokterController::class, 'updatePassword'])->name('dokter.pengaturan.password');
+
+
     // ==========================================
-    // ROUTE PETUGAS
+    // ROUTE PETUGAS (TIDAK DIGANGGU)
     // ==========================================
     // Dashboard Petugas
     Route::get('/dashboardpetugas', [PetugasController::class, 'dashboard'])->name('petugas.dashboard');
