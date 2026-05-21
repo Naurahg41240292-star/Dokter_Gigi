@@ -56,9 +56,7 @@
             <a href="{{ route('petugas.jadwal-kontrol') }}" class="nav-item active">
                 <i class="fas fa-calendar-alt w-5 text-center"></i><span>Jadwal Kontrol</span>
             </a>
-            <a href="{{ route('petugas.manajemen-user') }}" class="nav-item {{ request()->routeIs('petugas.manajemen-user') ? 'active' : '' }}">
-                <i class="fas fa-users-cog w-5 text-center"></i><span>Manajemen User</span>
-            </a>
+            
             <div class="my-6 px-8 border-t border-gray-100"></div>
             <a href="{{ route('petugas.pengaturan') }}" class="nav-item {{ request()->routeIs('petugas.pengaturan') ? 'active' : '' }}">
                 <i class="fas fa-cog w-5 text-center"></i><span>Pengaturan</span>

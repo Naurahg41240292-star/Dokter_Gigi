@@ -72,12 +72,7 @@
             <a href="{{ route('petugas.jadwal-kontrol') }}" class="nav-item {{ request()->routeIs('petugas.jadwal-kontrol') ? 'active' : '' }}">
                 <i class="fas fa-calendar-alt w-5 text-center"></i><span>Jadwal Kontrol</span>
             </a>
-            <a href="{{ route('petugas.rekam-medis') }}" class="nav-item {{ request()->routeIs('petugas.rekam-medis') ? 'active' : '' }}">
-                <i class="fas fa-file-medical w-5 text-center"></i><span>Rekam Medis</span>
-            </a>
-            <a href="{{ route('petugas.keuangan') }}" class="nav-item {{ request()->routeIs('petugas.keuangan') ? 'active' : '' }}">
-                <i class="fas fa-wallet w-5 text-center"></i><span>Keuangan</span>
-            </a>
+           
             <div class="my-6 px-8 border-t border-gray-100"></div>
             <a href="{{ route('petugas.pengaturan') }}" class="nav-item {{ request()->routeIs('petugas.pengaturan') ? 'active' : '' }}">
                 <i class="fas fa-cog w-5 text-center"></i><span>Pengaturan</span>

@@ -141,7 +141,7 @@
                 <i class="fas fa-calendar-alt w-5 text-center"></i>
                 <span>Jadwal Kontrol</span>
             </a>
-
+        
             <div class="my-6 px-8 border-t border-gray-100"></div>
 
             <a href="/pengaturan" class="nav-item">
@@ -224,23 +224,13 @@
     </a>
 
     <!-- 2. Antrian Menunggu (Mengganti Pasien Baru Daftar) -->
-    <a href="{{ route('petugas.rekam-medis') }}" class="block bg-white p-5 rounded-2xl shadow-sm border border-slate-100 hover-card relative overflow-hidden">
-        <div class="flex justify-between items-start mb-4">
-            <div>
-                <p class="text-slate-500 text-sm font-medium mb-1">Antrian Menunggu</p>
-                <h3 class="text-3xl font-extrabold text-slate-800">{{ $antrianHariIni }}</h3>
-            </div>
-            <div class="w-10 h-10 rounded-full bg-yellow-50 flex items-center justify-center text-yellow-500">
-                <i class="fas fa-clock"></i>
-            </div>
-        </div>
         <div class="flex items-center text-sm">
             <span class="bg-yellow-50 text-yellow-600 px-2 py-0.5 rounded-full text-xs font-bold">Belum Diperiksa</span>
         </div>
     </a>
 
     <!-- 3. Selesai Diperiksa -->
-    <a href="{{ route('petugas.rekam-medis') }}" class="block bg-white p-5 rounded-2xl shadow-sm border border-slate-100 hover-card relative overflow-hidden">
+    
         <div class="flex justify-between items-start mb-4">
             <div>
                 <p class="text-slate-500 text-sm font-medium mb-1">Selesai Diperiksa</p>

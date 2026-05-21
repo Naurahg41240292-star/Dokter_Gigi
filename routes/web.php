@@ -106,19 +106,6 @@ Route::middleware('auth')->group(function () {
     // Jadwal Kontrol
     Route::get('/jadwal-kontrol', [PetugasController::class, 'jadwalKontrol'])->name('petugas.jadwal-kontrol');
 
-    // Rekam Medis CRUD
-    Route::get('/rekam-medis-petugas', [PetugasController::class, 'rmIndex'])->name('petugas.rekam-medis');
-    Route::get('/tambah-rekam-medis', [PetugasController::class, 'rmCreate'])->name('petugas.tambah-rm');
-    Route::post('/simpan-rekam-medis', [PetugasController::class, 'rmStore'])->name('petugas.simpan-rm');
-    Route::get('/edit-rekam-medis/{rekamMedis}', [PetugasController::class, 'rmEdit'])->name('petugas.edit-rm');
-    Route::put('/update-rekam-medis/{rekamMedis}', [PetugasController::class, 'rmUpdate'])->name('petugas.update-rm');
-    Route::delete('/hapus-rekam-medis/{rekamMedis}', [PetugasController::class, 'rmDestroy'])->name('petugas.hapus-rm');
-
-    // Placeholder Petugas
-    Route::get('/keuangan', function () {
-        return '<h1 class="text-center text-2xl mt-20">Halaman Keuangan (Segera Dibuat)</h1>';
-    })->name('petugas.keuangan');
-
     Route::get('/pengaturan', function () {
         return '<h1 class="text-center text-2xl mt-20">Halaman Pengaturan (Segera Dibuat)</h1>';
     })->name('petugas.pengaturan');
