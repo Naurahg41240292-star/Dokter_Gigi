@@ -152,7 +152,6 @@
 
             <form method="POST" action="{{ route('logout') }}" class="mx-4 mt-2">
                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                
                 <button type="submit"
                     class="nav-item w-full text-red-500 hover:text-red-600 hover:bg-red-50">
 
@@ -177,40 +176,75 @@
                     </p>
 
                     <h2 class="text-2xl lg:text-3xl font-extrabold text-slate-800">
-                        Halo, dr. Gabriella! 👋
+                        Halo, {{ auth()->user()->name }}! 👋
                     </h2>
                 </div>
 
                 <div class="flex items-center gap-4 w-full md:w-auto">
 
-                    <!-- SEARCH -->
+                    <!-- SEARCH BAR -->
                     <div class="flex items-center bg-white border border-gray-200 rounded-xl px-4 py-2.5 w-full md:w-72 shadow-sm focus-within:ring-2 focus-within:ring-primary-500 transition">
                         <i class="fas fa-search text-gray-400 text-sm"></i>
 
-                        <input type="text"
+                        <input type="text" id="searchPasien"
                             placeholder="Cari pasien..."
                             class="ml-2 text-sm outline-none w-full bg-transparent text-slate-600">
                     </div>
 
-                    <!-- NOTIF -->
-                    <div class="relative cursor-pointer p-3 bg-white border border-gray-200 rounded-xl shadow-sm hover:bg-gray-50 transition">
-                        <i class="fas fa-bell text-gray-600"></i>
-
-                        <span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+                    <!-- NOTIFIKASI DROPDOWN -->
+                    <div class="relative">
+                        <button onclick="toggleNotif()" class="relative cursor-pointer p-3 bg-white border border-gray-200 rounded-xl shadow-sm hover:bg-gray-50 transition focus:outline-none">
+                            <i class="fas fa-bell text-gray-600"></i>
+                            <span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+                        </button>
+                        
+                        <!-- Dropdown Notif -->
+                        <div id="notifDropdown" class="hidden absolute right-0 top-14 w-80 bg-white border border-slate-200 rounded-2xl shadow-2xl z-50 overflow-hidden">
+                            <div class="p-4 border-b border-slate-100 flex justify-between items-center">
+                                <h4 class="font-bold text-slate-800">Notifikasi</h4>
+                                <span class="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-bold">3 Baru</span>
+                            </div>
+                            <div class="max-h-72 overflow-y-auto">
+                                <div class="flex items-start gap-3 p-4 bg-blue-50/50 border-b border-slate-50 hover:bg-slate-50 transition cursor-pointer">
+                                    <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 flex-shrink-0 mt-0.5"><i class="fas fa-calendar-check text-xs"></i></div>
+                                    <div>
+                                        <p class="text-sm text-slate-700"><span class="font-bold">Siti Aminah</span> mengonfirmasi janji temu.</p>
+                                        <p class="text-xs text-slate-400 mt-1">10 menit yang lalu</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-3 p-4 bg-blue-50/50 border-b border-slate-50 hover:bg-slate-50 transition cursor-pointer">
+                                    <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 flex-shrink-0 mt-0.5"><i class="fas fa-notes-medical text-xs"></i></div>
+                                    <div>
+                                        <p class="text-sm text-slate-700">Rekam medis <span class="font-bold">Budi Santoso</span> diperbarui.</p>
+                                        <p class="text-xs text-slate-400 mt-1">1 jam yang lalu</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-3 p-4 bg-blue-50/50 hover:bg-slate-50 transition cursor-pointer">
+                                    <div class="w-8 h-8 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600 flex-shrink-0 mt-0.5"><i class="fas fa-exclamation-triangle text-xs"></i></div>
+                                    <div>
+                                        <p class="text-sm text-slate-700">Jadwal dengan <span class="font-bold">Reza Rahadian</span> menunggu konfirmasi.</p>
+                                        <p class="text-xs text-slate-400 mt-1">3 jam yang lalu</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-3 text-center border-t border-slate-100 bg-slate-50">
+                                <a href="#" class="text-sm font-bold text-primary-600 hover:underline">Lihat Semua Notifikasi</a>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- SEPARATOR -->
                     <div class="h-8 w-px bg-gray-200 hidden md:block"></div>
 
-                    <!-- PROFILE NAVBAR -->
-                    <div class="hidden md:flex items-center gap-3 cursor-pointer hover:bg-gray-50 p-1.5 pr-4 rounded-xl transition border border-transparent hover:border-gray-200">
-                        <img src="https://picsum.photos/seed/drgabriella/100/100" class="w-9 h-9 rounded-full object-cover border-2 border-primary-100">
+                    <!-- PROFILE NAVBAR (DINAMIS) -->
+                    <a href="{{ route('dokter.pengaturan') }}?open=profil" class="hidden md:flex items-center gap-3 cursor-pointer hover:bg-gray-50 p-1.5 pr-4 rounded-xl transition border border-transparent hover:border-gray-200">
+                        <img src="{{ auth()->user()->photo ? asset('storage/'.auth()->user()->photo) : 'https://ui-avatars.com/api/?name='.urlencode(auth()->user()->name).'&background=2563eb&color=fff' }}" class="w-9 h-9 rounded-full object-cover border-2 border-primary-100">
                         <div>
-                            <p class="text-sm font-bold text-slate-800 leading-none">dr. Gabriella</p>
-                            <p class="text-[10px] text-slate-400 mt-0.5">Dokter Gigi</p>
+                            <p class="text-sm font-bold text-slate-800 leading-none">{{ auth()->user()->name }}</p>
+                            <p class="text-[10px] text-slate-400 mt-0.5">{{ auth()->user()->spesialisasi ?? 'Dokter Gigi' }}</p>
                         </div>
                         <i class="fas fa-chevron-down text-[10px] text-slate-400"></i>
-                    </div>
+                    </a>
 
                 </div>
             </div>
@@ -300,7 +334,6 @@
                         </p>
                     </div>
 
-                    <!-- INI YANG SUDAH DIGANTI JADI LINK -->
                     <a href="{{ route('dokter.riwayat-pasien') }}" class="text-sm font-bold text-primary-600 bg-primary-50 px-4 py-2 rounded-xl hover:bg-primary-100 transition inline-block">
                         Lihat Semua
                     </a>
@@ -308,7 +341,7 @@
 
                 <div class="overflow-x-auto">
 
-                    <table class="w-full text-left">
+                    <table class="w-full text-left" id="tabelPasien">
 
                         <thead>
                             <tr class="border-b border-slate-100 text-xs uppercase tracking-wider text-slate-400">
@@ -320,7 +353,8 @@
                             </tr>
                         </thead>
 
-                        <tbody class="text-sm">
+                        <!-- ID UNTUK JAVASCRIPT SEARCH -->
+                        <tbody class="text-sm" id="bodyTabelPasien">
 
                             <!-- ROW 1 -->
                             <tr class="border-b border-slate-50 table-row-hover transition">
@@ -338,12 +372,10 @@
                                 <td class="py-5">
                                     <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">Selesai</span>
                                 </td>
-                                <td class="py-5">
-                                    <div class="flex items-center justify-center gap-2">
-                                        <button title="Lihat Detail" class="w-8 h-8 rounded-lg bg-blue-50 hover:bg-blue-100 text-primary-600 flex items-center justify-center transition"><i class="fas fa-eye text-xs"></i></button>
-                                        <button title="Edit Jadwal" class="w-8 h-8 rounded-lg bg-yellow-50 hover:bg-yellow-100 text-yellow-600 flex items-center justify-center transition"><i class="fas fa-edit text-xs"></i></button>
-                                        <button title="Hapus Jadwal" class="w-8 h-8 rounded-lg bg-red-50 hover:bg-red-100 text-red-500 flex items-center justify-center transition"><i class="fas fa-trash text-xs"></i></button>
-                                    </div>
+                                <td class="py-5 text-center">
+                                    <button class="w-10 h-10 rounded-xl bg-slate-50 hover:bg-primary-50 text-slate-400 hover:text-primary-600 transition border border-slate-200">
+                                        <i class="fas fa-arrow-right"></i>
+                                    </button>
                                 </td>
                             </tr>
 
@@ -363,12 +395,10 @@
                                 <td class="py-5">
                                     <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs font-bold">Menunggu</span>
                                 </td>
-                                <td class="py-5">
-                                    <div class="flex items-center justify-center gap-2">
-                                        <button title="Lihat Detail" class="w-8 h-8 rounded-lg bg-blue-50 hover:bg-blue-100 text-primary-600 flex items-center justify-center transition"><i class="fas fa-eye text-xs"></i></button>
-                                        <button title="Edit Jadwal" class="w-8 h-8 rounded-lg bg-yellow-50 hover:bg-yellow-100 text-yellow-600 flex items-center justify-center transition"><i class="fas fa-edit text-xs"></i></button>
-                                        <button title="Hapus Jadwal" class="w-8 h-8 rounded-lg bg-red-50 hover:bg-red-100 text-red-500 flex items-center justify-center transition"><i class="fas fa-trash text-xs"></i></button>
-                                    </div>
+                                <td class="py-5 text-center">
+                                    <button class="w-10 h-10 rounded-xl bg-slate-50 hover:bg-primary-50 text-slate-400 hover:text-primary-600 transition border border-slate-200">
+                                        <i class="fas fa-arrow-right"></i>
+                                    </button>
                                 </td>
                             </tr>
 
@@ -388,12 +418,10 @@
                                 <td class="py-5">
                                     <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold">Diproses</span>
                                 </td>
-                                <td class="py-5">
-                                    <div class="flex items-center justify-center gap-2">
-                                        <button title="Lihat Detail" class="w-8 h-8 rounded-lg bg-blue-50 hover:bg-blue-100 text-primary-600 flex items-center justify-center transition"><i class="fas fa-eye text-xs"></i></button>
-                                        <button title="Edit Jadwal" class="w-8 h-8 rounded-lg bg-yellow-50 hover:bg-yellow-100 text-yellow-600 flex items-center justify-center transition"><i class="fas fa-edit text-xs"></i></button>
-                                        <button title="Hapus Jadwal" class="w-8 h-8 rounded-lg bg-red-50 hover:bg-red-100 text-red-500 flex items-center justify-center transition"><i class="fas fa-trash text-xs"></i></button>
-                                    </div>
+                                <td class="py-5 text-center">
+                                    <button class="w-10 h-10 rounded-xl bg-slate-50 hover:bg-primary-50 text-slate-400 hover:text-primary-600 transition border border-slate-200">
+                                        <i class="fas fa-arrow-right"></i>
+                                    </button>
                                 </td>
                             </tr>
 
@@ -437,40 +465,45 @@
 
     <script>
         const page = document.body;
-
         requestAnimationFrame(() => {
             page.classList.add('is-visible');
         });
 
-        document.querySelectorAll('a[href]').forEach((link) => {
+        // ==========================================
+        // 1. FUNGSI NOTIFIKASI MENGAMBANG
+        // ==========================================
+        function toggleNotif() {
+            const dropdown = document.getElementById('notifDropdown');
+            dropdown.classList.toggle('hidden');
+        }
 
-            link.addEventListener('click', (event) => {
+        // Tutup notif kalau klik di luar area
+        window.addEventListener('click', function(e) {
+            const notifBtn = document.querySelector('[onclick="toggleNotif()"]');
+            const notifDropdown = document.getElementById('notifDropdown');
+            
+            if (!notifBtn.contains(e.target) && !notifDropdown.contains(e.target)) {
+                notifDropdown.classList.add('hidden');
+            }
+        });
 
-                const href = link.getAttribute('href');
 
-                if (
-                    !href ||
-                    href.startsWith('#') ||
-                    link.target === '_blank' ||
-                    event.metaKey ||
-                    event.ctrlKey
-                ) {
-                    return;
+        // ==========================================
+        // 2. FUNGSI SEARCH PASIEN (REALTIME)
+        // ==========================================
+        document.getElementById('searchPasien').addEventListener('input', function() {
+            const searchValue = this.value.toLowerCase();
+            const tableBody = document.getElementById('bodyTabelPasien');
+            const rows = tableBody.querySelectorAll('tr');
+
+            rows.forEach(row => {
+                const rowText = row.textContent.toLowerCase();
+                
+                if (rowText.includes(searchValue)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
                 }
-
-                const targetUrl = new URL(href, window.location.origin);
-
-                if (targetUrl.origin !== window.location.origin) {
-                    return;
-                }
-
-                event.preventDefault();
-
-                page.classList.add('is-leaving');
-
-                setTimeout(() => {
-                    window.location.href = targetUrl.href;
-                }, 220);
             });
         });
     </script>

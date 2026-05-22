@@ -24,7 +24,7 @@
         body { background: #f8fafc; color: #1e293b; }
         .sidebar { width: 260px; height: 100vh; background: white; border-right: 1px solid #e2e8f0; position: fixed; left: 0; top: 0; z-index: 50; }
         .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 24px; margin: 0 16px 8px 16px; border-radius: 12px; color: #64748b; font-weight: 500; font-size: 14px; transition: all .2s; cursor: pointer; }
-        .nav-item:hover { background: #eff6ff'; color: #2563eb; }
+        .nav-item:hover { background: #eff6ff; color: #2563eb; }
         .nav-item.active { background: #eff6ff; color: #2563eb; font-weight: 600; }
         .hover-card { transition: all .25s ease; }
         .hover-card:hover { transform: translateY(-4px); box-shadow: 0 14px 30px rgba(0,0,0,.06); }
@@ -89,23 +89,53 @@
                     <h2 class="text-2xl lg:text-3xl font-extrabold text-slate-800">Riwayat Pasien 📋</h2>
                 </div>
                 <div class="flex items-center gap-4 w-full md:w-auto">
+                    
+                    <!-- SEARCH BAR DENGAN ID -->
                     <div class="flex items-center bg-white border border-gray-200 rounded-xl px-4 py-2.5 w-full md:w-72 shadow-sm focus-within:ring-2 focus-within:ring-primary-500 transition">
                         <i class="fas fa-search text-gray-400 text-sm"></i>
-                        <input type="text" placeholder="Cari riwayat pasien..." class="ml-2 text-sm outline-none w-full bg-transparent text-slate-600">
+                        <input type="text" id="searchRiwayat" placeholder="Cari riwayat pasien..." class="ml-2 text-sm outline-none w-full bg-transparent text-slate-600">
                     </div>
-                    <div class="relative cursor-pointer p-3 bg-white border border-gray-200 rounded-xl shadow-sm hover:bg-gray-50 transition">
-                        <i class="fas fa-bell text-gray-600"></i>
-                        <span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+
+                    <!-- NOTIFIKASI DROPDOWN -->
+                    <div class="relative">
+                        <button onclick="toggleNotif()" class="relative cursor-pointer p-3 bg-white border border-gray-200 rounded-xl shadow-sm hover:bg-gray-50 transition focus:outline-none">
+                            <i class="fas fa-bell text-gray-600"></i>
+                            <span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+                        </button>
+                        
+                        <!-- Dropdown Notif -->
+                        <div id="notifDropdown" class="hidden absolute right-0 top-14 w-80 bg-white border border-slate-200 rounded-2xl shadow-2xl z-50 overflow-hidden">
+                            <div class="p-4 border-b border-slate-100 flex justify-between items-center">
+                                <h4 class="font-bold text-slate-800">Notifikasi</h4>
+                                <span class="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-bold">1 Baru</span>
+                            </div>
+                            <div class="max-h-72 overflow-y-auto">
+                                <div class="flex items-start gap-3 p-4 bg-blue-50/50 border-b border-slate-50 hover:bg-slate-50 transition cursor-pointer">
+                                    <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 flex-shrink-0 mt-0.5"><i class="fas fa-notes-medical text-xs"></i></div>
+                                    <div>
+                                        <p class="text-sm text-slate-700">Ada rekam medis baru yang ditambahkan Petugas.</p>
+                                        <p class="text-xs text-slate-400 mt-1">Baru saja</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-3 text-center border-t border-slate-100 bg-slate-50">
+                                <a href="#" class="text-sm font-bold text-primary-600 hover:underline">Lihat Semua Notifikasi</a>
+                            </div>
+                        </div>
                     </div>
+
                     <div class="h-8 w-px bg-gray-200 hidden md:block"></div>
-                    <div class="hidden md:flex items-center gap-3 cursor-pointer hover:bg-gray-50 p-1.5 pr-4 rounded-xl transition border border-transparent hover:border-gray-200">
-                        <img src="https://picsum.photos/seed/drgabriella/100/100" class="w-9 h-9 rounded-full object-cover border-2 border-primary-100">
+                    
+                    <!-- PROFILE NAVBAR DINAMIS -->
+                    <a href="{{ route('dokter.pengaturan') }}?open=profil" class="hidden md:flex items-center gap-3 cursor-pointer hover:bg-gray-50 p-1.5 pr-4 rounded-xl transition border border-transparent hover:border-gray-200">
+                        <img src="{{ auth()->user()->photo ? asset('storage/'.auth()->user()->photo) : 'https://ui-avatars.com/api/?name='.urlencode(auth()->user()->name).'&background=2563eb&color=fff' }}" class="w-9 h-9 rounded-full object-cover border-2 border-primary-100">
                         <div>
-                            <p class="text-sm font-bold text-slate-800 leading-none">dr. Gabriella</p>
-                            <p class="text-[10px] text-slate-400 mt-0.5">Dokter Gigi</p>
+                            <p class="text-sm font-bold text-slate-800 leading-none">{{ auth()->user()->name }}</p>
+                            <p class="text-[10px] text-slate-400 mt-0.5">{{ auth()->user()->spesialisasi ?? 'Dokter Gigi' }}</p>
                         </div>
                         <i class="fas fa-chevron-down text-[10px] text-slate-400"></i>
-                    </div>
+                    </a>
+
                 </div>
             </div>
         </header>
@@ -123,7 +153,6 @@
 
             <div class="bg-white rounded-3xl shadow-sm border border-slate-100 p-7 mb-8">
                 
-                <!-- Judul Tabel (Tanpa Tombol Tambah) -->
                 <div class="mb-6">
                     <h3 class="text-xl font-bold text-slate-800">Tabel Riwayat Pasien</h3>
                     <p class="text-sm text-slate-400 mt-1">Data diagnosa dan resep obat pasien dari petugas</p>
@@ -140,7 +169,9 @@
                                 <th class="pb-4 text-center">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody class="text-sm">
+
+                        <!-- ID UNTUK JAVASCRIPT SEARCH -->
+                        <tbody class="text-sm" id="bodyTabelRiwayat">
                             
                             @forelse ($riwayats as $riwayat)
                             <tr class="border-b border-slate-50 table-row-hover transition">
@@ -165,21 +196,14 @@
                                     {{ Str::limit($riwayat->resep_obat, 30) ?? '-' }}
                                 </td>
                                 
-                                <!-- Tombol Aksi (Read, Update, Delete) -->
                                 <td class="py-5">
                                     <div class="flex items-center justify-center gap-2">
-                                        
-                                        <!-- READ: Lihat Detail -->
                                         <button title="Lihat Detail" onclick="alert('Detail Diagnosa: {{ $riwayat->diagnosa_tindakan }}')" class="w-8 h-8 rounded-lg bg-blue-50 hover:bg-blue-100 text-primary-600 flex items-center justify-center transition">
                                             <i class="fas fa-eye text-xs"></i>
                                         </button>
-
-                                        <!-- UPDATE: Edit -->
                                         <a href="{{ route('dokter.edit-riwayat', $riwayat->id) }}" title="Edit" class="w-8 h-8 rounded-lg bg-yellow-50 hover:bg-yellow-100 text-yellow-600 flex items-center justify-center transition">
                                             <i class="fas fa-edit text-xs"></i>
                                         </a>
-
-                                        <!-- DELETE: Hapus -->
                                         <form action="{{ route('dokter.hapus-riwayat', $riwayat->id) }}" method="POST" class="inline-block">
                                             @csrf
                                             @method('DELETE')
@@ -187,12 +211,11 @@
                                                 <i class="fas fa-trash text-xs"></i>
                                             </button>
                                         </form>
-
                                     </div>
                                 </td>
                             </tr>
                             @empty
-                            <tr>
+                            <tr id="emptyRow">
                                 <td colspan="5" class="py-10 text-center text-slate-400">
                                     <i class="fas fa-folder-open text-3xl mb-3 text-slate-300 block"></i>
                                     Belum ada data riwayat pasien yang diinput oleh Petugas.
@@ -213,6 +236,41 @@
         const page = document.body;
         requestAnimationFrame(() => { page.classList.add('is-visible'); });
 
+        // ==========================================
+        // 1. FUNGSI NOTIFIKASI
+        // ==========================================
+        function toggleNotif() {
+            const dropdown = document.getElementById('notifDropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        window.addEventListener('click', function(e) {
+            const notifBtn = document.querySelector('[onclick="toggleNotif()"]');
+            const notifDropdown = document.getElementById('notifDropdown');
+            if (!notifBtn.contains(e.target) && !notifDropdown.contains(e.target)) {
+                notifDropdown.classList.add('hidden');
+            }
+        });
+
+        // ==========================================
+        // 2. FUNGSI SEARCH RIWAYAT PASIEN
+        // ==========================================
+        document.getElementById('searchRiwayat').addEventListener('input', function() {
+            const searchValue = this.value.toLowerCase();
+            const tableBody = document.getElementById('bodyTabelRiwayat');
+            const rows = tableBody.querySelectorAll('tr:not(#emptyRow)'); // Skip baris "Belum ada data"
+
+            rows.forEach(row => {
+                const rowText = row.textContent.toLowerCase();
+                if (rowText.includes(searchValue)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+
+        // Auto hide alert
         const alert = document.getElementById('successAlert');
         if(alert) {
             setTimeout(() => { alert.style.display = 'none'; }, 3000);

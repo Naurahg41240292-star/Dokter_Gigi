@@ -22,8 +22,11 @@ class AppointmentController extends Controller
         ->orderBy('waktu', 'asc')
         ->first();
 
-    // Hitung total appointment (sekalian buat statistik di kartu atas kalau mau)
-    $totalAppointments = Appointment::where('user_id', $user->id)->count();
+    // 🔥 FIX: Hitung total appointment TANPA yang dibatalkan
+    $totalAppointments = Appointment::where('user_id', $user->id)
+        ->whereNotIn('status', ['Dibatalkan']) // <-- Tambahkan ini
+        ->count();
+
 
     // Biarin ini dummy dulu soalnya fiturnya belum ada
     $totalPerawatan = 0; 

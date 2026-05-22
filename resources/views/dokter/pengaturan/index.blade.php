@@ -88,7 +88,7 @@
     <!-- MAIN CONTENT -->
     <main class="flex-1 ml-[260px] overflow-y-auto h-screen">
 
-        <!-- TOP NAVBAR (DITAMBAHKAN) -->
+        <!-- TOP NAVBAR -->
         <header class="sticky top-0 z-30 bg-white/80 backdrop-blur-xl border-b border-slate-200 px-6 lg:px-8 py-4 mb-8">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
@@ -105,14 +105,17 @@
                         <span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
                     </div>
                     <div class="h-8 w-px bg-gray-200 hidden md:block"></div>
-                    <div class="hidden md:flex items-center gap-3 cursor-pointer hover:bg-gray-50 p-1.5 pr-4 rounded-xl transition border border-transparent hover:border-gray-200">
-                        <img src="https://picsum.photos/seed/drgabriella/100/100" class="w-9 h-9 rounded-full object-cover border-2 border-primary-100">
+                    
+                    <!-- PROFILE NAVBAR DINAMIS -->
+                    <a href="{{ route('dokter.pengaturan') }}?open=profil" class="hidden md:flex items-center gap-3 cursor-pointer hover:bg-gray-50 p-1.5 pr-4 rounded-xl transition border border-transparent hover:border-gray-200">
+                        <img src="{{ auth()->user()->photo ? asset('storage/'.auth()->user()->photo) : 'https://ui-avatars.com/api/?name='.urlencode(auth()->user()->name).'&background=2563eb&color=fff' }}" class="w-9 h-9 rounded-full object-cover border-2 border-primary-100">
                         <div>
-                            <p class="text-sm font-bold text-slate-800 leading-none">dr. Gabriella</p>
-                            <p class="text-[10px] text-slate-400 mt-0.5">Dokter Gigi</p>
+                            <p class="text-sm font-bold text-slate-800 leading-none">{{ auth()->user()->name }}</p>
+                            <p class="text-[10px] text-slate-400 mt-0.5">{{ auth()->user()->spesialisasi ?? 'Dokter Gigi' }}</p>
                         </div>
                         <i class="fas fa-chevron-down text-[10px] text-slate-400"></i>
-                    </div>
+                    </a>
+
                 </div>
             </div>
         </header>
@@ -351,6 +354,15 @@
                 }
                 reader.readAsDataURL(input.files[0]);
             }
+        }
+
+        // ==========================================
+        // TAMBAHAN: BUKA ACCORDION OTOMATIS DARI URL
+        // ==========================================
+        const urlParams = new URLSearchParams(window.location.search);
+        const openSection = urlParams.get('open');
+        if (openSection) {
+            toggleAccordion(openSection);
         }
     </script>
 

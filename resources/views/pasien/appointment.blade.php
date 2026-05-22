@@ -38,12 +38,8 @@
         .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; transition: box-shadow 0.25s ease, transform 0.25s ease, border-color 0.25s ease; cursor: pointer; }
         .card:hover { box-shadow: 0 12px 40px rgba(37, 99, 235, 0.08); border-color: #bfdbfe; transform: translateY(-2px); }
         
-        .notif-dropdown, .profile-dropdown { position: absolute; top: calc(100% + 8px); right: 0; background: #fff; border: 1px solid var(--border); opacity: 0; visibility: hidden; transform: translateY(-8px); transition: all 0.25s ease; z-index: 60; }
-        .notif-dropdown { width: 340px; border-radius: 16px; box-shadow: 0 20px 50px rgba(37, 99, 235, 0.1); }
-        .profile-dropdown { width: 200px; border-radius: 12px; box-shadow: 0 12px 36px rgba(37, 99, 235, 0.08); }
-        .notif-dropdown.open, .profile-dropdown.open { opacity: 1; visibility: visible; transform: translateY(0); }
-        .profile-dropdown a { display: flex; align-items: center; gap: 10px; padding: 10px 16px; font-size: 13px; color: var(--fg); transition: background 0.15s; text-decoration: none; }
-        .profile-dropdown a:hover { background: #eff6ff; } .profile-dropdown a.danger { color: #EF4444; }
+        .notif-dropdown { position: absolute; top: calc(100% + 8px); right: 0; background: #fff; border: 1px solid var(--border); opacity: 0; visibility: hidden; transform: translateY(-8px); transition: all 0.25s ease; z-index: 60; width: 340px; border-radius: 16px; box-shadow: 0 20px 50px rgba(37, 99, 235, 0.1); }
+        .notif-dropdown.open { opacity: 1; visibility: visible; transform: translateY(0); }
         .online-dot { width: 8px; height: 8px; background: #22C55E; border-radius: 50%; border: 2px solid #fff; position: absolute; bottom: 0; right: 0; }
 
         .badge-confirmed { background-color: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
@@ -112,6 +108,7 @@
                 </div>
 
                 <div class="flex items-center gap-3">
+                    <!-- Notifikasi -->
                     <div class="relative">
                         <button class="w-10 h-10 rounded-xl bg-white border border-gray-100 flex items-center justify-center text-gray-500 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-100 transition-colors relative cursor-pointer" onclick="toggleNotif()" id="notifBtn">
                             <i class="fas fa-bell text-[15px]"></i>
@@ -127,41 +124,23 @@
                         </div>
                     </div>
 
-                    <div class="relative">
-                        <button class="flex items-center gap-3 pl-3 pr-1 py-1 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer" onclick="toggleProfile()" id="profileBtn">
-                            <div class="text-right hidden sm:block">
-                                <p class="text-sm font-bold text-gray-800 leading-tight">{{ auth()->user()->name }}</p>
-                                <p class="text-[11px] text-gray-400">{{ auth()->user()->email }}</p>
-                            </div>
-                            <div class="relative">
-                                <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=2563eb&color=fff" alt="Profil" class="w-9 h-9 rounded-lg object-cover border border-gray-100">
-                                <span class="online-dot"></span>
-                            </div>
-                            <i class="fas fa-chevron-down text-[10px] text-gray-400 mr-2"></i>
-                        </button>
-
-                        <div class="profile-dropdown" id="profileDropdown">
-                            <div class="p-3 border-b border-gray-100">
-                                <p class="text-sm font-bold text-gray-900">{{ auth()->user()->name }}</p>
-                                <p class="text-[11px] text-gray-400">{{ auth()->user()->email }}</p>
-                            </div>
-                            <div class="py-1">
-                                <a href="#"><i class="fas fa-user text-gray-400 text-xs w-4"></i> Profil Saya</a>
-                                <a href="#"><i class="fas fa-cog text-gray-400 text-xs w-4"></i> Pengaturan</a>
-                                <form method="POST" action="{{ route('logout') }}" class="block">
-                                    @csrf
-                                    <button type="submit" class="w-full text-left flex items-center gap-2 px-4 py-2.5 text-[13px] text-red-500 hover:bg-red-50 transition-colors">
-                                        <i class="fas fa-sign-out-alt text-xs w-4"></i> Keluar
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
+                    <!-- Profil (Teks + Ikon, Tanpa Dropdown, Langsung ke Dashboard) -->
+<!-- Profil (Hanya Tampilan, Tidak Bisa Diklik) -->
+<div class="flex items-center gap-3 pl-3 pr-3 py-1 rounded-xl select-none">
+    <div class="text-right hidden sm:block">
+        <p class="text-sm font-bold text-gray-800 leading-tight">{{ auth()->user()->name }}</p>
+        <p class="text-[11px] text-gray-400">{{ auth()->user()->email }}</p>
+    </div>
+    <div class="relative">
+        <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=2563eb&color=fff" alt="Profil" class="w-9 h-9 rounded-lg object-cover border border-gray-100">
+        <span class="online-dot"></span>
+    </div>
+</div>
                 </div>
             </div>
         </header>
 
-                <main class="px-6 lg:px-8 py-6">
+        <main class="px-6 lg:px-8 py-6">
 
             @if(session('success'))
                 <div class="bg-green-50 border border-green-200 text-green-700 px-5 py-3 rounded-xl mb-6 flex items-center gap-3 font-semibold text-sm animate-fade-up">
@@ -260,7 +239,7 @@
                     </div>
                     @empty
                     
-                    <!-- EMPTY STATE LEBAR FULL-WIDTH -->
+                    <!-- EMPTY STATE -->
                     <div class="min-h-[50vh] flex items-center justify-center w-full animate-fade-up">
                         <div class="bg-white border-2 border-dashed border-blue-200 rounded-2xl p-12 md:p-16 w-full text-center shadow-sm">
                             <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4 mx-auto border border-blue-100">
@@ -275,7 +254,7 @@
                 </div>
             </section>
 
-            <!-- VIEW: FORM APPOINTMENT (YANG KEMARIN KEHAPUS) -->
+            <!-- VIEW: FORM APPOINTMENT -->
             <section id="view-form-appointment" class="hidden space-y-6 animate-fade-up">
 
                 <div class="flex items-center gap-3">
@@ -444,6 +423,8 @@
 
         </main>
 
+    </div> <!-- Penutup main-content -->
+
     <!-- MODAL DETAIL APPOINTMENT (E-TICKET / STRUK) -->
     <div class="modal-overlay" id="detailModal">
         <div class="modal-content">
@@ -517,6 +498,7 @@
         </div>
     </div>
 
+    <!-- SCRIPT DIGABUNG JADI SATU SAJA BIAR GAK ERROR -->
     <script>
         // SET MINIMUM DATE HARI INI
         const dateInput = document.getElementById('appointmentDate');
@@ -573,14 +555,12 @@
         // FUNGSI SIDEBAR & TOPBAR
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('mobileOverlay').classList.toggle('show'); }
         function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('mobileOverlay').classList.remove('show'); }
-        function toggleNotif() { document.getElementById('notifDropdown').classList.toggle('open'); document.getElementById('profileDropdown').classList.remove('open'); }
-        function toggleProfile() { document.getElementById('profileDropdown').classList.toggle('open'); document.getElementById('notifDropdown').classList.remove('open'); }
+        function toggleNotif() { document.getElementById('notifDropdown').classList.toggle('open'); }
 
         document.addEventListener('click', function(e) {
-            const notifBtn = document.getElementById('notifBtn'); const notifDrop = document.getElementById('notifDropdown');
-            const profileBtn = document.getElementById('profileBtn'); const profileDrop = document.getElementById('profileDropdown');
+            const notifBtn = document.getElementById('notifBtn'); 
+            const notifDrop = document.getElementById('notifDropdown');
             if (!notifBtn.contains(e.target) && !notifDrop.contains(e.target)) notifDrop.classList.remove('open');
-            if (!profileBtn.contains(e.target) && !profileDrop.contains(e.target)) profileDrop.classList.remove('open');
         });
 
         // SCRIPT UNTUK MODAL DETAIL & QR CODE
@@ -706,203 +686,3 @@
     </script>
 </body>
 </html>
-
-    <script>
-        const dateInput = document.getElementById('appointmentDate');
-        if(dateInput){
-            const today = new Date().toISOString().split('T')[0];
-            dateInput.setAttribute('min', today);
-        }
-
-                function switchView(viewName) {
-            const viewList = document.getElementById('view-appointment');
-            const viewForm = document.getElementById('view-form-appointment');
-            const title = document.getElementById('page-title');
-
-            // Sembunyikan semua dulu (biar aman)
-            if(viewList) viewList.classList.add('hidden');
-            if(viewForm) viewForm.classList.add('hidden');
-
-            // Tampilkan yang diminta
-            if (viewName === 'appointment') {
-                if(viewList) viewList.classList.remove('hidden');
-                if(title) title.innerText = 'Appointment Saya';
-            }
-            else if (viewName === 'form-appointment') {
-                if(viewForm) viewForm.classList.remove('hidden');
-                if(title) title.innerText = 'Buat Appointment';
-            }
-
-            if (window.innerWidth <= 1024) { closeSidebar(); }
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function filterAppointments(btnEl, filter) {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        btnEl.classList.add('active');
-        const cards = document.querySelectorAll('#appointment-list > div');
-        cards.forEach(card => {
-            const status = card.getAttribute('data-status');
-            let show = false;
-
-            if (filter === 'semua') {
-                show = true;
-            } else if (filter === 'mendatang') {
-            // Tampilkan yang Menunggu Konfirmasi dan Terjadwal saja
-                show = (status === 'mendatang');
-            } else if (filter === 'selesai') {
-                show = (status === 'selesai');
-            } else if (filter === 'dibatalkan') {
-                show = (status === 'dibatalkan');
-            }
-
-            card.style.display = show ? '' : 'none';
-        });
-    }
-
-        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('mobileOverlay').classList.toggle('show'); }
-        function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('mobileOverlay').classList.remove('show'); }
-        
-        function toggleNotif() { document.getElementById('notifDropdown').classList.toggle('open'); document.getElementById('profileDropdown').classList.remove('open'); }
-        function toggleProfile() { document.getElementById('profileDropdown').classList.toggle('open'); document.getElementById('notifDropdown').classList.remove('open'); }
-
-        document.addEventListener('click', function(e) {
-            const notifBtn = document.getElementById('notifBtn'); const notifDrop = document.getElementById('notifDropdown');
-            const profileBtn = document.getElementById('profileBtn'); const profileDrop = document.getElementById('profileDropdown');
-            if (!notifBtn.contains(e.target) && !notifDrop.contains(e.target)) notifDrop.classList.remove('open');
-            if (!profileBtn.contains(e.target) && !profileDrop.contains(e.target)) profileDrop.classList.remove('open');
-        });
-
-        // SCRIPT UNTUK MODAL DETAIL & QR CODE
-        function openDetailModal(element) {
-            document.getElementById('modalTreatment').innerText = element.dataset.treatment;
-            document.getElementById('modalDate').innerHTML = `<i class="fas fa-calendar-day text-primary-500 mr-2"></i>${element.dataset.date}`;
-            document.getElementById('modalTime').innerHTML = `<i class="fas fa-clock text-primary-500 mr-2"></i>${element.dataset.time} WIB`;
-            document.getElementById('modalDoctor').innerHTML = `<i class="fas fa-user-md text-primary-500 mr-2"></i>${element.dataset.doctor}`;
-            document.getElementById('modalName').innerText = element.dataset.name;
-            document.getElementById('modalPhone').innerText = element.dataset.phone;
-            document.getElementById('modalKeluhan').innerText = element.dataset.keluhan;
-            document.getElementById('modalEcName').innerText = element.dataset.ecName;
-            document.getElementById('modalEcPhone').innerText = element.dataset.ecPhone;
-            
-            // Set Nomor Antrian
-            const queueNum = element.dataset.queue;
-            document.getElementById('modalQueue').innerText = queueNum;
-
-            // Atur Warna Badge Status
-            const statusText = element.dataset.statusText;
-            const statusEl = document.getElementById('modalStatus');
-            statusEl.innerText = statusText;
-            statusEl.className = "px-3.5 py-1.5 rounded-full text-xs font-bold "; // reset class
-            if(statusText === 'Terjadwal') statusEl.classList.add('badge-confirmed');
-            else if(statusText === 'Menunggu Konfirmasi') statusEl.classList.add('badge-pending');
-            else if(statusText === 'Selesai') statusEl.classList.add('badge-completed');
-            else statusEl.classList.add('badge-cancelled');
-
-            // Generate QR Code
-            const qrContainer = document.getElementById('modalQrCode');
-            qrContainer.innerHTML = ""; // Kosongkan dulu biar gak numpuk QR code pas dibuka tutup berkali-kali
-            
-            // Data yang akan dimasukkan ke dalam QR Code (Isinya Nomor Antrian langsung)
-            const qrData = queueNum;
-            
-            new QRCode(qrContainer, {
-                text: qrData,
-                width: 140,
-                height: 140,
-                colorDark : "#1e3a8a", // Warna biru gelap D'Smile
-                colorLight : "#ffffff",
-                correctLevel : QRCode.CorrectLevel.H
-            });
-
-            document.getElementById('detailModal').classList.add('open');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeDetailModal() {
-            document.getElementById('detailModal').classList.remove('open');
-            document.body.style.overflow = 'auto';
-        }
-
-        document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeDetailModal(); });
-
-        // Auto switch ke form jika ada error validasi atau old input
-@if($errors->any() || old('nama_lengkap'))
-    document.addEventListener('DOMContentLoaded', function() {
-        switchView('form-appointment');
-    });
-@endif
-// ===== VALIDASI REAL-TIME NIK =====
-function validateNik() {
-    const input = document.getElementById('inputNik');
-    const warning = document.getElementById('warningNik');
-    const val = input.value;
-
-    if (val.length > 0 && val.length < 16) {
-        warning.textContent = 'NIK harus tepat 16 digit. (Kurang ' + (16 - val.length) + ' digit)';
-        warning.classList.remove('hidden');
-        input.classList.add('border-red-400');
-    } else if (val.length === 16) {
-        warning.classList.add('hidden');
-        input.classList.remove('border-red-400'); // Hapus merah, biar balik ke default
-    } else {
-        warning.classList.add('hidden');
-        input.classList.remove('border-red-400');
-    }
-}
-
-// ===== VALIDASI REAL-TIME NO. TELEPON =====
-function validatePhone(inputId, warningId) {
-    const input = document.getElementById(inputId);
-    const warning = document.getElementById(warningId);
-    const val = input.value;
-
-    if (val.length > 0 && val.length < 12) {
-        warning.textContent = 'No. Telepon harus tepat 12 digit. (Kurang ' + (12 - val.length) + ' digit)';
-        warning.classList.remove('hidden');
-        input.classList.add('border-red-400');
-    } else if (val.length === 12) {
-        warning.classList.add('hidden');
-        input.classList.remove('border-red-400'); // Hapus merah, biar balik ke default
-    } else if (val.length > 12) {
-        warning.textContent = 'No. Telepon tidak boleh lebih dari 12 digit.';
-        warning.classList.remove('hidden');
-        input.classList.add('border-red-400');
-    } else {
-        warning.classList.add('hidden');
-        input.classList.remove('border-red-400');
-    }
-}
-
-// ===== VALIDASI SAAT FORM DI-SUBMIT (CEK KEKOSONGAN) =====
-const form = document.getElementById('appointmentForm');
-if(form) {
-    form.addEventListener('submit', function(event) {
-        
-        // Cek dulu validasi NIK & Telepon
-        const nikVal = document.getElementById('inputNik').value;
-        const telpVal = document.getElementById('inputTelp').value;
-        const telpDaruratVal = document.getElementById('inputTelpDarurat').value;
-
-        let errorMsg = [];
-
-        if(nikVal.length !== 16) errorMsg.push('NIK harus tepat 16 digit');
-        if(telpVal.length !== 12) errorMsg.push('No. Telepon harus tepat 12 digit');
-        if(telpDaruratVal.length !== 12) errorMsg.push('No. Telepon Darurat harus tepat 12 digit');
-
-        // Cek input required yang kosong menggunakan bawaan HTML5
-        if (!form.checkValidity()) {
-            errorMsg.push('Masih ada data wajib isi yang kosong.');
-        }
-
-        // Jika ada error, cegah submit dan tampilkan alert
-        if(errorMsg.length > 0) {
-            event.preventDefault(); // Gagalin submit
-            alert('GAGAL SIMPAN!\n\n' + errorMsg.join('\n'));
-        }
-    });
-}
-
-    </script>
-</body>
-</html> 
