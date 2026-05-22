@@ -48,8 +48,8 @@
 </head>
 <body class="flex page-transition">
 
-    <!-- ========== SIDEBAR PETUGAS ========== -->
-    <aside class="sidebar">
+        <!-- ========== SIDEBAR PETUGAS (UNIVERSAL - AMAN) ========== -->
+    <aside class="sidebar flex flex-col">
         <div class="px-8 pt-8 pb-6 flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-primary-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
                 <i class="fas fa-tooth text-white text-lg"></i>
@@ -59,7 +59,7 @@
                 <p class="text-[10px] text-primary-600 font-bold uppercase tracking-wider mt-1">Admin Panel</p>
             </div>
         </div>
-        <nav class="mt-4">
+        <nav class="mt-4 flex-1 overflow-y-auto">
             <a href="{{ route('petugas.dashboard') }}" class="nav-item {{ request()->routeIs('petugas.dashboard') ? 'active' : '' }}">
                 <i class="fas fa-home w-5 text-center"></i><span>Beranda</span>
             </a>
@@ -72,12 +72,14 @@
             <a href="{{ route('petugas.jadwal-kontrol') }}" class="nav-item {{ request()->routeIs('petugas.jadwal-kontrol') ? 'active' : '' }}">
                 <i class="fas fa-calendar-alt w-5 text-center"></i><span>Jadwal Kontrol</span>
             </a>
-           
+            <a href="{{ route('petugas.manajemen-user') }}" class="nav-item {{ request()->routeIs('petugas.manajemen-user') ? 'active' : '' }}">
+                <i class="fas fa-users-cog w-5 text-center"></i><span>Manajemen User</span>
+            </a>
             <div class="my-6 px-8 border-t border-gray-100"></div>
             <a href="{{ route('petugas.pengaturan') }}" class="nav-item {{ request()->routeIs('petugas.pengaturan') ? 'active' : '' }}">
                 <i class="fas fa-cog w-5 text-center"></i><span>Pengaturan</span>
             </a>
-            <form method="POST" action="{{ route('logout') }}" class="mx-4 mt-2">
+            <form method="POST" action="{{ route('logout') }}" class="mt-2">
                 @csrf
                 <button type="submit" class="nav-item w-full text-red-500 hover:text-red-600 hover:bg-red-50">
                     <i class="fas fa-sign-out-alt w-5 text-center"></i><span>Keluar</span>
@@ -85,7 +87,6 @@
             </form>
         </nav>
     </aside>
-
     <!-- ========== MAIN CONTENT ========== -->
     <main class="flex-1 ml-[260px] p-6 lg:p-8">
         

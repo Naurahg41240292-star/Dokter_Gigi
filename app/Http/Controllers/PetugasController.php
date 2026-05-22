@@ -119,7 +119,10 @@ class PetugasController extends Controller
 
     public function edit(Pasien $pasien)
     {
-        return view('petugas.editpasien', compact('pasien'));
+    // Ambil rekam medis terakhir pasien (kalau ada)
+    $rekamMedis = RekamMedis::where('pasien_id', $pasien->id)->latest()->first();
+    
+    return view('petugas.editpasien', compact('pasien', 'rekamMedis'));
     }
 
     // REVISI 1: Update Pasien + Rekam Medis digabung
@@ -173,26 +176,27 @@ class PetugasController extends Controller
         return redirect()->route('petugas.data-pasien')->with('success', 'Data pasien berhasil dihapus!');
     }
 
-    // ================= MANAJEMEN USER (REVISI 2) =================
     public function manajemenUser()
-    {
-        // Ambil semua user dokter & petugas, urutkan yang pending di atas
-        $users = User::whereIn('role', ['dokter', 'petugas'])
-                    ->orderByRaw("FIELD(status, 'pending') DESC")
-                    ->latest()
-                    ->get();
+{
+    $users = User::whereIn('role', ['dokter', 'petugas'])
+                ->orderByRaw("FIELD(status, 'pending') DESC")
+                ->latest()
+                ->get();
 
-        return view('petugas.manajemen-user', compact('users'));
-    }
+    return view('petugas.manajemen-user', compact('users'));
+}
 
-    public function approveUser(User $user)
-    {
-        // ✅ UBAH MENJADI Status::APPROVED sesuai Enum kamu
-        $user->update(['status' => Status::APPROVED]);
-
-        return redirect()->route('petugas.manajemen-user')->with('success', "User {$user->name} berhasil disetujui.");
-    }
-
+public function approveUser(User $user)
+{
+    $user->update(['status' => Status::APPROVED]);
+    return redirect()->route('petugas.manajemen-user')->with('success', "User {$user->name} berhasil disetujui.");
+}
+public function destroyUser(User $user)
+{
+    // Hapus user dari database (aksi menolak/menghapus)
+    $user->delete();
+    return redirect()->route('petugas.manajemen-user')->with('success', "User {$user->name} berhasil dihapus.");
+}
     // ================= PENGATURAN (REVISI 3) =================
     public function pengaturan()
     {

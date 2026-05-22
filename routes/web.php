@@ -106,7 +106,11 @@ Route::middleware('auth')->group(function () {
     // Jadwal Kontrol
     Route::get('/jadwal-kontrol', [PetugasController::class, 'jadwalKontrol'])->name('petugas.jadwal-kontrol');
 
+    Route::get('/manajemen-user', [PetugasController::class, 'manajemenUser'])->name('petugas.manajemen-user');
+    Route::put('/manajemen-user/{user}/approve', [PetugasController::class, 'approveUser'])->name('petugas.approve-user');
+    Route::delete('/manajemen-user/{user}', [PetugasController::class, 'destroyUser'])->name('petugas.destroy-user');
     Route::get('/pengaturan', function () {
+    
         return '<h1 class="text-center text-2xl mt-20">Halaman Pengaturan (Segera Dibuat)</h1>';
     })->name('petugas.pengaturan');
 });
