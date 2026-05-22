@@ -169,47 +169,56 @@
     <div class="content">
 
         <!-- TOPBAR -->
-        <header class="topbar px-6 lg:px-8 py-4">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center gap-4">
-                    <button class="lg:hidden w-9 h-9 rounded-lg bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-50 transition-colors" onclick="toggleSidebar()">
-                        <i class="fas fa-bars text-sm"></i>
-                    </button>
-                    <div>
-                        <h2 class="text-lg font-bold text-gray-800 leading-tight" id="page-title">Riwayat Perawatan</h2>
-                        <p class="text-xs text-gray-400 mt-0.5">Lihat riwayat lengkap perawatan gigi Anda</p>
-                    </div>
-                </div>
+<header class="topbar px-6 lg:px-8 py-4">
+    <div class="flex items-center justify-between">
+        <div class="flex items-center gap-4">
+            <button class="lg:hidden w-9 h-9 rounded-lg bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-50 transition-colors" onclick="toggleSidebar()">
+                <i class="fas fa-bars text-sm"></i>
+            </button>
+            <div>
+                <h2 class="text-lg font-bold text-gray-800 leading-tight" id="page-title">Riwayat Perawatan</h2>
+                <p class="text-xs text-gray-400 mt-0.5" id="currentDate"></p>
+                <script>
+                    (function() {
+                        var days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+                        var months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+                        var now = new Date();
+                        var el = document.getElementById('currentDate');
+                        if (el) el.textContent = days[now.getDay()] + ', ' + now.getDate() + ' ' + months[now.getMonth()] + ' ' + now.getFullYear();
+                    })();
+                </script>
+            </div>
+        </div> <!-- INI PENUTUP KIRI, TADI KURANG -->
 
-                <div class="flex items-center gap-3">
-                    <div class="relative">
-                        <button class="w-10 h-10 rounded-xl bg-white border border-gray-100 flex items-center justify-center text-gray-500 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-100 transition-colors relative cursor-pointer" onclick="toggleNotif()" id="notifBtn">
-                            <i class="fas fa-bell text-[15px]"></i>
-                        </button>
-                        <div class="notif-dropdown" id="notifDropdown">
-                            <div class="p-4 border-b border-gray-100">
-                                <div class="flex items-center justify-between">
-                                    <h4 class="font-bold text-sm text-gray-900">Notifikasi</h4>
-                                    <button class="text-xs text-blue-600 font-bold hover:underline cursor-pointer">Tandai semua dibaca</button>
-                                </div>
-                            </div>
-                            <div class="p-6 text-center text-sm text-gray-400">Belum ada notifikasi</div>
+        <div class="flex items-center gap-3">
+            <div class="relative">
+                <button class="w-10 h-10 rounded-xl bg-white border border-gray-100 flex items-center justify-center text-gray-500 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-100 transition-colors relative cursor-pointer" onclick="toggleNotif()" id="notifBtn">
+                    <i class="fas fa-bell text-[15px]"></i>
+                </button>
+                <div class="notif-dropdown" id="notifDropdown">
+                    <div class="p-4 border-b border-gray-100">
+                        <div class="flex items-center justify-between">
+                            <h4 class="font-bold text-sm text-gray-900">Notifikasi</h4>
+                            <button class="text-xs text-blue-600 font-bold hover:underline cursor-pointer">Tandai semua dibaca</button>
                         </div>
                     </div>
-
-                    <div class="flex items-center gap-3 pl-3 pr-3 py-1 rounded-xl select-none">
-                        <div class="text-right hidden sm:block">
-                            <p class="text-sm font-bold text-gray-800 leading-tight">{{ auth()->user()->name }}</p>
-                            <p class="text-[11px] text-gray-400">{{ auth()->user()->email }}</p>
-                        </div>
-                        <div class="relative">
-                            <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=2563eb&color=fff" alt="Profil" class="w-9 h-9 rounded-lg object-cover border border-gray-100">
-                            <span class="online-dot"></span>
-                        </div>
-                    </div>
+                    <div class="p-6 text-center text-sm text-gray-400">Belum ada notifikasi</div>
                 </div>
             </div>
-        </header>
+
+            <div class="flex items-center gap-3 pl-3 pr-3 py-1 rounded-xl select-none">
+                <div class="text-right hidden sm:block">
+                    <p class="text-sm font-bold text-gray-800 leading-tight">{{ auth()->user()->name }}</p>
+                    <p class="text-[11px] text-gray-400">{{ auth()->user()->email }}</p>
+                </div>
+                <div class="relative">
+                    <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=2563eb&color=fff" alt="Profil" class="w-9 h-9 rounded-lg object-cover border border-gray-100">
+                    <span class="online-dot"></span>
+                </div>
+            </div>
+        </div>
+    </div> <!-- INI PENUTUP JUSTIFY-BETWEEN -->
+</header>
 
         <main class="px-6 lg:px-8 py-6">
             <div class="panel overflow-hidden">

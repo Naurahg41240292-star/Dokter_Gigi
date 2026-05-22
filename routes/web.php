@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
-use App\Http\Controllers\Pasien\PembayaranController;
+use App\Http\Controllers\Pasien\PricelistController;
 use App\Http\Controllers\Pasien\AppointmentController;
 use App\Http\Controllers\PetugasController;
 use Illuminate\Support\Facades\Route;
@@ -60,9 +60,9 @@ Route::middleware('auth')->group(function () {
         return view('pasien.artikel');
     })->name('pasien.artikel');
 
-    // Pembayaran
-    Route::get('/pembayaran', [PembayaranController::class, 'index'])->name('pembayaran.index');
-    Route::get('/pembayaran/{id}', [PembayaranController::class, 'show'])->name('pembayaran.show');
+    // Pricelist
+    Route::get('/pricelist', [PricelistController::class, 'index'])->name('pricelist.index');
+    Route::get('/pricelist/{id}', [PricelistController::class, 'show'])->name('pricelist.show');
 
 
     // ==========================================

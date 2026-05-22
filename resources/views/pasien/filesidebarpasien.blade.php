@@ -190,7 +190,7 @@
                     <span class="sp-text">Riwayat Perawatan</span>
                 </div>
             </a>
-            <a href="{{ route('pembayaran.index') }}" class="sidebar-pasien-link {{ request()->is('pembayaran*') ? 'active' : '' }}">
+            <a href="{{ route('pricelist.index') }}" class="sidebar-pasien-link {{ request()->is('pricelist*') ? 'active' : '' }}">
                 <div class="sidebar-pasien-link-inner">
                     <span class="sp-icon"><i class="fas fa-tags"></i></span>
                     <span class="sp-text">Pricelist</span>

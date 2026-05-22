@@ -103,7 +103,16 @@
                     </button>
                     <div>
                         <h2 class="text-lg font-bold text-gray-800 leading-tight" id="page-title">Appointment Saya</h2>
-                        <p class="text-xs text-gray-400 mt-0.5">Kelola jadwal perawatan gigi Anda</p>
+                        <p class="text-xs text-gray-400 mt-0.5" id="currentDate"></p>
+                        <script>
+                            (function() {
+                                var days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+                                var months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+                                var now = new Date();
+                                var el = document.getElementById('currentDate');
+                                if (el) el.textContent = days[now.getDay()] + ', ' + now.getDate() + ' ' + months[now.getMonth()] + ' ' + now.getFullYear();
+                            })();
+                        </script>
                     </div>
                 </div>
 
@@ -124,18 +133,17 @@
                         </div>
                     </div>
 
-                    <!-- Profil (Teks + Ikon, Tanpa Dropdown, Langsung ke Dashboard) -->
-<!-- Profil (Hanya Tampilan, Tidak Bisa Diklik) -->
-<div class="flex items-center gap-3 pl-3 pr-3 py-1 rounded-xl select-none">
-    <div class="text-right hidden sm:block">
-        <p class="text-sm font-bold text-gray-800 leading-tight">{{ auth()->user()->name }}</p>
-        <p class="text-[11px] text-gray-400">{{ auth()->user()->email }}</p>
-    </div>
-    <div class="relative">
-        <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=2563eb&color=fff" alt="Profil" class="w-9 h-9 rounded-lg object-cover border border-gray-100">
-        <span class="online-dot"></span>
-    </div>
-</div>
+                    <!-- Profil -->
+                    <div class="flex items-center gap-3 pl-3 pr-3 py-1 rounded-xl select-none">
+                        <div class="text-right hidden sm:block">
+                            <p class="text-sm font-bold text-gray-800 leading-tight">{{ auth()->user()->name }}</p>
+                            <p class="text-[11px] text-gray-400">{{ auth()->user()->email }}</p>
+                        </div>
+                        <div class="relative">
+                            <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=2563eb&color=fff" alt="Profil" class="w-9 h-9 rounded-lg object-cover border border-gray-100">
+                            <span class="online-dot"></span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </header>
@@ -383,23 +391,26 @@
                                     <label class="form-label">Dokter <span class="required">*</span></label>
                                     <select name="dokter" class="form-input" required>
                                         <option value="" disabled @if(!old('dokter')) selected @endif>Pilih dokter</option>
-                                        <option value="drg. Andi Wijoya" @if(old('dokter')=='drg. Andi Wijoya') selected @endif>drg. Andi Wijoya (Umum)</option>
-                                        <option value="drg. Rina Sari" @if(old('dokter')=='drg. Rina Sari') selected @endif>drg. Rina Sari (Ortodonti)</option>
-                                        <option value="drg. Budi Prasetyo" @if(old('dokter')=='drg. Budi Prasetyo') selected @endif>drg. Budi Prasetyo (Bedah)</option>
-                                        <option value="drg. Siti Aminah" @if(old('dokter')=='drg. Siti Aminah') selected @endif>drg. Siti Aminah (Pedodonti)</option>
+                                        <option value="drg. Ahmad Eunwo Ramdhan, Sp.Ort" @if(old('dokter')=='drg. Ahmad Eunwo Ramdhan, Sp.Ort') selected @endif>drg. Ahmad Eunwo Ramdhan, Sp.Ort</option>
+                                        <option value="drg. Naurah Afkarina Ananda, KG" @if(old('dokter')=='drg. Naurah Afkarina Ananda, KG') selected @endif>drg. Naurah Afkarina Ananda, KG</option>
+                                        <option value="drg. Binan Wooseok Sagara, Sp. Pros" @if(old('dokter')=='drg. Binan Wooseok Sagara, Sp. Pros') selected @endif>drg. Binan Wooseok Sagara, Sp. Pros</option>
+                                        <option value="drg. Intan Novitasari, Sp. Perio" @if(old('dokter')=='drg. Intan Novitasari, Sp. Perio') selected @endif>drg. Intan Novitasari, Sp. Perio</option>
+                                        <option value="drg. Najwa Wahdaniyatul Meilani, Sp. BM" @if(old('dokter')=='drg. Najwa Wahdaniyatul Meilani, Sp. BM') selected @endif>drg. Najwa Wahdaniyatul Meilani, Sp. BM</option>
+                                        <option value="drg. Aprilia Ajeng Wulandari, Sp.KGA" @if(old('dokter')=='drg. Aprilia Ajeng Wulandari, Sp.KGA') selected @endif>drg. Aprilia Ajeng Wulandari, Sp.KGA</option>
                                     </select>
                                 </div>
                                 <div>
                                     <label class="form-label">Jenis Perawatan <span class="required">*</span></label>
                                     <select name="jenis_perawatan" class="form-input" required>
                                         <option value="" disabled @if(!old('jenis_perawatan')) selected @endif>Pilih perawatan</option>
+                                        <option value="Behel Gigi" @if(old('jenis_perawatan')=='Behel Gigi') selected @endif>Behel Gigi</option>
+                                        <option value="Bleaching Gigi" @if(old('jenis_perawatan')=='Bleaching Gigi') selected @endif>Bleaching Gigi</option>
+                                        <option value="Gigi Tiruan" @if(old('jenis_perawatan')=='Gigi Tiruan') selected @endif>Gigi Tiruan</option>
+                                        <option value="Gum Lifting" @if(old('jenis_perawatan')=='Gum Lifting') selected @endif>Gum Lifting</option>
+                                        <option value="Veneer" @if(old('jenis_perawatan')=='Veneer') selected @endif>Veneer</option>
+                                        <option value="Tambal Gigi" @if(old('jenis_perawatan')=='Tambal Gigi') selected @endif>Tambal Gigi</option>
+                                        <option value="Cabut Gigi" @if(old('jenis_perawatan')=='Cabut Gigi') selected @endif>Cabut Gigi</option>
                                         <option value="Scaling Gigi" @if(old('jenis_perawatan')=='Scaling Gigi') selected @endif>Scaling Gigi</option>
-                                        <option value="Penambalan Gigi" @if(old('jenis_perawatan')=='Penambalan Gigi') selected @endif>Penambalan Gigi</option>
-                                        <option value="Pencabutan Gigi" @if(old('jenis_perawatan')=='Pencabutan Gigi') selected @endif>Pencabutan Gigi</option>
-                                        <option value="Konsultasi Ortodonti" @if(old('jenis_perawatan')=='Konsultasi Ortodonti') selected @endif>Konsultasi Ortodonti</option>
-                                        <option value="Perawatan Saluran Akar" @if(old('jenis_perawatan')=='Perawatan Saluran Akar') selected @endif>Perawatan Saluran Akar</option>
-                                        <option value="Pemasangan Crown / Veneer" @if(old('jenis_perawatan')=='Pemasangan Crown / Veneer') selected @endif>Pemasangan Crown / Veneer</option>
-                                        <option value="Konsultasi Umum" @if(old('jenis_perawatan')=='Konsultasi Umum') selected @endif>Konsultasi Umum</option>
                                     </select>
                                 </div>
                                 <div class="md:col-span-2">
@@ -610,12 +621,32 @@
 
         document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeDetailModal(); });
 
-        // AUTO SWITCH KE FORM KALO ADA ERROR VALIDASI
+        // AUTO SWITCH KE FORM KALO ADA ERROR VALIDASI ATAU DATANG DARI PRICELIST
         @if($errors->any() || old('nama_lengkap'))
             document.addEventListener('DOMContentLoaded', function() {
                 switchView('form-appointment');
             });
         @endif
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const openForm = urlParams.get('open_form');
+            const treatment = urlParams.get('treatment');
+
+            // Kalau diklik dari pricelist
+            if (openForm === '1') {
+                switchView('form-appointment');
+                
+                // Auto-select jenis perawatan kalau ada parameter treatment dari pricelist
+                if (treatment) {
+                    const selectEl = document.querySelector('select[name="jenis_perawatan"]');
+                    if (selectEl) {
+                        selectEl.value = treatment;
+                        selectEl.dispatchEvent(new Event('change'));
+                    }
+                }
+            }
+        });
 
         // VALIDASI REAL-TIME NIK
         function validateNik() {
