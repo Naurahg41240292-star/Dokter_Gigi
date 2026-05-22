@@ -6,20 +6,17 @@ namespace App\Models;
 use App\Enums\Role;
 use App\Enums\Status;
 use Database\Factories\UserFactory;
-use Illuminate\Database\Eloquent\Attributes\Fillable;
-use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['name', 'email', 'phone', 'password', 'role', 'status'])]
-#[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
+    // KITA HANYA PAKAI INI, TANPA #[Fillable] DI ATAS
     protected $fillable = [
         'name',
         'email',
@@ -27,12 +24,16 @@ class User extends Authenticatable
         'password',
         'role',
         'status',
+        'spesialisasi',  // PASTIIN ADA
+        'nomor_sip',     // PASTIIN ADA
+        'photo',         // PASTIIN ADA
     ];
 
     protected $hidden = [
         'password',
         'remember_token',
     ];
+
     /**
      * Get the attributes that should be cast.
      *
