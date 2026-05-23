@@ -27,6 +27,8 @@ class User extends Authenticatable
         'spesialisasi',  // PASTIIN ADA
         'nomor_sip',     // PASTIIN ADA
         'photo',         // PASTIIN ADA
+        'no_telp', // <-- Tambahkan ini
+        'foto',
     ];
 
     protected $hidden = [

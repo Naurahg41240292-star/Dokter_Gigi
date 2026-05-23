@@ -9,6 +9,7 @@ use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\Dokter\RiwayatPasienController;
 use App\Http\Controllers\Dokter\PengaturanDokterController;
 use App\Http\Controllers\Pasien\PengaturanController;
+use App\Http\Controllers\ProfileController;
 
 // ==========================================
 // ROUTE PUBLIK (Tanpa Login)
@@ -120,8 +121,12 @@ Route::middleware('auth')->group(function () {
     
     // Pengaturan Petugas (URL DIPISAHKAN SUPAYA TIDAK BENTROK DENGAN PASIEN)
     Route::get('/petugas/pengaturan', function () {
-        return '<h1 class="text-center text-2xl mt-20">Halaman Pengaturan Petugas (Segera Dibuat)</h1>';
+    return view('petugas.pengaturan'); // Arahkan ke file view: resources/views/petugas/pengaturan.blade.php
     })->name('petugas.pengaturan');
+    
+    // Route Aksi Form
+    Route::put('/petugas/pengaturan/profil', [ProfileController::class, 'updateProfil'])->name('petugas.pengaturan.update');
+    Route::put('/petugas/pengaturan/keamanan', [ProfileController::class, 'updatePassword'])->name('petugas.pengaturan.password');
 });
 
 Route::get('/welcome', function () {
