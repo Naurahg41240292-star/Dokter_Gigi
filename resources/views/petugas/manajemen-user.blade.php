@@ -152,9 +152,9 @@
                             </td>
                             <td class="py-4 text-slate-500">{{ $user->created_at->format('d M Y') }}</td>
                             <td class="py-4">
-                                @if($user->status === \App\Enums\Status::PENDING)
+                                @if($user->status === \App\Enums\Status::Pending)
                                     <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-md text-xs font-bold">PENDING</span>
-                                @elseif($user->status === \App\Enums\Status::APPROVED)
+                                @elseif($user->status === \App\Enums\Status::Approved)
                                     <span class="bg-green-100 text-green-700 px-3 py-1 rounded-md text-xs font-bold">APPROVED</span>
                                 @else
                                     <span class="bg-red-100 text-red-700 px-3 py-1 rounded-md text-xs font-bold">REJECTED</span>
@@ -162,7 +162,7 @@
                             </td>
                             <td class="py-4 text-center">
                                 <div class="flex items-center justify-center gap-2">
-                                    @if($user->status === \App\Enums\Status::PENDING)
+                                    @if($user->status === \App\Enums\Status::Pending)
                                     <form action="{{ route('petugas.approve-user', $user->id) }}" method="POST">
                                         @csrf @method('PUT')
                                         <button type="submit" class="bg-green-500 text-white px-3 py-2 rounded-lg text-xs font-bold hover:bg-green-600 transition shadow-sm">

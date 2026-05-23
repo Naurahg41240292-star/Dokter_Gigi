@@ -47,42 +47,41 @@ class AuthController extends Controller
         return $this->dashboard(); 
     }
 
-   public function login(Request $request)
-{
-    $credentials = $request->validate([
-        'email' => 'required|email',
-        'password' => 'required',
-    ]);
+    public function login(Request $request)
+    {
+        $credentials = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
 
-    if (Auth::attempt($credentials)) {
-        $request->session()->regenerate();
+        if (Auth::attempt($credentials)) {
+            $request->session()->regenerate();
 
-        $user = Auth::user();
+            $user = Auth::user();
 
-        // ✅ UBAH: Bandingkan dengan Enum Status, bukan string 'pending'
-        if ($user->status === Status::PENDING) {
-            Auth::logout();
-            return redirect()->route('login')->withErrors([
-                'email' => 'Akun Anda belum disetujui oleh Admin.',
-            ]);
+            // ✅ FIX: Jika status PENDING, baru ditolak. Jika APPROVED, boleh masuk.
+            if ($user->status === Status::Pending) {
+                Auth::logout();
+                return redirect()->route('login')->withErrors([
+                    'email' => 'Akun Anda belum disetujui oleh Admin.',
+                ]);
+            }
+
+            switch ($user->role) {
+                case Role::DOKTER:
+                    return redirect()->route('dokter.dashboard');
+                case Role::PETUGAS:
+                    return redirect()->route('petugas.dashboard');
+                case Role::PASIEN:
+                default:
+                    return redirect()->route('pasien.dashboard');
+            }
         }
 
-        // ✅ UBAH: Bandingkan dengan Enum Role, bukan string 'dokter'/'petugas'/'pasien'
-        switch ($user->role) {
-            case Role::DOKTER:
-                return redirect()->route('dokter.dashboard');
-            case Role::PETUGAS:
-                return redirect()->route('petugas.dashboard');
-            case Role::PASIEN:
-            default:
-                return redirect()->route('pasien.dashboard');
-        }
+        return back()->withErrors([
+            'email' => 'Email atau password salah.',
+        ]);
     }
-
-    return back()->withErrors([
-        'email' => 'Email atau password salah.',
-    ]);
-}
 
     public function register(Request $request)
     {
@@ -95,8 +94,8 @@ class AuthController extends Controller
         ]);
 
          $statusAkun = ($request->role === Role::PASIEN->value)
-            ? Status::APPROVED   
-            : Status::PENDING;
+            ? Status::Approved   
+            : Status::Pending;
 
         $user = User::create([
             'name' => $request->name,
@@ -107,7 +106,8 @@ class AuthController extends Controller
             'status' => $statusAkun,
         ]);
 
-        if ($user->status === 'pending') {
+        // ✅ FIX: Bandingkan dengan Enum Status::Pending, bukan string 'pending'
+        if ($user->status === Status::Pending) {
             return redirect()->route('login')->with('success', 'Pendaftaran berhasil! Akun Anda sedang menunggu persetujuan Admin.');
         } else {
             return redirect()->route('login')->with('success', 'Pendaftaran berhasil! Silakan masuk menggunakan email dan kata sandi Anda.');
@@ -201,24 +201,25 @@ class AuthController extends Controller
     }
 
     public function dashboard()
-{
-    $user = Auth::user();
+    {
+        $user = Auth::user();
 
-    if ($user->status === Status::PENDING) {
-        Auth::logout();
-        return redirect()->route('login')->withErrors([
-            'email' => 'Akun Anda belum disetujui oleh Admin.',
-        ]);
-    }
+        // ✅ FIX: Sama seperti login, yang ditolak itu yang PENDING
+        if ($user->status === Status::Pending) {
+            Auth::logout();
+            return redirect()->route('login')->withErrors([
+                'email' => 'Akun Anda belum disetujui oleh Admin.',
+            ]);
+        }
 
-    switch ($user->role) {
-        case Role::DOKTER:
-            return redirect()->route('dokter.dashboard');
-        case Role::PETUGAS:
-            return redirect()->route('petugas.dashboard');
-        case Role::PASIEN:
-        default:
-            return redirect()->route('pasien.dashboard');
+        switch ($user->role) {
+            case Role::DOKTER:
+                return redirect()->route('dokter.dashboard');
+            case Role::PETUGAS:
+                return redirect()->route('petugas.dashboard');
+            case Role::PASIEN:
+            default:
+                return redirect()->route('pasien.dashboard');
+        }
     }
-}
 }
