@@ -28,7 +28,7 @@ class PetugasController extends Controller
                                 ->count();
         $totalPasien = Pasien::count();
         $dokterAktif = User::where('role', 'dokter')->count();
-        $penerimaanHariIni = Pembayaran::whereDate('created_at', $today)->sum('amount');
+        
 
         $jadwalHariIni = RekamMedis::whereDate('tanggal_kunjungan', $today)
                                 ->with('pasien')
@@ -40,7 +40,8 @@ class PetugasController extends Controller
 
         return view('petugas.dashboard', compact(
             'pasienHariIni', 'antrianHariIni', 'sedangDiperiksa', 'selesaiHariIni',
-            'totalPasien', 'dokterAktif', 'penerimaanHariIni', 'jadwalHariIni', 'pasienTerbaru'
+            'totalPasien', 'dokterAktif','jadwalHariIni', 'pasienTerbaru'
+            
         ));
     }
 

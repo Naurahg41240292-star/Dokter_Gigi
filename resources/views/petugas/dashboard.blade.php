@@ -126,7 +126,7 @@
             </div>
             <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 hover-card">
                 <div class="flex justify-between items-start mb-4">
-                    <div><p class="text-slate-500 text-sm font-medium mb-1">Penerimaan Hari Ini</p><h3 class="text-2xl font-extrabold text-slate-800">Rp {{ number_format($penerimaanHariIni, 0, ',', '.') }}</h3></div>
+                   
                     <div class="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-orange-500"><i class="fas fa-cash-register"></i></div>
                 </div>
                 <span class="bg-orange-50 text-orange-600 px-2 py-0.5 rounded-full text-xs font-bold">Estimasi</span>
