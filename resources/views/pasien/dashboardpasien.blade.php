@@ -252,14 +252,9 @@
 
             <!-- ARTIKEL -->
             <section class="fade-up" style="animation-delay:0.35s">
-                <div class="flex items-center justify-between mb-5">
-                    <div>
-                        <h3 class="font-bold text-gray-800 text-base">Tips & Artikel Kesehatan Gigi</h3>
-                        <p class="text-xs text-gray-400 mt-0.5">Wawasan terbaru untuk senyum Anda</p>
-                    </div>
-                    <a href="/artikel" class="text-xs font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1 cursor-pointer transition-colors">
-                        Lihat Semua <i class="fas fa-arrow-right text-[10px]"></i>
-                    </a>
+                <div class="mb-5">
+                    <h3 class="font-bold text-gray-800 text-base">Tips & Artikel Kesehatan Gigi</h3>
+                    <p class="text-xs text-gray-400 mt-0.5">Wawasan terbaru untuk senyum Anda</p>
                 </div>
 
                 <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">

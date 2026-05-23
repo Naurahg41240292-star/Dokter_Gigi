@@ -201,7 +201,7 @@
         <div class="sidebar-pasien-divider"></div>
 
         <div class="sidebar-pasien-bottom">
-            <a href="#" class="sidebar-pasien-link">
+            <a href="{{ route('pengaturan.index') }}" class="sidebar-pasien-link {{ request()->routeIs('pengaturan.index') ? 'active' : '' }}">
                 <div class="sidebar-pasien-link-inner">
                     <span class="sp-icon"><i class="fas fa-cog"></i></span>
                     <span class="sp-text">Pengaturan</span>

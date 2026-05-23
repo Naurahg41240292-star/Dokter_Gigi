@@ -17,25 +17,25 @@ class LandingPageController extends Controller
             'title' => 'Behel Gigi (Ortodonti)',
             'icon' => 'fas fa-teeth-open',
             'description' => 'Layanan perapian gigi menggunakan kawat gigi konvensional atau clear aligner. Dapatkan senyum yang rapi dan percaya diri dengan perawatan dari dokter spesialis ortodonti kami.',
-            'image' => 'https://images.unsplash.com/photo-1598256989800-fe5f95da9787?q=80&w=800&auto=format&fit=crop'
+            'image' => asset('images/behel.jpeg') // SUDAH DIGANTI
         ],
         'bleaching-gigi' => [
             'title' => 'Bleaching Gigi (Pemutihan)',
             'icon' => 'fas fa-sun',
             'description' => 'Ingin gigi seputih mutiara? Layanan bleaching kami menggunakan bahan aman dan teknologi terkini untuk mengembangkan warna alami gigi Anda tanpa merusak enamel.',
-            'image' => 'https://images.unsplash.com/photo-1606811971618-4486d14f3f99?q=80&w=800&auto=format&fit=crop'
+            'image' => asset('images/bleaching.jpeg') // SUDAH DIGANTI
         ],
         'gigi-tiruan' => [
             'title' => 'Gigi Tiruan (Prosthodonti)',
             'icon' => 'fas fa-teeth',
             'description' => 'Solusi gigi palsu (gigi tiruan) untuk mengembalikan fungsi mengunyah dan keindahan senyum Anda. Tersedia gigi tiruan lepas maupun tiruan cekat (implan).',
-            'image' => 'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?q=80&w=800&auto=format&fit=crop'
+            'image' => asset('images/gigitiruan.jpeg') // SUDAH DIGANTI
         ],
         'gum-lifting' => [
             'title' => 'Gum Lifting (Crown Lengthening)',
             'icon' => 'fas fa-hand-holding-medical',
             'description' => 'Perbaikan kontur gusi yang terlalu banyak menutupi gigi (gummy smile). Prosedur ini membuat proporsi gigi dan gusi menjadi lebih harmonis.',
-            'image' => 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?q=80&w=800&auto=format&fit=crop'
+            'image' => asset('images/gum.jpeg') // SUDAH DIGANTI
         ],
         'veneer' => [
             'title' => 'Veneer Gigi',

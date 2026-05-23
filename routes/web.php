@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\Dokter\RiwayatPasienController;
 use App\Http\Controllers\Dokter\PengaturanDokterController;
+use App\Http\Controllers\Pasien\PengaturanController;
 
 // ==========================================
 // ROUTE PUBLIK (Tanpa Login)
@@ -64,6 +65,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/pricelist', [PricelistController::class, 'index'])->name('pricelist.index');
     Route::get('/pricelist/{id}', [PricelistController::class, 'show'])->name('pricelist.show');
 
+    // Pengaturan Pasien
+    Route::get('/pengaturan', [PengaturanController::class, 'index'])->name('pengaturan.index');
+
+     // TAMBAHKAN 2 ROUTE INI:
+    Route::put('/pengaturan/profile', [PengaturanController::class, 'updateProfile'])->name('pengaturan.profile.update');
+    Route::put('/pengaturan/password', [PengaturanController::class, 'updatePassword'])->name('pengaturan.password.update');
+
 
     // ==========================================
     // ROUTE DOKTER (FITUR BARU)
@@ -81,7 +89,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/dokter/update-riwayat/{riwayatPasien}', [RiwayatPasienController::class, 'update'])->name('dokter.update-riwayat');
     Route::delete('/dokter/hapus-riwayat/{riwayatPasien}', [RiwayatPasienController::class, 'destroy'])->name('dokter.hapus-riwayat');
 
-    // 3. Pengaturan Akun
+    // 3. Pengaturan Akun Dokter
     Route::get('/dokter/pengaturan', [PengaturanDokterController::class, 'index'])->name('dokter.pengaturan');
     Route::put('/dokter/pengaturan/profile', [PengaturanDokterController::class, 'updateProfile'])->name('dokter.pengaturan.profile');
     Route::put('/dokter/pengaturan/password', [PengaturanDokterController::class, 'updatePassword'])->name('dokter.pengaturan.password');
@@ -109,9 +117,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/manajemen-user', [PetugasController::class, 'manajemenUser'])->name('petugas.manajemen-user');
     Route::put('/manajemen-user/{user}/approve', [PetugasController::class, 'approveUser'])->name('petugas.approve-user');
     Route::delete('/manajemen-user/{user}', [PetugasController::class, 'destroyUser'])->name('petugas.destroy-user');
-    Route::get('/pengaturan', function () {
     
-        return '<h1 class="text-center text-2xl mt-20">Halaman Pengaturan (Segera Dibuat)</h1>';
+    // Pengaturan Petugas (URL DIPISAHKAN SUPAYA TIDAK BENTROK DENGAN PASIEN)
+    Route::get('/petugas/pengaturan', function () {
+        return '<h1 class="text-center text-2xl mt-20">Halaman Pengaturan Petugas (Segera Dibuat)</h1>';
     })->name('petugas.pengaturan');
 });
 
