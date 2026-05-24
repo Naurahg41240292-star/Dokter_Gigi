@@ -90,9 +90,9 @@
         <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 md:p-8 max-w-5xl mx-auto">
             
             <!-- PENTING: Form menggunakan method PUT untuk update di Laravel -->
-            <form action="{{ route('petugas.update-rm', $rekamMedis->id) }}" method="POST">
-                @csrf
-                @method('PUT')
+            <form action="{{ route('petugas.update', $pasien->id) }}" method="POST">
+            @csrf
+            @method('PUT')
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <div>

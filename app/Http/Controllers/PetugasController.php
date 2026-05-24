@@ -44,181 +44,232 @@ class PetugasController extends Controller
             
         ));
     }
-
-    // ================= JADWAL KONTROL =================
-    public function jadwalKontrol()
+       public function jadwalKontrol()
     {
         $today = Carbon::today();
 
-        // Statistik Kartu
         $totalJanji = Appointment::whereDate('tanggal', $today)->count();
-        $menunggu = Appointment::whereDate('tanggal', $today)->where('status', 'Menunggu')->count();
+        $menunggu = Appointment::whereDate('tanggal', $today)->where('status', 'Menunggu Konfirmasi')->count();
         $sedangPeriksa = Appointment::whereDate('tanggal', $today)->where('status', 'Sedang Berjalan')->count();
         $selesai = Appointment::whereDate('tanggal', $today)->where('status', 'Selesai')->count();
 
-        // Data Tabel
         $appointments = Appointment::whereDate('tanggal', $today)
-                            ->with(['pasien', 'user', 'rekamMedis'])
+                            ->with(['pasien', 'user'])
                             ->orderBy('waktu', 'asc')
                             ->paginate(10);
 
+        // HAPUS dd() DAN KEMBALIKAN RETURN VIEW INI:
         return view('petugas.jadwalkontrol', compact(
             'totalJanji', 'menunggu', 'sedangPeriksa', 'selesai', 'appointments'
         ));
     }
-
+    
     // ================= DATA PASIEN CRUD =================
     public function create()
     {
         return view('petugas.inputdata');
     }
 
-   public function store(Request $request)
-{
-    $validatedData = $request->validate([
-        'nama' => 'required|string|max:255',
-        'nik' => 'required|string|max:16|unique:pasiens',
-        'tanggal_lahir' => 'nullable|date',
-        'jenis_kelamin' => 'nullable|in:Laki-laki,Perempuan',
-        'alamat' => 'nullable|string',
-        'golongan_darah' => 'nullable|in:A,B,AB,O',
-        'riwayat_alergi' => 'nullable|string',
-        'riwayat_penyakit' => 'nullable|string',
-        'kontak_nama' => 'nullable|string',
-        'kontak_hubungan' => 'nullable|string',
-        'kontak_telepon' => 'nullable|string|max:13', // Batasi maksimal 13 karakter
-        // Validasi untuk Appointment
-        'tanggal_appointment' => 'required|date',
-        'waktu' => 'required',
-        'dokter' => 'required|string',
-        'jenis_perawatan' => 'required|string',
-        'keluhan' => 'nullable|string',
-    ]);
-
-    // 1. Simpan Data Pasien
-    $pasienData = $request->only([
-        'nama', 'nik', 'tanggal_lahir', 'jenis_kelamin', 'alamat', 
-        'golongan_darah', 'riwayat_alergi', 'riwayat_penyakit', 
-        'kontak_nama', 'kontak_hubungan', 'kontak_telepon'
-    ]);
-    $pasien = Pasien::create($pasienData);
-
-    // 2. Buat Rekam Medis Awal (Diperbaiki agar sesuai input form)
-    $sudahAdaRM = RekamMedis::where('pasien_id', $pasien->id)
-                        ->whereDate('tanggal_kunjungan', $request->tanggal_appointment)
-                        ->exists();
-
-    if (!$sudahAdaRM) {
-        RekamMedis::create([
-            'pasien_id' => $pasien->id,
-            'dokter' => $request->dokter, // Ambil dari form
-            'tanggal_kunjungan' => $request->tanggal_appointment, // Ambil dari form
-            'keluhan' => $request->keluhan, // Ambil dari form
-            'diagnosa' => null,
-            'tindakan' => null,
-            'resep_obat' => null,
-            'status' => 'Menunggu', // Diubah jadi Menunggu, karena belum diperiksa
-        ]);
-    }
-
-    // 3. SIMPAN DATA APPOINTMENT (INI YANG HILANG)
-    Appointment::create([
-        'pasien_id' => $pasien->id,
-        'user_id' => auth()->id(), // ID Petugas yang input
-        'tanggal' => $request->tanggal_appointment,
-        'waktu' => $request->waktu,
-        'dokter' => $request->dokter,
-        'perawatan' => $request->jenis_perawatan, // Sesuaikan nama kolom di databasemu (perawatan / jenis_perawatan)
-        'keluhan' => $request->keluhan,
-        'status' => 'Menunggu',
-    ]);
-
-    return redirect()->route('petugas.input-data')->with('success', 'Data pasien berhasil disimpan!');
-}
     public function index()
     {
-        $pasiens = Pasien::latest()->paginate(10);
-        return view('petugas.datapasien', compact('pasiens'));
+        try {
+            $pasiens = Pasien::latest()->paginate(10);
+            return view('petugas.datapasien', compact('pasiens'));
+        } catch (\Exception $e) {
+            dd("ERROR DATA PASIEN: " . $e->getMessage());
+        }
     }
 
-    public function edit(Pasien $pasien)
-    {
-    // Ambil rekam medis terakhir pasien (kalau ada)
-    $rekamMedis = RekamMedis::where('pasien_id', $pasien->id)->latest()->first();
-    
-    return view('petugas.editpasien', compact('pasien', 'rekamMedis'));
-    }
-
-    // REVISI 1: Update Pasien + Rekam Medis digabung
-    public function update(Request $request, Pasien $pasien)
-    {
-        // Validasi Data Pasien + Data Rekam Medis
+        public function store(Request $request)
+{
+    try {
         $validatedData = $request->validate([
             'nama' => 'required|string|max:255',
-            'nik' => 'required|string|max:50|unique:pasiens,nik,' . $pasien->id,
-            'tanggal_lahir' => 'nullable|date',
+            'nik' => 'required|string|max:16',
+            'tanggal_lahir' => 'required|date', // Wajib isi
             'jenis_kelamin' => 'nullable|in:Laki-laki,Perempuan',
+            'no_telepon' => 'required|string|max:13', // Wajib isi sesuai permintaanmu
+            'email' => 'nullable|email', // Ditambahkan karena ada di form & model
             'alamat' => 'nullable|string',
             'golongan_darah' => 'nullable|in:A,B,AB,O',
             'riwayat_alergi' => 'nullable|string',
             'riwayat_penyakit' => 'nullable|string',
             'kontak_nama' => 'nullable|string',
             'kontak_hubungan' => 'nullable|string',
-            'kontak_telepon' => 'nullable|string',
-            // Field dari Rekam Medis
-            'diagnosa' => 'nullable|string',
-            'tindakan' => 'nullable|string',
-            'status_perawatan' => 'nullable|string',
-            'catatan' => 'nullable|string',
+            'kontak_telepon' => 'nullable|string|max:13',
+            'tanggal_appointment' => 'required|date',
+            'waktu' => 'required',
+            'dokter' => 'required|string',
+            'jenis_perawatan' => 'required|string',
+            'keluhan' => 'nullable|string',
         ]);
 
-        // 1. Update Data Pasien
-        $pasienData = $request->only([
-            'nama', 'nik', 'tanggal_lahir', 'jenis_kelamin', 'alamat', 
-            'golongan_darah', 'riwayat_alergi', 'riwayat_penyakit', 
-            'kontak_nama', 'kontak_hubungan', 'kontak_telepon'
-        ]);
-        $pasien->update($pasienData);
+        // 1. Cari pasien berdasarkan NIK, kalau tidak ada buat baru
+        $pasien = Pasien::firstOrCreate(
+            ['nik' => $validatedData['nik']], 
+            $request->only([
+                'nama', 'tanggal_lahir', 'jenis_kelamin', 'no_telepon', 'email', 'alamat', 
+                'golongan_darah', 'riwayat_alergi', 'riwayat_penyakit', 
+                'kontak_nama', 'kontak_hubungan', 'kontak_telepon'
+            ])
+        );
 
-        // 2. Update Rekam Medis Terakhir Pasien
-        $rekamMedis = RekamMedis::where('pasien_id', $pasien->id)->latest()->first();
-        if ($rekamMedis) {
-            $rekamMedis->update([
-                'diagnosa' => $request->diagnosa,
-                'tindakan' => $request->tindakan,
-                'status' => $request->status_perawatan ?? $rekamMedis->status,
-                'catatan' => $request->catatan,
+        // 2. Cari ID Dokter
+        $dokterUser = User::where('name', $request->dokter)->where('role', 'dokter')->first();
+        $dokter_id = $dokterUser ? $dokterUser->id : null;
+
+        // 3. Buat Rekam Medis Awal (Kode kamu sebelumnya, aku biarkan)
+        $sudahAdaRM = RekamMedis::where('pasien_id', $pasien->id)
+                            ->whereDate('tanggal_kunjungan', $request->tanggal_appointment)
+                            ->exists();
+
+        if (!$sudahAdaRM) {
+            RekamMedis::create([
+                'pasien_id' => $pasien->id,
+                'dokter_id' => $dokter_id,
+                'dokter' => $request->dokter, 
+                'tanggal_kunjungan' => $request->tanggal_appointment, 
+                'keluhan' => $request->keluhan, 
+                'diagnosa' => null,
+                'tindakan' => null,
+                'resep_obat' => null,
+                'status' => 'Menunggu',
             ]);
         }
 
-        return redirect()->route('petugas.data-pasien')->with('success', 'Data pasien & rekam medis berhasil diperbarui!');
-    }
+         
+                   // 4. SIMPAN DATA APPOINTMENT
+            Appointment::create([
+                'pasien_id'    => $pasien->id,
+                'dokter_id'    => $dokter_id,
+                'user_id'      => auth()->id(),
+                
+                // Data Pasien (Ambil langsung dari $request agar pasti terisi)
+                'nik'          => $request->nik,                    
+                'nama_lengkap' => $request->nama,                 
+                'tgl_lahir'    => $request->tanggal_lahir,         
+                'jenis_kelamin'=> $request->jenis_kelamin,
+                'no_telepon'   => $request->no_telepon,        // <--- PASTIKAN DARI $request
+                'email'        => $request->email,
+                'alamat'       => $request->alamat,
+                'golongan_darah'=> $request->golongan_darah,
+                'tekanan_darah' => $request->tekanan_darah,    // Ditambahkan dari dd()
+                'alergi_obat'  => $request->riwayat_alergi,    
+                'alergi_makanan' => $request->alergi_makanan,  // Ditambahkan dari dd()
+                'obat_dikonsumsi' => $request->obat_dikonsumsi,// Ditambahkan dari dd()
+                'riwayat_penyakit' => $request->riwayat_penyakit,
+                
+                // Kontak Darurat 
+                'kontak_darurat_nama' => $request->kontak_nama,
+                'kontak_darurat_hubungan' => $request->kontak_hubungan,
+                'kontak_darurat_telepon' => $request->kontak_telepon,
+                
+                // Data Appointment
+                'tanggal'      => $request->tanggal_appointment,
+                'waktu'        => $request->waktu,
+                'dokter'       => $request->dokter,
+                'jenis_perawatan' => $request->jenis_perawatan,
+                'keluhan'      => $request->keluhan,
+                'status'       => 'Menunggu Konfirmasi',
+            ]);
 
+        return redirect()->route('petugas.input-data')->with('success', 'Data pasien berhasil disimpan!');
+    
+    } catch (\Exception $e) {
+        dd("ERROR SIMPAN DATA: " . $e->getMessage());
+    }
+}
     public function destroy(Pasien $pasien)
     {
         $pasien->delete();
         return redirect()->route('petugas.data-pasien')->with('success', 'Data pasien berhasil dihapus!');
     }
 
-   public function manajemenUser()
-{
-    // Versi paling aman untuk testing
-    $users = User::whereIn('role', ['dokter', 'petugas'])->latest()->get();
-    
-    return view('petugas.manajemen-user', compact('users'));
-}
-public function approveUser(User $user)
-{
-    $user->update(['status' => Status::APPROVED]);
-    return redirect()->route('petugas.manajemen-user')->with('success', "User {$user->name} berhasil disetujui.");
-}
-public function destroyUser(User $user)
-{
-    // Hapus user dari database (aksi menolak/menghapus)
-    $user->delete();
-    return redirect()->route('petugas.manajemen-user')->with('success', "User {$user->name} berhasil dihapus.");
-}
-    // ================= PENGATURAN (REVISI 3) =================
+        // Fungsi untuk menampilkan halaman edit
+    public function edit($id)
+    {
+        // Cari data pasien berdasarkan ID
+        $pasien = Pasien::findOrFail($id);
+        
+        // Ambil rekam medis terakhir pasien ini (yang belum selesai)
+        $rekamMedis = RekamMedis::where('pasien_id', $pasien->id)
+                                ->where('status', '!=', 'Selesai')
+                                ->latest()
+                                ->first();
+
+        // Kirim data ke view edit
+        return view('petugas.editpasien', compact('pasien', 'rekamMedis'));
+    }
+
+    // Fungsi untuk menyimpan hasil edit
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'nik' => 'required|string|max:16',
+            'no_telepon' => 'nullable|string|max:13', // Sesuaikan dengan nama di form
+            'golongan_darah' => 'nullable|in:A,B,AB,O',
+            'riwayat_alergi' => 'nullable|string',
+            'riwayat_penyakit' => 'nullable|string',
+            'status_perawatan' => 'required|in:Menunggu,Dalam Perawatan,Selesai',
+            'diagnosa' => 'nullable|string',
+            'tindakan' => 'nullable|string',
+            'resep_obat' => 'nullable|string',
+        ]);
+
+        try {
+            // 1. Update Data Pasien
+            $pasien = Pasien::findOrFail($id);
+            $pasien->nama = $request->nama;
+            $pasien->nik = $request->nik;
+            $pasien->no_telp = $request->no_telp; // Tangkap dari name="no_telepon"
+            $pasien->golongan_darah = $request->golongan_darah;
+            $pasien->riwayat_alergi = $request->riwayat_alergi;
+            $pasien->riwayat_penyakit = $request->riwayat_penyakit;
+            $pasien->save();
+
+            // 2. Update Data Rekam Medis (Jika ada)
+            if ($request->filled('status_perawatan')) {
+                $rekamMedis = RekamMedis::where('pasien_id', $pasien->id)
+                                        ->where('status', '!=', 'Selesai')
+                                        ->latest()
+                                        ->first();
+
+                if ($rekamMedis) {
+                    $rekamMedis->dokter = $request->dokter;
+                    $rekamMedis->status = $request->status_perawatan; // Dari form: status_perawatan
+                    $rekamMedis->diagnosa = $request->diagnosa;
+                    $rekamMedis->tindakan = $request->tindakan;
+                    $rekamMedis->resep_obat = $request->resep_obat;
+                    $rekamMedis->save();
+                }
+            }
+
+            return redirect()->route('petugas.data-pasien')->with('success', 'Data pasien berhasil diperbarui!');
+
+        } catch (\Exception $e) {
+            dd("ERROR UPDATE: " . $e->getMessage());
+        }
+    }
+
+    public function manajemenUser()
+    {
+        $users = User::whereIn('role', ['dokter', 'petugas'])->latest()->get();
+        return view('petugas.manajemen-user', compact('users'));
+    }
+
+    public function approveUser(User $user)
+    {
+        $user->update(['status' => Status::APPROVED]);
+        return redirect()->route('petugas.manajemen-user')->with('success', "User {$user->name} berhasil disetujui.");
+    }
+
+    public function destroyUser(User $user)
+    {
+        $user->delete();
+        return redirect()->route('petugas.manajemen-user')->with('success', "User {$user->name} berhasil dihapus.");
+    }
+
     public function pengaturan()
     {
         return view('petugas.pengaturan');

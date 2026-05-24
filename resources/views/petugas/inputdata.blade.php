@@ -84,17 +84,52 @@
             <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 md:p-8 max-w-5xl mx-auto">
                 <form action="{{ route('petugas.input-data.store') }}" method="POST">@csrf
                     
-                    <div class="mb-10"><h3 class="text-lg font-bold text-slate-800 mb-1">DATA PASIEN</h3><div class="w-16 h-1 bg-primary-600 rounded-full mb-6"></div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div><label class="block text-sm font-semibold text-slate-700 mb-2">Nama Lengkap <span class="text-red-500">*</span></label><input type="text" name="nama" required class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" placeholder="Masukkan nama lengkap"></div>
-                            <div><label class="block text-sm font-semibold text-slate-700 mb-2">NIK (No. KTP) <span class="text-red-500">*</span></label><input type="text" name="nik" maxlength="16" required class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" placeholder="16 digit NIK"></div>
-                            <div><label class="block text-sm font-semibold text-slate-700 mb-2">Email</label><input type="email" name="email" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" placeholder="contoh@email.com"></div>
-                            <div><label class="block text-sm font-semibold text-slate-700 mb-2">No. Telepon Pasien</label><input type="tel" name="no_telp" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" placeholder="08xx-xxxx-xxxx" maxlength="13"></div>
-                            <div><label class="block text-sm font-semibold text-slate-700 mb-2">Tanggal Lahir</label><input type="date" name="tanggal_lahir" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"></div>
-                            <div><label class="block text-sm font-semibold text-slate-700 mb-2">Jenis Kelamin</label><div class="flex items-center gap-6 mt-2.5"><label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="jenis_kelamin" value="Laki-laki" class="w-4 h-4 text-primary-600"><span class="text-sm text-slate-700">Laki-laki</span></label><label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="jenis_kelamin" value="Perempuan" class="w-4 h-4 text-primary-600"><span class="text-sm text-slate-700">Perempuan</span></label></div></div>
-                            <div class="md:col-span-2"><label class="block text-sm font-semibold text-slate-700 mb-2">Alamat Lengkap</label><textarea name="alamat" rows="3" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none" placeholder="Masukkan alamat lengkap"></textarea></div>
-                        </div>
-                    </div>
+                    <div class="mb-10">
+    <h3 class="text-lg font-bold text-slate-800 mb-1">DATA PASIEN</h3>
+    <div class="w-16 h-1 bg-primary-600 rounded-full mb-6"></div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-2">Nama Lengkap <span class="text-red-500">*</span></label>
+            <input type="text" name="nama" required class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" placeholder="Masukkan nama lengkap">
+        </div>
+        
+        <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-2">NIK (No. KTP) <span class="text-red-500">*</span></label>
+            <input type="text" name="nik" maxlength="16" required class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" placeholder="16 digit NIK">
+        </div>
+        
+        <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-2">Email</label>
+            <input type="email" name="email" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" placeholder="contoh@email.com">
+        </div>
+        
+        <!-- UBAH NAME JADI no_telepon DAN TAMBAH REQUIRED -->
+        <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-2">No. Telepon Pasien <span class="text-red-500">*</span></label>
+            <input type="tel" name="no_telepon" required class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" placeholder="08xx-xxxx-xxxx" maxlength="13">
+        </div>
+        
+        <!-- TAMBAH REQUIRED -->
+        <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-2">Tanggal Lahir <span class="text-red-500">*</span></label>
+            <input type="date" name="tanggal_lahir" required class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
+        </div>
+        
+        <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-2">Jenis Kelamin</label>
+            <div class="flex items-center gap-6 mt-2.5">
+                <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="jenis_kelamin" value="Laki-laki" class="w-4 h-4 text-primary-600"><span class="text-sm text-slate-700">Laki-laki</span></label>
+                <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="jenis_kelamin" value="Perempuan" class="w-4 h-4 text-primary-600"><span class="text-sm text-slate-700">Perempuan</span></label>
+            </div>
+        </div>
+        
+        <div class="md:col-span-2">
+            <label class="block text-sm font-semibold text-slate-700 mb-2">Alamat Lengkap</label>
+            <textarea name="alamat" rows="3" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none" placeholder="Masukkan alamat lengkap"></textarea>
+        </div>
+    </div>
+</div>
 
                     <div class="mb-10"><h3 class="text-lg font-bold text-slate-800 mb-1">DATA MEDIS AWAL</h3><div class="w-16 h-1 bg-primary-600 rounded-full mb-6"></div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

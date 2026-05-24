@@ -219,49 +219,51 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-50 text-sm">
-                            @forelse ($appointments as $item)
-                            <tr class="hover:bg-slate-50/50 transition table-row-hover">
-                                <td class="px-6 py-4 font-medium text-slate-600 w-24">
-                                    @if($item->waktu) {{ \Carbon\Carbon::parse($item->waktu)->format('H:i') }} @else {{ $item->created_at->format('H:i') }} @endif
-                                </td>
-                                <td class="px-6 py-4">
-                                    <div class="flex items-center gap-3">
-                                        <img src="{{ isset($item->pasien) && $item->pasien->foto ? asset('storage/' . $item->pasien->foto) : 'https://ui-avatars.com/api/?name='.urlencode($item->pasien->nama ?? $item->user->name ?? 'P').'&background=2563eb&color=fff' }}" class="w-8 h-8 rounded-full shadow-sm object-cover" alt="Avatar">
-                                        <span class="font-semibold text-slate-800">{{ $item->pasien->nama ?? $item->user->name ?? 'Pasien Umum' }}</span>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 text-slate-600">{{ $item->dokter }}</td>
-                                <td class="px-6 py-4 text-slate-500">{{ $item->perawatan }}</td>
-                                <td class="px-6 py-4 text-center">
-                                    @if($item->status == 'Selesai')
-                                        <span class="bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-md text-[11px] font-bold">Selesai</span>
-                                    @elseif($item->status == 'Sedang Berjalan')
-                                        <span class="bg-blue-50 text-blue-700 px-2.5 py-1 rounded-md text-[11px] font-bold">Sedang Berjalan</span>
-                                    @elseif($item->status == 'Dibatalkan')
-                                        <span class="bg-red-50 text-red-700 px-2.5 py-1 rounded-md text-[11px] font-bold">Dibatalkan</span>
-                                    @else
-                                        <span class="bg-amber-50 text-amber-700 px-2.5 py-1 rounded-md text-[11px] font-bold">Menunggu</span>
-                                    @endif
-                                </td>
-                                <td class="px-6 py-4 text-right">
-                                    @if(optional($item->pasien)->id)
-                                        <a href="{{ route('petugas.edit-pasien', optional($item->pasien)->id) }}" class="inline-flex items-center gap-2 bg-primary-600 text-white px-3 py-2 rounded-lg text-[11px] font-bold hover:bg-primary-700 transition shadow-sm">
-                                            <i class="fas fa-file-medical text-[10px]"></i> Isi Rekam Medis
-                                        </a>
-                                    @else
-                                        <span class="text-slate-400 text-xs italic">Belum ada data pasien</span>
-                                    @endif
-                                </td>
-                            </tr>
-                            @empty
-                            <tr>
-                                <td colspan="6" class="py-16 text-center text-slate-400">
-                                    <i class="fas fa-calendar-times text-4xl mb-3 block text-slate-300"></i>
-                                    Belum ada jadwal kontrol hari ini.
-                                </td>
-                            </tr>
-                            @endforelse
-                        </tbody>
+                        @forelse ($appointments as $item)
+                        <tr class="hover:bg-slate-50/50 transition table-row-hover">
+                            <td class="px-6 py-4 font-medium text-slate-600 w-24">
+                                {{ optional($item->waktu) ? \Carbon\Carbon::parse($item->waktu)->format('H:i') : $item->created_at->format('H:i') }}
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-3">
+                                    <!-- Avatar disederhanakan agar tidak error -->
+                                    <img src="https://ui-avatars.com/api/?name={{ urlencode(optional($item->pasien)->nama ?? optional($item->user)->name ?? 'P') }}&background=2563eb&color=fff" class="w-8 h-8 rounded-full shadow-sm object-cover" alt="Avatar">
+                                    
+                                    <span class="font-semibold text-slate-800">{{ optional($item->pasien)->nama ?? optional($item->user)->name ?? 'Pasien Umum' }}</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-slate-600">{{ $item->dokter ?? '-' }}</td>
+                            <td class="px-6 py-4 text-slate-500">{{ $item->jenis_perawatan ?? '-' }}</td>
+                            <td class="px-6 py-4 text-center">
+                                @if($item->status == 'Selesai')
+                                    <span class="bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-md text-[11px] font-bold">Selesai</span>
+                                @elseif($item->status == 'Sedang Berjalan')
+                                    <span class="bg-blue-50 text-blue-700 px-2.5 py-1 rounded-md text-[11px] font-bold">Sedang Berjalan</span>
+                                @elseif($item->status == 'Dibatalkan')
+                                    <span class="bg-red-50 text-red-700 px-2.5 py-1 rounded-md text-[11px] font-bold">Dibatalkan</span>
+                                @else
+                                    <span class="bg-amber-50 text-amber-700 px-2.5 py-1 rounded-md text-[11px] font-bold">Menunggu</span>
+                                @endif
+                            </td>
+                            <td class="px-6 py-4 text-right">
+                                @if(optional($item->pasien)->id)
+                                    <a href="{{ route('petugas.edit-pasien', $item->pasien->id) }}" class="inline-flex items-center gap-2 bg-primary-600 text-white px-3 py-2 rounded-lg text-[11px] font-bold hover:bg-primary-700 transition shadow-sm">
+                                        <i class="fas fa-file-medical text-[10px]"></i> Isi Rekam Medis
+                                    </a>
+                                @else
+                                    <span class="text-slate-400 text-xs italic">Belum ada data pasien</span>
+                                @endif
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="6" class="py-16 text-center text-slate-400">
+                                <i class="fas fa-calendar-times text-4xl mb-3 block text-slate-300"></i>
+                                Belum ada jadwal kontrol hari ini.
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
                     </table>
                 </div>
                 

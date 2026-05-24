@@ -106,12 +106,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/input-data-pasien', [PetugasController::class, 'create'])->name('petugas.input-data');
     Route::post('/input-data-pasien', [PetugasController::class, 'store'])->name('petugas.input-data.store');
 
-    // Data Pasien
+        // Data Pasien
     Route::get('/data-pasien', [PetugasController::class, 'index'])->name('petugas.data-pasien');
-    Route::get('/edit-pasien/{pasien}', [PetugasController::class, 'edit'])->name('petugas.edit-pasien');
-    Route::put('/update-pasien/{pasien}', [PetugasController::class, 'update'])->name('petugas.update-pasien');
+    Route::get('/edit-pasien/{id}', [PetugasController::class, 'edit'])->name('petugas.edit-pasien');
+    Route::put('/update-pasien/{id}', [PetugasController::class, 'update'])->name('petugas.update-pasien');
     Route::delete('/hapus-pasien/{pasien}', [PetugasController::class, 'destroy'])->name('petugas.hapus-pasien');
-
+    
     // Jadwal Kontrol
     Route::get('/jadwal-kontrol', [PetugasController::class, 'jadwalKontrol'])->name('petugas.jadwal-kontrol');
 
