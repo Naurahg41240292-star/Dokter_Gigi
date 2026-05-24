@@ -87,7 +87,7 @@ class PetugasController extends Controller
             'nama' => 'required|string|max:255',
             'nik' => 'required|string|max:16',
             'tanggal_lahir' => 'required|date', // Wajib isi
-            'jenis_kelamin' => 'nullable|in:Laki-laki,Perempuan',
+            'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
             'no_telepon' => 'required|string|max:13', // Wajib isi sesuai permintaanmu
             'email' => 'nullable|email', // Ditambahkan karena ada di form & model
             'alamat' => 'nullable|string',
@@ -133,7 +133,7 @@ class PetugasController extends Controller
                 'diagnosa' => null,
                 'tindakan' => null,
                 'resep_obat' => null,
-                'status' => 'Menunggu',
+                'status' => 'Menunggu Konfirmasi',
             ]);
         }
 
@@ -148,7 +148,7 @@ class PetugasController extends Controller
                 'nik'          => $request->nik,                    
                 'nama_lengkap' => $request->nama,                 
                 'tgl_lahir'    => $request->tanggal_lahir,         
-                'jenis_kelamin'=> $request->jenis_kelamin,
+                'jenis_kelamin'=> $request->jenis_kelamin, 
                 'no_telepon'   => $request->no_telepon,        // <--- PASTIKAN DARI $request
                 'email'        => $request->email,
                 'alamat'       => $request->alamat,
@@ -211,7 +211,7 @@ class PetugasController extends Controller
             'golongan_darah' => 'nullable|in:A,B,AB,O',
             'riwayat_alergi' => 'nullable|string',
             'riwayat_penyakit' => 'nullable|string',
-            'status_perawatan' => 'required|in:Menunggu,Dalam Perawatan,Selesai',
+            'status_perawatan' => 'required|in:Menunggu Konfirmasi,Sedang Perawatan,Dalam Perawatan,Selesai',
             'diagnosa' => 'nullable|string',
             'tindakan' => 'nullable|string',
             'resep_obat' => 'nullable|string',
@@ -222,7 +222,7 @@ class PetugasController extends Controller
             $pasien = Pasien::findOrFail($id);
             $pasien->nama = $request->nama;
             $pasien->nik = $request->nik;
-            $pasien->no_telp = $request->no_telp; // Tangkap dari name="no_telepon"
+            $pasien->no_telp = $request->no_telepon; // Tangkap dari name="no_telepon"
             $pasien->golongan_darah = $request->golongan_darah;
             $pasien->riwayat_alergi = $request->riwayat_alergi;
             $pasien->riwayat_penyakit = $request->riwayat_penyakit;

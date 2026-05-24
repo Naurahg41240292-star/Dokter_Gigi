@@ -1,11 +1,11 @@
 <?php
-
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Petugas;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\Controller;
 
 class ProfileController extends Controller
 {

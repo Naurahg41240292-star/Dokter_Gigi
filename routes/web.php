@@ -9,7 +9,7 @@ use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\Dokter\RiwayatPasienController;
 use App\Http\Controllers\Dokter\PengaturanDokterController;
 use App\Http\Controllers\Pasien\PengaturanController;
-use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Petugas\ProfileController;
 
 // ==========================================
 // ROUTE PUBLIK (Tanpa Login)

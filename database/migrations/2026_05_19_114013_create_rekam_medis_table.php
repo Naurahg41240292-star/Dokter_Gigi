@@ -20,7 +20,7 @@ return new class extends Migration
     $table->string('diagnosa')->nullable();
     $table->string('tindakan')->nullable();
     $table->string('resep_obat')->nullable();
-    $table->enum('status', ['Dalam Perawatan', 'Selesai'])->default('Dalam Perawatan');
+     $table->enum('status', ['Menunggu Konfirmasi', 'Sedang Perawatan', 'Dalam Perawatan', 'Selesai']);
     $table->timestamps();
     });
     }

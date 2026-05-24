@@ -85,51 +85,71 @@
                 <form action="{{ route('petugas.input-data.store') }}" method="POST">@csrf
                     
                     <div class="mb-10">
-    <h3 class="text-lg font-bold text-slate-800 mb-1">DATA PASIEN</h3>
-    <div class="w-16 h-1 bg-primary-600 rounded-full mb-6"></div>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        
-        <div>
-            <label class="block text-sm font-semibold text-slate-700 mb-2">Nama Lengkap <span class="text-red-500">*</span></label>
-            <input type="text" name="nama" required class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" placeholder="Masukkan nama lengkap">
-        </div>
-        
-        <div>
-            <label class="block text-sm font-semibold text-slate-700 mb-2">NIK (No. KTP) <span class="text-red-500">*</span></label>
-            <input type="text" name="nik" maxlength="16" required class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" placeholder="16 digit NIK">
-        </div>
-        
-        <div>
-            <label class="block text-sm font-semibold text-slate-700 mb-2">Email</label>
-            <input type="email" name="email" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" placeholder="contoh@email.com">
-        </div>
-        
-        <!-- UBAH NAME JADI no_telepon DAN TAMBAH REQUIRED -->
-        <div>
-            <label class="block text-sm font-semibold text-slate-700 mb-2">No. Telepon Pasien <span class="text-red-500">*</span></label>
-            <input type="tel" name="no_telepon" required class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" placeholder="08xx-xxxx-xxxx" maxlength="13">
-        </div>
-        
-        <!-- TAMBAH REQUIRED -->
-        <div>
-            <label class="block text-sm font-semibold text-slate-700 mb-2">Tanggal Lahir <span class="text-red-500">*</span></label>
-            <input type="date" name="tanggal_lahir" required class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
-        </div>
-        
-        <div>
-            <label class="block text-sm font-semibold text-slate-700 mb-2">Jenis Kelamin</label>
-            <div class="flex items-center gap-6 mt-2.5">
-                <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="jenis_kelamin" value="Laki-laki" class="w-4 h-4 text-primary-600"><span class="text-sm text-slate-700">Laki-laki</span></label>
-                <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="jenis_kelamin" value="Perempuan" class="w-4 h-4 text-primary-600"><span class="text-sm text-slate-700">Perempuan</span></label>
-            </div>
-        </div>
-        
-        <div class="md:col-span-2">
-            <label class="block text-sm font-semibold text-slate-700 mb-2">Alamat Lengkap</label>
-            <textarea name="alamat" rows="3" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none" placeholder="Masukkan alamat lengkap"></textarea>
-        </div>
-    </div>
-</div>
+                        <h3 class="text-lg font-bold text-slate-800 mb-1">DATA PASIEN</h3>
+                        <div class="w-16 h-1 bg-primary-600 rounded-full mb-6"></div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            
+                            <!-- Nama Lengkap -->
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-2">Nama Lengkap <span class="text-red-500">*</span></label>
+                                <input type="text" name="nama" value="{{ old('nama') }}" required class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" placeholder="Masukkan nama lengkap">
+                                @error('nama') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                            </div>
+
+                            <!-- NIK -->
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-2">NIK (No. KTP) <span class="text-red-500">*</span></label>
+                                <input type="text" name="nik" value="{{ old('nik') }}" maxlength="16" required class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" placeholder="16 digit NIK">
+                                @error('nik') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                            </div>
+
+                            <!-- Email -->
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-2">Email</label>
+                                <input type="email" name="email" value="{{ old('email') }}" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" placeholder="contoh@email.com">
+                                @error('email') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                            </div>
+
+                            <!-- No. Telepon -->
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-2">No. Telepon Pasien <span class="text-red-500">*</span></label>
+                                <input type="tel" name="no_telepon" value="{{ old('no_telepon') }}" required class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" placeholder="08xx-xxxx-xxxx" maxlength="13">
+                                @error('no_telepon') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                            </div>
+
+                            <!-- Tanggal Lahir -->
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-2">Tanggal Lahir <span class="text-red-500">*</span></label>
+                                <input type="date" name="tanggal_lahir" value="{{ old('tanggal_lahir') }}" required class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
+                                @error('tanggal_lahir') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                            </div>
+
+                            <!-- Jenis Kelamin -->
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-2">Jenis Kelamin <span class="text-red-500">*</span></label>
+                                <div class="flex items-center gap-6 mt-2.5">
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="radio" name="jenis_kelamin" value="Laki-laki" required class="w-4 h-4 text-primary-600" {{ old('jenis_kelamin') == 'Laki-laki' ? 'checked' : '' }}>
+                                        <span class="text-sm text-slate-700">Laki-laki</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="radio" name="jenis_kelamin" value="Perempuan" class="w-4 h-4 text-primary-600" {{ old('jenis_kelamin') == 'Perempuan' ? 'checked' : '' }}>
+                                        <span class="text-sm text-slate-700">Perempuan</span>
+                                    </label>
+                                </div>
+                                @error('jenis_kelamin') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                            </div>
+
+                            <!-- Alamat -->
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-semibold text-slate-700 mb-2">Alamat Lengkap</label>
+                                <textarea name="alamat" rows="3" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none" placeholder="Masukkan alamat lengkap">{{ old('alamat') }}</textarea>
+                                @error('alamat') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                            </div>
+                            
+                        </div>
+                    </div>
+                
 
                     <div class="mb-10"><h3 class="text-lg font-bold text-slate-800 mb-1">DATA MEDIS AWAL</h3><div class="w-16 h-1 bg-primary-600 rounded-full mb-6"></div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
