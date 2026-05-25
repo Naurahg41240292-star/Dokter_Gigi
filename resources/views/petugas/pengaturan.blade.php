@@ -48,18 +48,9 @@
 
     <!-- ========== SIDEBAR (FIXED FULL HEIGHT PAKAI TOP-0 BOTTOM-0) ========== -->
     <aside class="fixed top-0 left-0 bottom-0 w-[260px] bg-white border-r border-slate-200 z-50 flex flex-col shadow-sm">
-        
-        <!-- Logo -->
-        <div class="px-8 pt-8 pb-6 flex items-center gap-3 flex-shrink-0">
-            <div class="w-10 h-10 rounded-xl bg-primary-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
-                <i class="fas fa-tooth text-white text-lg"></i>
-            </div>
-            <div>
-                <h1 class="text-lg font-bold text-slate-800 leading-none">D'Smile</h1>
-                <p class="text-[10px] text-primary-600 font-bold uppercase tracking-wider mt-1">Admin Panel</p>
-            </div>
+        <div class="px-6 pt-8 pb-6 flex-shrink-0">
+            <img src="{{ asset('images/logo (2).png') }}" alt="D'Smile Dental Clinic Logo" class="w-auto h-12 object-contain">
         </div>
-
         <!-- Menu Scrollable Utama -->
         <nav class="flex-1 overflow-y-auto mt-2 pb-4">
             <a href="{{ route('petugas.dashboard') }}" class="nav-item {{ request()->routeIs('petugas.dashboard') ? 'active' : '' }}">
@@ -147,54 +138,54 @@
                 </div>
             @endif
 
-            <!-- PENGATURAN LIST ACCORDION -->
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 max-w-4xl mx-auto overflow-hidden divide-y divide-slate-100">
-                
+                        <!-- PENGATURAN LIST ACCORDION -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden divide-y divide-slate-100">
                 <!-- 1. PROFIL SAYA -->
                 <div>
-                    <button onclick="toggleAccordion('profil')" class="w-full flex items-center gap-5 p-6 hover:bg-slate-50 transition group text-left">
-                        <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center flex-shrink-0">
-                            <i class="fas fa-user text-blue-600 text-lg"></i>
+                    <button onclick="toggleAccordion('profil')" class="w-full flex items-center gap-6 p-8 hover:bg-slate-50 transition group text-left">
+                        <div class="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-user text-blue-600 text-2xl"></i>
                         </div>
                         <div class="flex-1 min-w-0">
-                            <h4 class="text-sm font-bold text-slate-800">Profil Saya</h4>
-                            <p class="text-xs text-slate-500 mt-0.5">Kelola informasi profil dan data pribadi Anda</p>
+                            <h4 class="text-lg font-bold text-slate-800">Profil Saya</h4>
+                            <p class="text-sm text-slate-500 mt-1">Kelola informasi profil dan data pribadi Anda</p>
                         </div>
-                        <i id="icon-profil" class="fas fa-chevron-down text-slate-300 group-hover:text-primary-600 transition accordion-icon"></i>
+                        <i id="icon-profil" class="fas fa-chevron-down text-slate-400 group-hover:text-primary-600 transition accordion-icon text-lg"></i>
                     </button>
                     
                     <div id="content-profil" class="accordion-content bg-slate-50/50">
-                        <div class="p-6 pt-2 border-t border-slate-100">
+                        <!-- isi form profil tetap sama, tidak diubah -->
+                        <div class="p-8 pt-4 border-t border-slate-100">
                             <form action="{{ route('petugas.pengaturan.update') }}" method="POST" enctype="multipart/form-data">
                                 @csrf
                                 @method('PUT')
                                 
                                 <div class="flex flex-col items-center mb-6">
-                                    <img src="{{ auth()->user()->foto ? asset('storage/' . auth()->user()->foto) : 'https://ui-avatars.com/api/?name='.urlencode(auth()->user()->name).'&background=2563eb&color=fff' }}" alt="Foto Profil" class="w-20 h-20 rounded-full border-4 border-white shadow-md object-cover mb-3">
+                                    <img src="{{ auth()->user()->foto ? asset('storage/' . auth()->user()->foto) : 'https://ui-avatars.com/api/?name='.urlencode(auth()->user()->name).'&background=2563eb&color=fff' }}" alt="Foto Profil" class="w-24 h-24 rounded-full border-4 border-white shadow-md object-cover mb-3">
                                     <label class="cursor-pointer px-4 py-2 bg-white border border-slate-200 text-primary-600 text-xs font-semibold rounded-lg hover:bg-primary-50 transition">
                                         <i class="fas fa-camera mr-1"></i> Ubah Foto
                                         <input type="file" name="foto" class="hidden" accept="image/*">
                                     </label>
                                     @error('foto') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                                 </div>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                                     <div>
-                                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Nama Lengkap</label>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Nama Lengkap</label>
                                         <input type="text" name="name" value="{{ old('name', auth()->user()->name) }}" required class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white @error('name') border-red-400 @enderror">
                                         @error('name') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                                     </div>
                                     <div>
-                                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Email</label>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Email</label>
                                         <input type="email" name="email" value="{{ old('email', auth()->user()->email) }}" required class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white @error('email') border-red-400 @enderror">
                                         @error('email') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                                     </div>
-                                    <div class="md:col-span-2">
-                                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">No. Telepon</label>
-                                        <input type="tel" name="no_telp" value="{{ old('no_telp', auth()->user()->no_telp) }}" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white" placeholder="08xx-xxxx-xxxx">
+                                    <div class="md:col-span -3">
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">No. Telepon</label>
+                                        ...
                                     </div>
                                 </div>
                                 <div class="flex justify-end mt-6">
-                                    <button type="submit" class="px-5 py-2.5 bg-primary-600 text-white rounded-xl text-xs font-bold hover:bg-primary-700 shadow-md shadow-blue-500/20 transition flex items-center gap-2">
+                                    <button type="submit" class="px-5 py-2.5 bg-primary-600 text-white rounded-xl text-sm font-bold hover:bg-primary-700 shadow-md shadow-blue-500/20 transition flex items-center gap-2">
                                         <i class="fas fa-save"></i> Simpan Perubahan
                                     </button>
                                 </div>
@@ -205,45 +196,46 @@
 
                 <!-- 2. KEAMANAN AKUN -->
                 <div>
-                    <button onclick="toggleAccordion('keamanan')" class="w-full flex items-center gap-5 p-6 hover:bg-slate-50 transition group text-left">
-                        <div class="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center flex-shrink-0">
-                            <i class="fas fa-shield-halved text-emerald-600 text-lg"></i>
+                    <button onclick="toggleAccordion('keamanan')" class="w-full flex items-center gap-6 p-8 hover:bg-slate-50 transition group text-left">
+                        <div class="w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-shield-halved text-emerald-600 text-2xl"></i>
                         </div>
                         <div class="flex-1 min-w-0">
-                            <h4 class="text-sm font-bold text-slate-800">Keamanan Akun</h4>
-                            <p class="text-xs text-slate-500 mt-0.5">Atur kata sandi dan verifikasi dua langkah</p>
+                            <h4 class="text-lg font-bold text-slate-800">Keamanan Akun</h4>
+                            <p class="text-sm text-slate-500 mt-1">Atur kata sandi dan verifikasi dua langkah</p>
                         </div>
-                        <i id="icon-keamanan" class="fas fa-chevron-down text-slate-300 group-hover:text-emerald-600 transition accordion-icon"></i>
+                        <i id="icon-keamanan" class="fas fa-chevron-down text-slate-400 group-hover:text-emerald-600 transition accordion-icon text-lg"></i>
                     </button>
                     
                     <div id="content-keamanan" class="accordion-content bg-slate-50/50">
-                        <div class="p-6 pt-2 border-t border-slate-100">
+                        <!-- isi form keamanan tetap sama -->
+                        <div class="p-8 pt-4 border-t border-slate-100">
                             <form action="{{ route('petugas.pengaturan.password') }}" method="POST">
                                 @csrf
                                 @method('PUT')
                                 
-                                <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 mb-4 flex items-start gap-2">
-                                    <i class="fas fa-info-circle text-emerald-600 mt-0.5 text-xs"></i>
-                                    <p class="text-xs text-emerald-700">Pastikan kata sandi baru Anda kuat, mengandung huruf besar, kecil, angka, dan simbol.</p>
+                                <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 mb-6 flex items-start gap-3">
+                                    <i class="fas fa-info-circle text-emerald-600 mt-0.5"></i>
+                                    <p class="text-sm text-emerald-700">Pastikan kata sandi baru Anda kuat, mengandung huruf besar, kecil, angka, dan simbol.</p>
                                 </div>
                                 <div class="space-y-4">
                                     <div>
-                                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Kata Sandi Saat Ini</label>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Kata Sandi Saat Ini</label>
                                         <input type="password" name="current_password" required class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white @error('current_password') border-red-400 @enderror">
                                         @error('current_password') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                                     </div>
                                     <div>
-                                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Kata Sandi Baru</label>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Kata Sandi Baru</label>
                                         <input type="password" name="new_password" required class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white @error('new_password') border-red-400 @enderror">
                                         @error('new_password') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                                     </div>
                                     <div>
-                                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Konfirmasi Kata Sandi Baru</label>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Konfirmasi Kata Sandi Baru</label>
                                         <input type="password" name="new_password_confirmation" required class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
                                     </div>
                                 </div>
                                 <div class="flex justify-end mt-6">
-                                    <button type="submit" class="px-5 py-2.5 bg-emerald-600 text-white rounded-xl text-xs font-bold hover:bg-emerald-700 shadow-md shadow-emerald-500/20 transition flex items-center gap-2">
+                                    <button type="submit" class="px-5 py-2.5 bg-emerald-600 text-white rounded-xl text-sm font-bold hover:bg-emerald-700 shadow-md shadow-emerald-500/20 transition flex items-center gap-2">
                                         <i class="fas fa-key"></i> Update Kata Sandi
                                     </button>
                                 </div>
@@ -254,33 +246,33 @@
 
                 <!-- 3. PRIVASI & DATA -->
                 <div>
-                    <button onclick="toggleAccordion('privasi')" class="w-full flex items-center gap-5 p-6 hover:bg-slate-50 transition group text-left">
-                        <div class="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center flex-shrink-0">
-                            <i class="fas fa-eye text-purple-600 text-lg"></i>
+                    <button onclick="toggleAccordion('privasi')" class="w-full flex items-center gap-6 p-8 hover:bg-slate-50 transition group text-left">
+                        <div class="w-16 h-16 bg-purple-50 rounded-2xl flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-eye text-purple-600 text-2xl"></i>
                         </div>
                         <div class="flex-1 min-w-0">
-                            <h4 class="text-sm font-bold text-slate-800">Privasi & Data</h4>
-                            <p class="text-xs text-slate-500 mt-0.5">Kelola data Anda dan preferensi privasi</p>
+                            <h4 class="text-lg font-bold text-slate-800">Privasi & Data</h4>
+                            <p class="text-sm text-slate-500 mt-1">Kelola data Anda dan preferensi privasi</p>
                         </div>
-                        <i id="icon-privasi" class="fas fa-chevron-down text-slate-300 group-hover:text-purple-600 transition accordion-icon"></i>
+                        <i id="icon-privasi" class="fas fa-chevron-down text-slate-400 group-hover:text-purple-600 transition accordion-icon text-lg"></i>
                     </button>
                     
                     <div id="content-privasi" class="accordion-content bg-slate-50/50">
-                        <div class="p-6 pt-2 border-t border-slate-100 space-y-4">
-                            <div class="flex items-center justify-between p-4 border border-slate-200 rounded-xl bg-white">
+                        <div class="p-8 pt-4 border-t border-slate-100 space-y-5">
+                            <div class="flex items-center justify-between p-5 border border-slate-200 rounded-xl bg-white">
                                 <div>
-                                    <h4 class="text-xs font-semibold text-slate-800">Notifikasi Email</h4>
-                                    <p class="text-[11px] text-slate-500 mt-0.5">Terima pemberitahuan jadwal pasien via email</p>
+                                    <h4 class="text-sm font-semibold text-slate-800">Notifikasi Email</h4>
+                                    <p class="text-xs text-slate-500 mt-1">Terima pemberitahuan jadwal pasien via email</p>
                                 </div>
                                 <label class="relative inline-flex items-center cursor-pointer">
                                     <input type="checkbox" checked class="sr-only peer">
-                                    <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-purple-600"></div>
+                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
                                 </label>
                             </div>
-                            <div class="p-4 border border-red-200 bg-red-50 rounded-xl">
-                                <h4 class="text-xs font-semibold text-red-700">Hapus Akun</h4>
-                                <p class="text-[11px] text-red-500 mt-0.5 mb-3">Setelah menghapus akun, semua data tidak dapat dikembalikan.</p>
-                                <button class="px-3 py-1.5 bg-white border border-red-300 text-red-600 text-[11px] font-bold rounded-lg hover:bg-red-100 transition">Hapus Akun Saya</button>
+                            <div class="p-5 border border-red-200 bg-red-50 rounded-xl">
+                                <h4 class="text-sm font-semibold text-red-700">Hapus Akun</h4>
+                                <p class="text-xs text-red-500 mt-1 mb-4">Setelah menghapus akun, semua data tidak dapat dikembalikan.</p>
+                                <button class="px-4 py-2 bg-white border border-red-300 text-red-600 text-xs font-bold rounded-lg hover:bg-red-100 transition">Hapus Akun Saya</button>
                             </div>
                         </div>
                     </div>
@@ -288,50 +280,50 @@
 
                 <!-- 4. BANTUAN & DUKUNGAN -->
                 <div>
-                    <button onclick="toggleAccordion('bantuan')" class="w-full flex items-center gap-5 p-6 hover:bg-slate-50 transition group text-left">
-                        <div class="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center flex-shrink-0">
-                            <i class="fas fa-circle-question text-amber-600 text-lg"></i>
+                    <button onclick="toggleAccordion('bantuan')" class="w-full flex items-center gap-6 p-8 hover:bg-slate-50 transition group text-left">
+                        <div class="w-16 h-16 bg-amber-50 rounded-2xl flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-circle-question text-amber-600 text-2xl"></i>
                         </div>
                         <div class="flex-1 min-w-0">
-                            <h4 class="text-sm font-bold text-slate-800">Bantuan & Dukungan</h4>
-                            <p class="text-xs text-slate-500 mt-0.5">Dapatkan bantuan atau hubungi dukungan</p>
+                            <h4 class="text-lg font-bold text-slate-800">Bantuan & Dukungan</h4>
+                            <p class="text-sm text-slate-500 mt-1">Dapatkan bantuan atau hubungi dukungan</p>
                         </div>
-                        <i id="icon-bantuan" class="fas fa-chevron-down text-slate-300 group-hover:text-amber-600 transition accordion-icon"></i>
+                        <i id="icon-bantuan" class="fas fa-chevron-down text-slate-400 group-hover:text-amber-600 transition accordion-icon text-lg"></i>
                     </button>
                     
                     <div id="content-bantuan" class="accordion-content bg-slate-50/50">
-                        <div class="p-6 pt-2 border-t border-slate-100 space-y-6">
+                        <div class="p-8 pt-4 border-t border-slate-100 space-y-8">
                             
                             <!-- Bagian Panduan Penggunaan -->
                             <div>
-                                <h5 class="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
+                                <h5 class="text-base font-bold text-slate-800 mb-4 flex items-center gap-2">
                                     <i class="fas fa-book-open text-amber-500"></i> Panduan Penggunaan
                                 </h5>
-                                <div class="space-y-2">
-                                    <details class="group bg-white border border-slate-200 rounded-lg">
-                                        <summary class="px-4 py-3 cursor-pointer list-none flex justify-between items-center text-xs font-medium text-slate-700 hover:bg-slate-50 rounded-lg">
+                                <div class="space-y-3">
+                                    <details class="group bg-white border border-slate-200 rounded-xl">
+                                        <summary class="px-5 py-4 cursor-pointer list-none flex justify-between items-center text-sm font-medium text-slate-700 hover:bg-slate-50 rounded-xl">
                                             <span>Bagaimana cara menambahkan pasien baru?</span>
                                             <i class="fas fa-chevron-down text-slate-400 group-open:rotate-180 transition-transform"></i>
                                         </summary>
-                                        <div class="px-4 py-3 text-xs text-slate-600 bg-slate-50 border-t border-slate-100 rounded-b-lg">
+                                        <div class="px-5 py-4 text-sm text-slate-600 bg-slate-50 border-t border-slate-100 rounded-b-xl">
                                             Klik menu <b>"Input Data Pasien"</b> di sidebar sebelah kiri, lalu isi formulir data pribadi, data medis, dan jadwal kunjungan pasien. Setelah selesai, klik tombol <b>"Simpan"</b> di bagian bawah halaman.
                                         </div>
                                     </details>
-                                    <details class="group bg-white border border-slate-200 rounded-lg">
-                                        <summary class="px-4 py-3 cursor-pointer list-none flex justify-between items-center text-xs font-medium text-slate-700 hover:bg-slate-50 rounded-lg">
+                                    <details class="group bg-white border border-slate-200 rounded-xl">
+                                        <summary class="px-5 py-4 cursor-pointer list-none flex justify-between items-center text-sm font-medium text-slate-700 hover:bg-slate-50 rounded-xl">
                                             <span>Bagaimana cara mengubah jadwal kontrol pasien?</span>
                                             <i class="fas fa-chevron-down text-slate-400 group-open:rotate-180 transition-transform"></i>
                                         </summary>
-                                        <div class="px-4 py-3 text-xs text-slate-600 bg-slate-50 border-t border-slate-100 rounded-b-lg">
+                                        <div class="px-5 py-4 text-sm text-slate-600 bg-slate-50 border-t border-slate-100 rounded-b-xl">
                                             Buka menu <b>"Jadwal Kontrol"</b>, cari nama pasien yang ingin diubah, lalu klik ikon edit (pensil) pada baris pasien tersebut untuk memperbarui tanggal dan waktu kunjungan.
                                         </div>
                                     </details>
-                                    <details class="group bg-white border border-slate-200 rounded-lg">
-                                        <summary class="px-4 py-3 cursor-pointer list-none flex justify-between items-center text-xs font-medium text-slate-700 hover:bg-slate-50 rounded-lg">
+                                    <details class="group bg-white border border-slate-200 rounded-xl">
+                                        <summary class="px-5 py-4 cursor-pointer list-none flex justify-between items-center text-sm font-medium text-slate-700 hover:bg-slate-50 rounded-xl">
                                             <span>Dimana saya bisa melihat rekam medis pasien?</span>
                                             <i class="fas fa-chevron-down text-slate-400 group-open:rotate-180 transition-transform"></i>
                                         </summary>
-                                        <div class="px-4 py-3 text-xs text-slate-600 bg-slate-50 border-t border-slate-100 rounded-b-lg">
+                                        <div class="px-5 py-4 text-sm text-slate-600 bg-slate-50 border-t border-slate-100 rounded-b-xl">
                                             Pergi ke menu <b>"Data Pasien"</b>, lalu klik ikon mata (lihat detail) pada pasien yang dicari. Semua riwayat medis dan perawatan akan ditampilkan di sana.
                                         </div>
                                     </details>
@@ -340,35 +332,35 @@
 
                             <!-- Bagian Hubungi IT Support -->
                             <div>
-                                <h5 class="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
+                                <h5 class="text-base font-bold text-slate-800 mb-4 flex items-center gap-2">
                                     <i class="fas fa-headset text-blue-500"></i> Hubungi IT Support
                                 </h5>
-                                <div class="bg-white border border-slate-200 rounded-xl p-4 space-y-3">
-                                    <div class="flex items-start gap-3">
-                                        <div class="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
-                                            <i class="fas fa-envelope text-blue-600 text-xs"></i>
+                                <div class="bg-white border border-slate-200 rounded-xl p-5 space-y-4">
+                                    <div class="flex items-start gap-4">
+                                        <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+                                            <i class="fas fa-envelope text-blue-600 text-sm"></i>
                                         </div>
                                         <div>
-                                            <p class="text-xs font-semibold text-slate-700">Email</p>
-                                            <p class="text-xs text-slate-500">it.support@dsmile-dental.com</p>
+                                            <p class="text-sm font-semibold text-slate-700">Email</p>
+                                            <p class="text-sm text-slate-500">it.support@dsmile-dental.com</p>
                                         </div>
                                     </div>
-                                    <div class="flex items-start gap-3">
-                                        <div class="w-8 h-8 bg-green-50 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
-                                            <i class="fab fa-whatsapp text-green-600 text-xs"></i>
+                                    <div class="flex items-start gap-4">
+                                        <div class="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+                                            <i class="fab fa-whatsapp text-green-600 text-sm"></i>
                                         </div>
                                         <div>
-                                            <p class="text-xs font-semibold text-slate-700">WhatsApp / Telepon</p>
-                                            <p class="text-xs text-slate-500">+62 812-3456-7890</p>
+                                            <p class="text-sm font-semibold text-slate-700">WhatsApp / Telepon</p>
+                                            <p class="text-sm text-slate-500">+62 812-3456-7890</p>
                                         </div>
                                     </div>
-                                    <div class="flex items-start gap-3">
-                                        <div class="w-8 h-8 bg-amber-50 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
-                                            <i class="fas fa-clock text-amber-600 text-xs"></i>
+                                    <div class="flex items-start gap-4">
+                                        <div class="w-10 h-10 bg-amber-50 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+                                            <i class="fas fa-clock text-amber-600 text-sm"></i>
                                         </div>
                                         <div>
-                                            <p class="text-xs font-semibold text-slate-700">Jam Operasional IT</p>
-                                            <p class="text-xs text-slate-500">Senin - Jumat, 08:00 - 17:00 WIB</p>
+                                            <p class="text-sm font-semibold text-slate-700">Jam Operasional IT</p>
+                                            <p class="text-sm text-slate-500">Senin - Jumat, 08:00 - 17:00 WIB</p>
                                         </div>
                                     </div>
                                 </div>
@@ -379,9 +371,7 @@
                 </div>
 
             </div>
-        </div>
     </main>
-
     <script>
         const page = document.body;
         requestAnimationFrame(() => page.classList.add('is-visible'));

@@ -44,9 +44,8 @@
 
     <!-- ========== SIDEBAR ========== -->
     <aside class="fixed top-0 left-0 bottom-0 w-[260px] bg-white border-r border-slate-200 z-50 flex flex-col shadow-sm">
-        <div class="px-8 pt-8 pb-6 flex items-center gap-3 flex-shrink-0">
-            <div class="w-10 h-10 rounded-xl bg-primary-600 flex items-center justify-center shadow-lg shadow-blue-500/30"><i class="fas fa-tooth text-white text-lg"></i></div>
-            <div><h1 class="text-lg font-bold text-slate-800 leading-none">D'Smile</h1><p class="text-[10px] text-primary-600 font-bold uppercase tracking-wider mt-1">Admin Panel</p></div>
+        <div class="px-6 pt-8 pb-6 flex-shrink-0">
+            <img src="{{ asset('images/logo (2).png') }}" alt="D'Smile Dental Clinic Logo" class="w-auto h-12 object-contain">
         </div>
         <nav class="flex-1 overflow-y-auto mt-2 pb-4">
             <a href="{{ route('petugas.dashboard') }}" class="nav-item active"><i class="fas fa-home w-5 text-center"></i><span>Beranda</span></a>
