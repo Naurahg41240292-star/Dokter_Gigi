@@ -10,6 +10,8 @@ use App\Http\Controllers\Dokter\RiwayatPasienController;
 use App\Http\Controllers\Dokter\PengaturanDokterController;
 use App\Http\Controllers\Pasien\PengaturanController;
 use App\Http\Controllers\Petugas\ProfileController;
+use App\Http\Controllers\DokterController;
+use App\Http\Controllers\PasienController;
 
 // ==========================================
 // ROUTE PUBLIK (Tanpa Login)
@@ -43,20 +45,20 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
 
     // ==========================================
+        // ==========================================
     // ROUTE PASIEN
     // ==========================================
-    // Dashboard Pasien Khusus
-    Route::get('/dashboardpasien', [AppointmentController::class, 'dashboard'])->name('pasien.dashboard');
+    // Dashboard Pasien -> UBAH KE PasienController
+    Route::get('/dashboardpasien', [PasienController::class, 'dashboard'])->name('pasien.dashboard');
 
-    // Appointment
+    // Appointment (Tetap pakai AppointmentController)
     Route::get('/appointment', [AppointmentController::class, 'index'])->name('appointment.index');
     Route::post('/appointment', [AppointmentController::class, 'store'])->name('appointment.store');
     Route::put('/appointment/{id}/cancel', [AppointmentController::class, 'cancel'])->name('appointment.cancel');
 
-    // Riwayat & Artikel
-    Route::get('/riwayat-perawatan', function () {
-        return view('pasien.riwayatperawatan');
-    })->name('pasien.riwayat');
+    // Riwayat Perawatan -> UBAH KE PasienController (Dinamis dari database)
+    Route::get('/riwayat-perawatan', [PasienController::class, 'rekamMedis'])->name('pasien.riwayat');
+    Route::get('/riwayat-perawatan/{id}', [PasienController::class, 'showRekamMedis'])->name('pasien.rekam-medis.show');
 
     Route::get('/artikel', function () {
         return view('pasien.artikel');
@@ -78,9 +80,7 @@ Route::middleware('auth')->group(function () {
     // ROUTE DOKTER (FITUR BARU)
     // ==========================================
     // 1. Dashboard
-    Route::get('/dashboarddokter', function () {
-        return view('dokter.dashboard');
-    })->name('dokter.dashboard');
+    Route::get('/dashboarddokter', [DokterController::class, 'dashboard'])->name('dokter.dashboard');
 
     // 2. Riwayat Pasien (Diagnosa & Resep Obat)
     Route::get('/dokter/riwayat-pasien', [RiwayatPasienController::class, 'index'])->name('dokter.riwayat-pasien');
@@ -114,6 +114,7 @@ Route::middleware('auth')->group(function () {
     
     // Jadwal Kontrol
     Route::get('/jadwal-kontrol', [PetugasController::class, 'jadwalKontrol'])->name('petugas.jadwal-kontrol');
+    Route::post('/jadwal-kontrol/{id}/konfirmasi', [PetugasController::class, 'konfirmasiAppointment'])->name('petugas.konfirmasi-appointment');
 
     Route::get('/manajemen-user', [PetugasController::class, 'manajemenUser'])->name('petugas.manajemen-user');
     Route::put('/manajemen-user/{user}/approve', [PetugasController::class, 'approveUser'])->name('petugas.approve-user');

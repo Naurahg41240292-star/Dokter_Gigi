@@ -240,7 +240,7 @@
         <!-- CONTENT AREA -->
         <div class="px-6 lg:px-8">
 
-            <!-- CARDS DINAMIS -->
+                           <!-- CARDS DINAMIS -->
             <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
 
                 <!-- CARD: Pasien Hari Ini -->
@@ -248,7 +248,7 @@
                     <div class="flex justify-between items-start mb-5">
                         <div>
                             <p class="text-slate-500 text-sm font-medium mb-2">Pasien Hari Ini</p>
-                            <h3 class="text-4xl font-extrabold text-slate-800">{{ $pasienHariIni ?? 0 }}</h3>
+                            <h3 class="text-4xl font-extrabold text-slate-800">{{ $antrianHariIni->count() }}</h3>
                         </div>
                         <div class="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center text-primary-600">
                             <i class="fas fa-users"></i>
@@ -260,49 +260,49 @@
                     </div>
                 </div>
 
-                <!-- CARD: Janji Temu -->
+                <!-- CARD: Menunggu Konfirmasi -->
                 <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm hover-card">
                     <div class="flex justify-between items-start mb-5">
                         <div>
-                            <p class="text-slate-500 text-sm font-medium mb-2">Janji Temu</p>
-                            <h3 class="text-4xl font-extrabold text-slate-800">{{ $janjiTemu ?? 0 }}</h3>
+                            <p class="text-slate-500 text-sm font-medium mb-2">Menunggu Konfirmasi</p>
+                            <h3 class="text-4xl font-extrabold text-slate-800">{{ $antrianHariIni->where('status', 'Menunggu Konfirmasi')->count() }}</h3>
                         </div>
-                        <div class="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600">
-                            <i class="fas fa-calendar-check"></i>
+                        <div class="w-12 h-12 rounded-2xl bg-yellow-50 flex items-center justify-center text-yellow-600">
+                            <i class="fas fa-clock"></i>
                         </div>
                     </div>
                     <div class="flex items-center gap-2 text-sm">
-                        <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-bold">{{ $janjiTemu ?? 0 }}</span>
-                        <span class="text-slate-400 text-xs">jadwal hari ini</span>
+                        <span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full text-xs font-bold">Pending</span>
+                        <span class="text-slate-400 text-xs">perlu dicek</span>
                     </div>
                 </div>
 
-                <!-- CARD: Sedang Diperiksa -->
+                <!-- CARD: Terjadwal / Sedang Diperiksa -->
                 <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm hover-card">
                     <div class="flex justify-between items-start mb-5">
                         <div>
-                            <p class="text-slate-500 text-sm font-medium mb-2">Sedang Diperiksa</p>
-                            <h3 class="text-4xl font-extrabold text-slate-800">{{ $sedangDiperiksa ?? 0 }}</h3>
+                            <p class="text-slate-500 text-sm font-medium mb-2">Terjadwal</p>
+                            <h3 class="text-4xl font-extrabold text-slate-800">{{ $antrianHariIni->where('status', 'Terjadwal')->count() }}</h3>
                         </div>
                         <div class="w-12 h-12 rounded-2xl bg-teal-50 flex items-center justify-center text-teal-600">
                             <i class="fas fa-stethoscope"></i>
                         </div>
                     </div>
-                    <span class="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-xs font-bold">Aktif sekarang</span>
+                    <span class="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-xs font-bold">Siap diperiksa</span>
                 </div>
 
-                <!-- CARD: Total Pasien -->
+                <!-- CARD: Selesai -->
                 <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm hover-card">
                     <div class="flex justify-between items-start mb-5">
                         <div>
-                            <p class="text-slate-500 text-sm font-medium mb-2">Total Pasien</p>
-                            <h3 class="text-4xl font-extrabold text-slate-800">{{ $totalPasien ?? 0 }}</h3>
+                            <p class="text-slate-500 text-sm font-medium mb-2">Selesai</p>
+                            <h3 class="text-4xl font-extrabold text-slate-800">{{ $antrianHariIni->where('status', 'Selesai')->count() }}</h3>
                         </div>
-                        <div class="w-12 h-12 rounded-2xl bg-purple-50 flex items-center justify-center text-purple-600">
-                            <i class="fas fa-user-friends"></i>
+                        <div class="w-12 h-12 rounded-2xl bg-green-50 flex items-center justify-center text-green-600">
+                            <i class="fas fa-check-circle"></i>
                         </div>
                     </div>
-                    <span class="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-xs font-bold">Keseluruhan</span>
+                    <span class="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-xs font-bold">Hari ini</span>
                 </div>
             </div>
 
@@ -340,24 +340,32 @@
                             </tr>
                         </thead>
 
-                        <!-- ID UNTUK JAVASCRIPT SEARCH -->
+                                                <!-- ID UNTUK JAVASCRIPT SEARCH -->
                         <tbody class="text-sm" id="bodyTabelPasien">
 
-                            <!-- ROW 1 -->
+                            @forelse($antrianHariIni as $antrian)
                             <tr class="border-b border-slate-50 table-row-hover transition">
-                                <td class="py-5 font-semibold text-slate-600">09:00</td>
+                                <td class="py-5 font-semibold text-slate-600">{{ \Carbon\Carbon::parse($antrian->waktu)->format('H:i') }}</td>
                                 <td class="py-5">
                                     <div class="flex items-center gap-3">
-                                        <img src="https://picsum.photos/seed/doc1/100/100" class="w-10 h-10 rounded-full object-cover">
+                                        <img src="https://ui-avatars.com/api/?name={{ urlencode($antrian->nama_lengkap) }}&background=random" class="w-10 h-10 rounded-full object-cover">
                                         <div>
-                                            <p class="font-bold text-slate-700">Budi Santoso</p>
-                                            <p class="text-xs text-slate-400">Pasien Lama</p>
+                                            <p class="font-bold text-slate-700">{{ $antrian->nama_lengkap }}</p>
+                                            <p class="text-xs text-slate-400">{{ $antrian->perawatan ?? 'Perawatan Umum' }}</p>
                                         </div>
                                     </div>
                                 </td>
-                                <td class="py-5 text-slate-500">Scaling Gigi</td>
+                                <td class="py-5 text-slate-500">{{ Str::limit($antrian->keluhan, 30) ?? '-' }}</td>
                                 <td class="py-5">
-                                    <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">Selesai</span>
+                                    @if($antrian->status == 'Menunggu Konfirmasi')
+                                        <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs font-bold">Menunggu</span>
+                                    @elseif($antrian->status == 'Terjadwal')
+                                        <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold">Terjadwal</span>
+                                    @elseif($antrian->status == 'Selesai')
+                                        <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">Selesai</span>
+                                    @else
+                                        <span class="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-xs font-bold">{{ $antrian->status }}</span>
+                                    @endif
                                 </td>
                                 <td class="py-5 text-center">
                                     <button class="w-10 h-10 rounded-xl bg-slate-50 hover:bg-primary-50 text-slate-400 hover:text-primary-600 transition border border-slate-200">
@@ -365,52 +373,14 @@
                                     </button>
                                 </td>
                             </tr>
-
-                            <!-- ROW 2 -->
-                            <tr class="border-b border-slate-50 table-row-hover transition">
-                                <td class="py-5 font-semibold text-slate-600">10:30</td>
-                                <td class="py-5">
-                                    <div class="flex items-center gap-3">
-                                        <img src="https://picsum.photos/seed/doc2/100/100" class="w-10 h-10 rounded-full object-cover">
-                                        <div>
-                                            <p class="font-bold text-slate-700">Siti Aminah</p>
-                                            <p class="text-xs text-slate-400">Pasien Baru</p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="py-5 text-slate-500">Cabut Gigi Bungsu</td>
-                                <td class="py-5">
-                                    <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs font-bold">Menunggu</span>
-                                </td>
-                                <td class="py-5 text-center">
-                                    <button class="w-10 h-10 rounded-xl bg-slate-50 hover:bg-primary-50 text-slate-400 hover:text-primary-600 transition border border-slate-200">
-                                        <i class="fas fa-arrow-right"></i>
-                                    </button>
+                            @empty
+                            <tr>
+                                <td colspan="5" class="text-center py-10 text-slate-400 font-medium">
+                                    <i class="fas fa-coffee text-3xl mb-3 block text-slate-300"></i>
+                                    Belum ada antrian pasien hari ini.
                                 </td>
                             </tr>
-
-                            <!-- ROW 3 -->
-                            <tr class="table-row-hover transition">
-                                <td class="py-5 font-semibold text-slate-600">13:00</td>
-                                <td class="py-5">
-                                    <div class="flex items-center gap-3">
-                                        <img src="https://picsum.photos/seed/doc3/100/100" class="w-10 h-10 rounded-full object-cover">
-                                        <div>
-                                            <p class="font-bold text-slate-700">Reza Rahadian</p>
-                                            <p class="text-xs text-slate-400">Kontrol</p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="py-5 text-slate-500">Konsultasi Ortodonti</td>
-                                <td class="py-5">
-                                    <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold">Diproses</span>
-                                </td>
-                                <td class="py-5 text-center">
-                                    <button class="w-10 h-10 rounded-xl bg-slate-50 hover:bg-primary-50 text-slate-400 hover:text-primary-600 transition border border-slate-200">
-                                        <i class="fas fa-arrow-right"></i>
-                                    </button>
-                                </td>
-                            </tr>
+                            @endforelse
 
                         </tbody>
                     </table>

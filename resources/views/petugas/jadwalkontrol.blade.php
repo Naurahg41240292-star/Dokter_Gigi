@@ -227,24 +227,42 @@
                             </td>
                             <td class="px-6 py-4 text-slate-600">{{ $item->dokter ?? '-' }}</td>
                             <td class="px-6 py-4 text-slate-500">{{ $item->jenis_perawatan ?? '-' }}</td>
+                            <!-- KOLOM STATUS -->
                             <td class="px-6 py-4 text-center">
-                                @if($item->status == 'Selesai')
-                                    <span class="bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-md text-[11px] font-bold">Selesai</span>
+                                @if($item->status == 'Menunggu Konfirmasi')
+                                    <span class="bg-amber-50 text-amber-700 px-2.5 py-1 rounded-md text-[11px] font-bold">Menunggu Konfirmasi</span>
+                                @elseif($item->status == 'Terjadwal')
+                                    <span class="bg-blue-50 text-blue-700 px-2.5 py-1 rounded-md text-[11px] font-bold">Terjadwal</span>
                                 @elseif($item->status == 'Sedang Berjalan')
-                                    <span class="bg-blue-50 text-blue-700 px-2.5 py-1 rounded-md text-[11px] font-bold">Sedang Berjalan</span>
+                                    <span class="bg-teal-50 text-teal-700 px-2.5 py-1 rounded-md text-[11px] font-bold">Sedang Berjalan</span>
+                                @elseif($item->status == 'Selesai')
+                                    <span class="bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-md text-[11px] font-bold">Selesai</span>
                                 @elseif($item->status == 'Dibatalkan')
                                     <span class="bg-red-50 text-red-700 px-2.5 py-1 rounded-md text-[11px] font-bold">Dibatalkan</span>
                                 @else
-                                    <span class="bg-amber-50 text-amber-700 px-2.5 py-1 rounded-md text-[11px] font-bold">Menunggu</span>
+                                    <span class="bg-slate-50 text-slate-700 px-2.5 py-1 rounded-md text-[11px] font-bold">{{ $item->status }}</span>
                                 @endif
                             </td>
+
+                            <!-- KOLOM AKSI -->
                             <td class="px-6 py-4 text-right">
-                                @if(optional($item->pasien)->id)
-                                    <a href="{{ route('petugas.edit-pasien', $item->pasien->id) }}" class="inline-flex items-center gap-2 bg-primary-600 text-white px-3 py-2 rounded-lg text-[11px] font-bold hover:bg-primary-700 transition shadow-sm">
-                                        <i class="fas fa-file-medical text-[10px]"></i> Isi Rekam Medis
-                                    </a>
+                                @if($item->status == 'Menunggu Konfirmasi')
+                                    <!-- Jika status Menunggu, tampilkan tombol Konfirmasi -->
+                                    <form action="{{ route('petugas.konfirmasi-appointment', $item->id) }}" method="POST" class="inline-block">
+                                        @csrf
+                                        <button type="submit" class="inline-flex items-center gap-2 bg-emerald-600 text-white px-3 py-2 rounded-lg text-[11px] font-bold hover:bg-emerald-700 transition shadow-sm">
+                                            <i class="fas fa-check text-[10px]"></i> Konfirmasi
+                                        </button>
+                                    </form>
                                 @else
-                                    <span class="text-slate-400 text-xs italic">Belum ada data pasien</span>
+                                    <!-- Jika sudah dikonfirmasi, baru muncul tombol Isi Rekam Medis -->
+                                    @if(optional($item->pasien)->id)
+                                        <a href="{{ route('petugas.edit-pasien', $item->pasien->id) }}" class="inline-flex items-center gap-2 bg-primary-600 text-white px-3 py-2 rounded-lg text-[11px] font-bold hover:bg-primary-700 transition shadow-sm">
+                                            <i class="fas fa-file-medical text-[10px]"></i> Isi Rekam Medis
+                                        </a>
+                                    @else
+                                        <span class="text-slate-400 text-xs italic">Belum ada data pasien</span>
+                                    @endif
                                 @endif
                             </td>
                         </tr>

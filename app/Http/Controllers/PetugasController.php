@@ -45,29 +45,80 @@ class PetugasController extends Controller
         ));
     }
        public function jadwalKontrol()
-    {
-        $today = Carbon::today();
+{
+    $today = Carbon::today();
 
-        $totalJanji = Appointment::whereDate('tanggal', $today)->count();
-        $menunggu = Appointment::whereDate('tanggal', $today)->where('status', 'Menunggu Konfirmasi')->count();
-        $sedangPeriksa = Appointment::whereDate('tanggal', $today)->where('status', 'Sedang Berjalan')->count();
-        $selesai = Appointment::whereDate('tanggal', $today)->where('status', 'Selesai')->count();
+    $totalJanji = Appointment::whereDate('tanggal', $today)->count();
 
-        $appointments = Appointment::whereDate('tanggal', $today)
-                            ->with(['pasien', 'user'])
-                            ->orderBy('waktu', 'asc')
-                            ->paginate(10);
+    $menunggu = Appointment::whereDate('tanggal', $today)
+                    ->where('status', 'Menunggu Konfirmasi')
+                    ->count();
 
-        // HAPUS dd() DAN KEMBALIKAN RETURN VIEW INI:
-        return view('petugas.jadwalkontrol', compact(
-            'totalJanji', 'menunggu', 'sedangPeriksa', 'selesai', 'appointments'
-        ));
+    $sedangPeriksa = Appointment::whereDate('tanggal', $today)
+                    ->where('status', 'Sedang Berjalan')
+                    ->count();
+
+    $selesai = Appointment::whereDate('tanggal', $today)
+                    ->where('status', 'Selesai')
+                    ->count();
+
+    $appointments = Appointment::whereDate('tanggal', $today)
+                        ->with(['pasien', 'user'])
+                        ->orderBy('waktu', 'asc')
+                        ->paginate(10);
+
+    return view('petugas.jadwalkontrol', compact(
+        'totalJanji',
+        'menunggu',
+        'sedangPeriksa',
+        'selesai',
+        'appointments'
+    ));
+}
+
+public function konfirmasiAppointment($id)
+{
+    try {
+        // Cari appointment berdasarkan ID
+        $appointment = Appointment::findOrFail($id);
+
+        // Cegah konfirmasi ganda
+        if ($appointment->status == 'Terjadwal') {
+            return redirect()
+                ->route('petugas.jadwal-kontrol')
+                ->with('warning', 'Janji temu sudah dikonfirmasi sebelumnya.');
+        }
+
+        // Update status appointment
+        $appointment->status = 'Terjadwal';
+        $appointment->save();
+
+        // Sinkronkan ke rekam medis
+        $rekamMedis = RekamMedis::where('pasien_id', $appointment->pasien_id)
+                            ->whereDate('tanggal_kunjungan', $appointment->tanggal)
+                            ->first();
+
+        if ($rekamMedis) {
+            $rekamMedis->status = 'Terjadwal';
+            $rekamMedis->save();
+        }
+
+        return redirect()
+            ->route('petugas.jadwal-kontrol')
+            ->with('success', 'Janji temu berhasil dikonfirmasi dan diteruskan ke Dokter!');
+
+    } catch (\Exception $e) {
+        return redirect()
+            ->route('petugas.jadwal-kontrol')
+            ->with('error', 'Gagal mengkonfirmasi: ' . $e->getMessage());
     }
+}
     
     // ================= DATA PASIEN CRUD =================
     public function create()
     {
-        return view('petugas.inputdata');
+        $dokters = User::where('role', 'dokter')->get(); // Ambil data dokter
+        return view('petugas.inputdata', compact('dokters')); // Kirim ke view
     }
 
     public function index()
@@ -91,7 +142,7 @@ class PetugasController extends Controller
             'no_telepon' => 'required|string|max:13', // Wajib isi sesuai permintaanmu
             'email' => 'nullable|email', // Ditambahkan karena ada di form & model
             'alamat' => 'nullable|string',
-            'golongan_darah' => 'nullable|in:A,B,AB,O',
+            'golongan_darah' => 'nullable|string|max:10',
             'riwayat_alergi' => 'nullable|string',
             'riwayat_penyakit' => 'nullable|string',
             'kontak_nama' => 'nullable|string',
@@ -99,7 +150,7 @@ class PetugasController extends Controller
             'kontak_telepon' => 'nullable|string|max:13',
             'tanggal_appointment' => 'required|date',
             'waktu' => 'required',
-            'dokter' => 'required|string',
+            'dokter_id' => 'required|exists:users,id',
             'jenis_perawatan' => 'required|string',
             'keluhan' => 'nullable|string',
         ]);
@@ -114,10 +165,10 @@ class PetugasController extends Controller
             ])
         );
 
-        // 2. Cari ID Dokter
-        $dokterUser = User::where('name', $request->dokter)->where('role', 'dokter')->first();
-        $dokter_id = $dokterUser ? $dokterUser->id : null;
-
+        // 2. Ambil Data Dokter langsung dari ID
+        $dokterUser = User::findOrFail($request->dokter_id);
+        $dokter_id = $dokterUser->id;
+        $namaDokter = $dokterUser->name;
         // 3. Buat Rekam Medis Awal (Kode kamu sebelumnya, aku biarkan)
         $sudahAdaRM = RekamMedis::where('pasien_id', $pasien->id)
                             ->whereDate('tanggal_kunjungan', $request->tanggal_appointment)
@@ -127,7 +178,7 @@ class PetugasController extends Controller
             RekamMedis::create([
                 'pasien_id' => $pasien->id,
                 'dokter_id' => $dokter_id,
-                'dokter' => $request->dokter, 
+                'dokter' => $namaDokter,
                 'tanggal_kunjungan' => $request->tanggal_appointment, 
                 'keluhan' => $request->keluhan, 
                 'diagnosa' => null,
@@ -143,7 +194,7 @@ class PetugasController extends Controller
                 'pasien_id'    => $pasien->id,
                 'dokter_id'    => $dokter_id,
                 'user_id'      => auth()->id(),
-                
+                'dokter'       => $namaDokter, // Tambahkan ini
                 // Data Pasien (Ambil langsung dari $request agar pasti terisi)
                 'nik'          => $request->nik,                    
                 'nama_lengkap' => $request->nama,                 
@@ -167,7 +218,7 @@ class PetugasController extends Controller
                 // Data Appointment
                 'tanggal'      => $request->tanggal_appointment,
                 'waktu'        => $request->waktu,
-                'dokter'       => $request->dokter,
+                'dokter'       => $namaDokter,
                 'jenis_perawatan' => $request->jenis_perawatan,
                 'keluhan'      => $request->keluhan,
                 'status'       => 'Menunggu Konfirmasi',
@@ -208,7 +259,7 @@ class PetugasController extends Controller
             'nama' => 'required|string|max:255',
             'nik' => 'required|string|max:16',
             'no_telepon' => 'nullable|string|max:13', // Sesuaikan dengan nama di form
-            'golongan_darah' => 'nullable|in:A,B,AB,O',
+            'golongan_darah' => 'nullable|string|max:10',
             'riwayat_alergi' => 'nullable|string',
             'riwayat_penyakit' => 'nullable|string',
             'status_perawatan' => 'required|in:Menunggu Konfirmasi,Sedang Perawatan,Dalam Perawatan,Selesai',
@@ -236,7 +287,7 @@ class PetugasController extends Controller
                                         ->first();
 
                 if ($rekamMedis) {
-                    $rekamMedis->dokter = $request->dokter;
+                    $rekamMedis->dokter = $namaDokter;
                     $rekamMedis->status = $request->status_perawatan; // Dari form: status_perawatan
                     $rekamMedis->diagnosa = $request->diagnosa;
                     $rekamMedis->tindakan = $request->tindakan;
@@ -260,7 +311,7 @@ class PetugasController extends Controller
 
     public function approveUser(User $user)
     {
-        $user->update(['status' => Status::APPROVED]);
+        $user->update(['status' => Status::Approved]);
         return redirect()->route('petugas.manajemen-user')->with('success', "User {$user->name} berhasil disetujui.");
     }
 

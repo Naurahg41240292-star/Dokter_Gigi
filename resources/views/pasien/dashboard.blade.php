@@ -126,30 +126,30 @@
                     </div>
                 </div>
 
-                <!-- TOPBAR - Bagian Profil (Sudah Disamakan dengan Appointment) -->
-<div class="flex items-center gap-3">
-    <!-- Notifikasi -->
-    <button class="w-10 h-10 rounded-xl bg-white border border-gray-100 flex items-center justify-center text-gray-400 hover:bg-blue-50 hover:text-blue-500 hover:border-blue-100 transition-colors cursor-pointer">
-        <i class="fas fa-bell text-[15px]"></i>
-    </button>
-    <!-- Profil -->
-    <div class="flex items-center gap-3 pl-3 pr-3 py-1 rounded-xl select-none">
-        <div class="text-right hidden sm:block">
-            <p class="text-sm font-bold text-gray-800 leading-tight">{{ auth()->user()->name }}</p>
-            <p class="text-[11px] text-gray-400">{{ auth()->user()->email }}</p>
-        </div>
-        <div class="relative">
-            <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=2563eb&color=fff" alt="Profil" class="w-9 h-9 rounded-lg object-cover border border-gray-100">
-            <span class="online-dot"></span>
-        </div>
-    </div>
-</div>
+                <!-- TOPBAR - Bagian Profil -->
+                <div class="flex items-center gap-3">
+                    <!-- Notifikasi -->
+                    <button class="w-10 h-10 rounded-xl bg-white border border-gray-100 flex items-center justify-center text-gray-400 hover:bg-blue-50 hover:text-blue-500 hover:border-blue-100 transition-colors cursor-pointer">
+                        <i class="fas fa-bell text-[15px]"></i>
+                    </button>
+                    <!-- Profil -->
+                    <div class="flex items-center gap-3 pl-3 pr-3 py-1 rounded-xl select-none">
+                        <div class="text-right hidden sm:block">
+                            <p class="text-sm font-bold text-gray-800 leading-tight">{{ auth()->user()->name }}</p>
+                            <p class="text-[11px] text-gray-400">{{ auth()->user()->email }}</p>
+                        </div>
+                        <div class="relative">
+                            <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=2563eb&color=fff" alt="Profil" class="w-9 h-9 rounded-lg object-cover border border-gray-100">
+                            <span class="online-dot"></span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </header>
 
         <main class="px-6 lg:px-8 py-6">
 
-            <!-- STAT CARDS (MENGGUNAKAN DATA ASLI DARI CONTROLLER) -->
+            <!-- STAT CARDS (DATA ASLI DARI CONTROLLER) -->
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                 <div class="card stat-card blue p-5 fade-up">
                     <div class="flex items-center justify-between mb-3">

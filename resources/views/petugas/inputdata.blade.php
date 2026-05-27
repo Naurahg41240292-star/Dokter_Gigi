@@ -152,7 +152,21 @@
 
                     <div class="mb-10"><h3 class="text-lg font-bold text-slate-800 mb-1">DATA MEDIS AWAL</h3><div class="w-16 h-1 bg-primary-600 rounded-full mb-6"></div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div><label class="block text-sm font-semibold text-slate-700 mb-2">Golongan Darah</label><select name="golongan_darah" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"><option value="">Pilih Golongan Darah</option><option value="A">A</option><option value="B">B</option><option value="AB">AB</option><option value="O">O</option><option value="-">-</option></select></div>
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-2">Golongan Darah</label>
+                                <select name="golongan_darah" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
+                                    <option value="">Pilih Golongan Darah</option>
+                                    <option value="A+">A+</option>
+                                    <option value="A-">A-</option>
+                                    <option value="B+">B+</option>
+                                    <option value="B-">B-</option>
+                                    <option value="AB+">AB+</option>
+                                    <option value="AB-">AB-</option>
+                                    <option value="O+">O+</option>
+                                    <option value="O-">O-</option>
+                                    <option value="Tidak Diketahui">Tidak Diketahui</option>
+                                </select>
+                            </div>
                             <div><label class="block text-sm font-semibold text-slate-700 mb-2">Tekanan Darah</label><input type="text" name="tekanan_darah" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" placeholder="Contoh: 120/80 mmHg"></div>
                             <div><label class="block text-sm font-semibold text-slate-700 mb-2">Riwayat Alergi Obat</label><input type="text" name="riwayat_alergi" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" placeholder="Contoh: Penisilin, Amoxicillin"></div>
                             <div><label class="block text-sm font-semibold text-slate-700 mb-2">Alergi Makanan</label><input type="text" name="alergi_makanan" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" placeholder="Contoh: Kacang, Susu, Makanan Laut"></div>
@@ -179,7 +193,15 @@
                                 </select>
                                 @error('waktu') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                             </div>
-                            <div><label class="block text-sm font-semibold text-slate-700 mb-2">Pilih Dokter <span class="text-red-500">*</span></label><select name="dokter" required class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"><option value="">Pilih Dokter</option><option value="drg.Ahmad Eunwo Ramdhan, Sp.Ort">drg.Ahmad Eunwo Ramdhan, Sp.Ort</option><option value="drg. Naurah Afkarina Ananda, KG">drg. Naurah Afkarina Ananda, KG</option><option value="drg. Binan Wooseok Sagara, Sp. Pros">drg. Binan Wooseok Sagara, Sp. Pros</option><option value="drg. Intan Novitasari, Sp. Perio">drg. Intan Novitasari, Sp. Perio</option><option value="drg. Najwa Wahdaniyatul Meilani, Sp. BM">drg. Najwa Wahdaniyatul Meilani, Sp. BM</option><option value="drg. Aprilia Ajeng Wulandari, Sp.KGA">drg. Aprilia Ajeng Wulandari, Sp.KGA</option></select></div>
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-2">Pilih Dokter <span class="text-red-500">*</span></label>
+                                <select name="dokter_id" required class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
+                                    <option value="">Pilih Dokter</option>
+                                    @foreach($dokters as $dokter)
+                                        <option value="{{ $dokter->id }}">{{ $dokter->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                             <div><label class="block text-sm font-semibold text-slate-700 mb-2">Jenis Perawatan <span class="text-red-500">*</span></label><select name="jenis_perawatan" required class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"><option value="">Pilih Perawatan</option><option value="Pemeriksaan Umum">Pemeriksaan Umum</option><option value="behel gigi (Rp. 7.000.000)">behel gigi (Rp. 7.000.000)</option><option value="bleaching gigi (Rp. 1.500.000)">bleaching gigi (Rp. 1.500.000)</option><option value="gigi tiruan (Rp. 2.500.000)">gigi tiruan (Rp. 2.500.000)</option><option value="gum lifting (Rp. 4.000.000)">gum lifting (Rp. 4.000.000)</option><option value="Veneer (Rp. 4.500.000)">Veneer (Rp. 4.500.000)</option><option value="tambal gigi (Rp. 350.000)">tambal gigi (Rp. 350.000)</option><option value="cabut gigi (Rp. 300.000)">cabut gigi (Rp. 300.000)</option><option value="scalling gigi (Rp. 500.000)">scalling gigi (Rp. 500.000)</option></select></div>
                             <div class="md:col-span-2"><label class="block text-sm font-semibold text-slate-700 mb-2">Keluhan Saat Ini</label><textarea name="keluhan" rows="3" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" placeholder="Deskripsikan keluhan pasien"></textarea></div>
                         </div>
