@@ -164,59 +164,42 @@
                             </tr>
                         </thead>
 
-                        <!-- ID UNTUK JAVASCRIPT SEARCH -->
-                        <tbody class="text-sm" id="bodyTabelRiwayat">
-                            
-                            @forelse ($riwayats as $riwayat)
-                            <tr class="border-b border-slate-50 table-row-hover transition">
-                                <td class="py-5 font-semibold text-slate-600">
-                                    {{ \Carbon\Carbon::parse($riwayat->tanggal_periksa)->format('d M Y') }}
+                       <!-- Cari bagian tbody tabel riwayat pasien, ganti dengan ini -->
+                        <tbody>
+                            @forelse($riwayatPasien as $riwayat)
+                            <tr class="border-b border-slate-50 hover:bg-slate-50 transition">
+                                <td class="px-6 py-4 text-sm text-slate-600">
+                                    {{ \Carbon\Carbon::parse($riwayat->tanggal_kunjungan)->format('d M Y') }}
                                 </td>
-                                <td class="py-5">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 font-bold text-sm">
-                                            {{ strtoupper(substr($riwayat->pasien->nama ?? 'X', 0, 1)) }}
-                                        </div>
-                                        <div>
-                                            <p class="font-bold text-slate-700">{{ $riwayat->pasien->nama ?? 'Pasien Dihapus' }}</p>
-                                            <p class="text-xs text-slate-400">Catatan: {{ Str::limit($riwayat->catatan, 20) }}</p>
-                                        </div>
-                                    </div>
+                                <td class="px-6 py-4 text-sm font-semibold text-slate-700">
+                                    {{ $riwayat->pasien->nama ?? '-' }}
                                 </td>
-                                <td class="py-5 text-slate-500">
-                                    {{ Str::limit($riwayat->diagnosa_tindakan, 30) }}
+                                <td class="px-6 py-4 text-sm text-slate-600">
+                                    {{ Str::limit($riwayat->diagnosa, 40) }}
                                 </td>
-                                <td class="py-5 text-slate-500">
-                                    {{ Str::limit($riwayat->resep_obat, 30) ?? '-' }}
+                                <td class="px-6 py-4 text-sm text-slate-600">
+                                    {{ Str::limit($riwayat->resep_obat, 40) ?? '-' }}
                                 </td>
-                                
-                                <td class="py-5">
-                                    <div class="flex items-center justify-center gap-2">
-                                        <button title="Lihat Detail" onclick="alert('Detail Diagnosa: {{ $riwayat->diagnosa_tindakan }}')" class="w-8 h-8 rounded-lg bg-blue-50 hover:bg-blue-100 text-primary-600 flex items-center justify-center transition">
-                                            <i class="fas fa-eye text-xs"></i>
+                                <td class="px-6 py-4 text-center">
+                                    <a href="{{ route('dokter.edit-riwayat', $riwayat->id) }}" class="text-primary-600 hover:text-primary-800 text-sm font-semibold mr-3">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </a>
+                                    <form action="{{ route('dokter.hapus-riwayat', $riwayat->id) }}" method="POST" class="inline-block">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="text-red-500 hover:text-red-700 text-sm font-semibold" onclick="return confirm('Yakin hapus?')">
+                                            <i class="fas fa-trash"></i> Hapus
                                         </button>
-                                        <a href="{{ route('dokter.edit-riwayat', $riwayat->id) }}" title="Edit" class="w-8 h-8 rounded-lg bg-yellow-50 hover:bg-yellow-100 text-yellow-600 flex items-center justify-center transition">
-                                            <i class="fas fa-edit text-xs"></i>
-                                        </a>
-                                        <form action="{{ route('dokter.hapus-riwayat', $riwayat->id) }}" method="POST" class="inline-block">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" title="Hapus" onclick="return confirm('Yakin ingin menghapus riwayat ini?')" class="w-8 h-8 rounded-lg bg-red-50 hover:bg-red-100 text-red-500 flex items-center justify-center transition">
-                                                <i class="fas fa-trash text-xs"></i>
-                                            </button>
-                                        </form>
-                                    </div>
+                                    </form>
                                 </td>
                             </tr>
                             @empty
-                            <tr id="emptyRow">
-                                <td colspan="5" class="py-10 text-center text-slate-400">
-                                    <i class="fas fa-folder-open text-3xl mb-3 text-slate-300 block"></i>
-                                    Belum ada data riwayat pasien yang diinput oleh Petugas.
+                            <tr>
+                                <td colspan="5" class="px-6 py-12 text-center text-slate-400">
+                                    <i class="fas fa-file-medical text-3xl mb-3 block text-slate-300"></i>
+                                    Belum ada data riwayat pasien.
                                 </td>
                             </tr>
                             @endforelse
-
                         </tbody>
                     </table>
                 </div>

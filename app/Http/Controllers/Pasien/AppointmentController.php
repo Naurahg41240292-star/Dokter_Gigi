@@ -11,50 +11,16 @@ use Illuminate\Support\Facades\Auth;
 
 class AppointmentController extends Controller
 {
-    // METHOD DASHBOARD (Jika masih dipakai di route lain)
-    public function dashboard()
-    {
-        $user = Auth::user();
-        
-        // Cari data pasien dari user yang login
-        $pasien = Pasien::where('user_id', $user->id)->first();
-
-        if (!$pasien) {
-            $upcomingAppointment = null;
-            $totalAppointments = 0;
-        } else {
-            // Gunakan pasien_id agar sinkron dengan sistem petugas & dokter
-            $upcomingAppointment = Appointment::where('pasien_id', $pasien->id)
-                ->whereIn('status', ['Terjadwal', 'Menunggu Konfirmasi'])
-                ->where('tanggal', '>=', now()->toDateString())
-                ->orderBy('tanggal', 'asc')
-                ->orderBy('waktu', 'asc')
-                ->first();
-
-            $totalAppointments = Appointment::where('pasien_id', $pasien->id)
-                ->whereNotIn('status', ['Dibatalkan'])
-                ->count();
-        }
-
-        $totalPerawatan = 0; 
-        $tagihanPending = 0;
-
-        return view('pasien.dashboardpasien', compact(
-            'upcomingAppointment', 
-            'totalAppointments', 
-            'totalPerawatan', 
-            'tagihanPending'
-        ));
-    }
-
-    // Nampilin list appointment
+    // Nampilin list appointment pasien
     public function index()
     {
         $pasien = Pasien::where('user_id', Auth::id())->first();
 
+
         if (!$pasien) {
             $appointments = collect(); // Kosongkan kalau belum punya data pasien
         } else {
+            // Cari appointment berdasarkan pasien_id
             $appointments = Appointment::where('pasien_id', $pasien->id)
                                         ->orderBy('tanggal', 'desc')
                                         ->get();
@@ -63,7 +29,7 @@ class AppointmentController extends Controller
         return view('pasien.appointment', compact('appointments'));
     }
 
-    // Nyimpen data form ke database (INI YANG PALING PENTING DIPERBAIKI)
+    // Nyimpen data form ke database (INI YANG PALING PENTING)
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -71,14 +37,14 @@ class AppointmentController extends Controller
             'nik' => 'required|string|size:16',
             'tgl_lahir' => 'required|date',
             'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
-            'no_telepon' => 'required|string|max:13', // Diubah jadi max:13 biar fleksibel
+            'no_telepon' => 'required|string|max:13',
             'alamat' => 'required|string',
             'kontak_darurat_nama' => 'required|string',
             'kontak_darurat_hubungan' => 'required|string',
             'kontak_darurat_telepon' => 'required|string|max:13',
             'tanggal' => 'required|date|after_or_equal:today',
             'waktu' => 'required|string',
-            'dokter' => 'required|string', // Sementara string, nanti kita cari ID-nya
+            'dokter' => 'required|string',
             'jenis_perawatan' => 'required|string',
             'keluhan' => 'nullable|string',
         ]);
@@ -87,7 +53,7 @@ class AppointmentController extends Controller
         $pasien = Pasien::firstOrCreate(
             ['nik' => $validated['nik']], 
             [
-                'user_id' => Auth::id(), // Hubungkan ke akun pasien yang login
+                'user_id' => Auth::id(),
                 'nama' => $validated['nama_lengkap'],
                 'tanggal_lahir' => $validated['tgl_lahir'],
                 'jenis_kelamin' => $validated['jenis_kelamin'],
@@ -96,6 +62,11 @@ class AppointmentController extends Controller
             ]
         );
 
+        // Update user_id kalau pasien sudah ada tapi belum terhubung akun
+        if (!$pasien->user_id) {
+            $pasien->update(['user_id' => Auth::id()]);
+        }
+
         // 2. Cari ID Dokter berdasarkan nama yang dipilih di form
         $dokterUser = User::where('name', $request->dokter)->where('role', 'dokter')->first();
         $dokter_id = $dokterUser ? $dokterUser->id : null;
@@ -103,9 +74,9 @@ class AppointmentController extends Controller
 
         // 3. Simpan Appointment dengan pasien_id dan dokter_id
         Appointment::create([
-            'user_id' => Auth::id(), // ID user pasien
-            'pasien_id' => $pasien->id, // ID tabel pasien (WAJIB)
-            'dokter_id' => $dokter_id, // ID user dokter (WAJIB)
+            'user_id' => Auth::id(),
+            'pasien_id' => $pasien->id,       // WAJIB ADA
+            'dokter_id' => $dokter_id,         // WAJIB ADA
             'nama_lengkap' => $validated['nama_lengkap'],
             'nik' => $validated['nik'],
             'tgl_lahir' => $validated['tgl_lahir'],
@@ -117,7 +88,7 @@ class AppointmentController extends Controller
             'kontak_darurat_telepon' => $validated['kontak_darurat_telepon'],
             'tanggal' => $validated['tanggal'],
             'waktu' => $validated['waktu'],
-            'dokter' => $namaDokter, // Simpan nama string juga
+            'dokter' => $namaDokter,
             'jenis_perawatan' => $validated['jenis_perawatan'],
             'keluhan' => $validated['keluhan'],
             'status' => 'Menunggu Konfirmasi',
@@ -135,7 +106,6 @@ class AppointmentController extends Controller
             return redirect()->back()->with('error', 'Data pasien tidak ditemukan.');
         }
 
-        // Cari appointment milik pasien ini
         $appointment = Appointment::where('pasien_id', $pasien->id)->findOrFail($id);
         $appointment->status = 'Dibatalkan';
         $appointment->save();

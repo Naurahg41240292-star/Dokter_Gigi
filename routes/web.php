@@ -81,6 +81,8 @@ Route::middleware('auth')->group(function () {
     // ==========================================
     // 1. Dashboard
     Route::get('/dashboarddokter', [DokterController::class, 'dashboard'])->name('dokter.dashboard');
+    Route::get('/dokter/rekam-medis/{id}', [DokterController::class, 'isiRekamMedis'])->name('dokter.rekam-medis.isi');
+    Route::post('/dokter/rekam-medis/{id}', [DokterController::class, 'simpanRekamMedis'])->name('dokter.rekam-medis.simpan');
 
     // 2. Riwayat Pasien (Diagnosa & Resep Obat)
     Route::get('/dokter/riwayat-pasien', [RiwayatPasienController::class, 'index'])->name('dokter.riwayat-pasien');

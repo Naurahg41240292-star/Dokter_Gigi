@@ -342,16 +342,15 @@
 
                                                 <!-- ID UNTUK JAVASCRIPT SEARCH -->
                         <tbody class="text-sm" id="bodyTabelPasien">
-
                             @forelse($antrianHariIni as $antrian)
                             <tr class="border-b border-slate-50 table-row-hover transition">
-                                <td class="py-5 font-semibold text-slate-600">{{ \Carbon\Carbon::parse($antrian->waktu)->format('H:i') }}</td>
+                               <td class="py-5 font-semibold text-slate-600">{{ $antrian->waktu }}</td>
                                 <td class="py-5">
                                     <div class="flex items-center gap-3">
                                         <img src="https://ui-avatars.com/api/?name={{ urlencode($antrian->nama_lengkap) }}&background=random" class="w-10 h-10 rounded-full object-cover">
                                         <div>
                                             <p class="font-bold text-slate-700">{{ $antrian->nama_lengkap }}</p>
-                                            <p class="text-xs text-slate-400">{{ $antrian->perawatan ?? 'Perawatan Umum' }}</p>
+                                            <p class="text-xs text-slate-400">{{ $antrian->jenis_perawatan ?? 'Perawatan Umum' }}</p>
                                         </div>
                                     </div>
                                 </td>
@@ -361,17 +360,34 @@
                                         <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs font-bold">Menunggu</span>
                                     @elseif($antrian->status == 'Terjadwal')
                                         <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold">Terjadwal</span>
+                                    @elseif($antrian->status == 'Sedang Berjalan')
+                                        <span class="bg-teal-100 text-teal-700 px-3 py-1 rounded-full text-xs font-bold">Sedang Diperiksa</span>
                                     @elseif($antrian->status == 'Selesai')
                                         <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">Selesai</span>
                                     @else
                                         <span class="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-xs font-bold">{{ $antrian->status }}</span>
                                     @endif
                                 </td>
+                                
+                                <!-- BAGIAN AKSI YANG SUDAH DIUBAH -->
                                 <td class="py-5 text-center">
-                                    <button class="w-10 h-10 rounded-xl bg-slate-50 hover:bg-primary-50 text-slate-400 hover:text-primary-600 transition border border-slate-200">
-                                        <i class="fas fa-arrow-right"></i>
-                                    </button>
+                                    @if($antrian->status == 'Terjadwal')
+                                        <a href="{{ route('dokter.rekam-medis.isi', $antrian->id) }}" 
+                                        class="inline-flex items-center gap-2 bg-primary-600 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-primary-700 transition shadow-sm">
+                                            <i class="fas fa-stethoscope text-[10px]"></i> Periksa
+                                        </a>
+                                    @elseif($antrian->status == 'Sedang Berjalan')
+                                        <a href="{{ route('dokter.rekam-medis.isi', $antrian->id) }}" 
+                                        class="inline-flex items-center gap-2 bg-teal-600 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-teal-700 transition shadow-sm">
+                                            <i class="fas fa-file-medical text-[10px]"></i> Lanjut Isi RM
+                                        </a>
+                                    @elseif($antrian->status == 'Selesai')
+                                        <span class="text-green-600 text-xs font-bold"><i class="fas fa-check-circle"></i> Selesai</span>
+                                    @else
+                                        <span class="text-slate-400 text-xs italic">Menunggu Konfirmasi</span>
+                                    @endif
                                 </td>
+
                             </tr>
                             @empty
                             <tr>
@@ -381,7 +397,6 @@
                                 </td>
                             </tr>
                             @endforelse
-
                         </tbody>
                     </table>
                 </div>

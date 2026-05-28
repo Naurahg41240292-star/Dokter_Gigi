@@ -3,70 +3,99 @@
 namespace App\Http\Controllers\Dokter;
 
 use App\Http\Controllers\Controller;
-use App\Models\RiwayatPasien;
-use App\Models\Pasien; // Panggil model pasien
+use App\Models\RekamMedis;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class RiwayatPasienController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     */
     public function index()
     {
-        $riwayats = RiwayatPasien::with('pasien')->where('dokter_id', Auth::id())->latest()->get();
-        return view('dokter.riwayat-pasien.index', compact('riwayats'));
+        // Ambil semua rekam medis yang sudah selesai, yang diperiksa oleh dokter ini
+        $riwayatPasien = RekamMedis::where('dokter_id', auth()->id())
+            ->where('status', 'Selesai')
+            ->with('pasien')
+            ->orderBy('tanggal_kunjungan', 'desc')
+            ->paginate(10);
+
+       return view('dokter.riwayat-pasien.index', compact('riwayatPasien'));
     }
 
+    /**
+     * Show the form for creating a new resource.
+     */
     public function create()
     {
-        $pasiens = Pasien::all();
-        return view('dokter.riwayat-pasien.create', compact('pasiens'));
+        return view('dokter.tambahriwayat');
     }
 
+    /**
+     * Store a newly created resource in storage.
+     */
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'pasien_id' => 'required|exists:pasiens,id',
-            'tanggal_periksa' => 'required|date',
-            'diagnosa_tindakan' => 'required',
-            'resep_obat' => 'nullable',
-            'catatan' => 'nullable',
+            'diagnosa' => 'required|string',
+            'tindakan' => 'required|string',
+            'resep_obat' => 'nullable|string',
+            'catatan' => 'nullable|string',
         ]);
 
-        RiwayatPasien::create([
-            'pasien_id' => $request->pasien_id,
-            'dokter_id' => Auth::id(),
-            'tanggal_periksa' => $request->tanggal_periksa,
-            'diagnosa_tindakan' => $request->diagnosa_tindakan,
-            'resep_obat' => $request->resep_obat,
-            'catatan' => $request->catatan,
+        RekamMedis::create([
+            'pasien_id' => $validated['pasien_id'],
+            'dokter_id' => auth()->id(),
+            'dokter' => auth()->user()->name,
+            'tanggal_kunjungan' => now(),
+            'keluhan' => $request->keluhan ?? '-',
+            'diagnosa' => $validated['diagnosa'],
+            'tindakan' => $validated['tindakan'],
+            'resep_obat' => $validated['resep_obat'],
+            'catatan' => $validated['catatan'],
+            'status' => 'Selesai',
         ]);
 
-        return redirect()->route('dokter.riwayat-pasien')->with('success', 'Riwayat pasien berhasil disimpan!');
+        return redirect()->route('dokter.riwayat-pasien')->with('success', 'Riwayat berhasil ditambahkan!');
     }
 
-    public function edit(RiwayatPasien $riwayatPasien)
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit($id)
     {
-        $pasiens = Pasien::all();
-        return view('dokter.riwayat-pasien.edit', compact('riwayatPasien', 'pasiens'));
+        $rekamMedis = RekamMedis::where('dokter_id', auth()->id())->findOrFail($id);
+        return view('dokter.editriwayat', compact('rekamMedis'));
     }
 
-    public function update(Request $request, RiwayatPasien $riwayatPasien)
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, $id)
     {
-        $request->validate([
-            'pasien_id' => 'required|exists:pasiens,id',
-            'tanggal_periksa' => 'required|date',
-            'diagnosa_tindakan' => 'required',
-            'resep_obat' => 'nullable',
-            'catatan' => 'nullable',
+        $rekamMedis = RekamMedis::where('dokter_id', auth()->id())->findOrFail($id);
+
+        $validated = $request->validate([
+            'diagnosa' => 'required|string',
+            'tindakan' => 'required|string',
+            'resep_obat' => 'nullable|string',
+            'catatan' => 'nullable|string',
         ]);
 
-        $riwayatPasien->update($request->all());
-        return redirect()->route('dokter.riwayat-pasien')->with('success', 'Riwayat pasien berhasil diperbarui!');
+        $rekamMedis->update($validated);
+
+        return redirect()->route('dokter.riwayat-pasien')->with('success', 'Riwayat berhasil diperbarui!');
     }
 
-    public function destroy(RiwayatPasien $riwayatPasien)
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy($id)
     {
-        $riwayatPasien->delete();
-        return redirect()->route('dokter.riwayat-pasien')->with('success', 'Riwayat pasien berhasil dihapus!');
+        $rekamMedis = RekamMedis::where('dokter_id', auth()->id())->findOrFail($id);
+        $rekamMedis->delete();
+
+        return redirect()->route('dokter.riwayat-pasien')->with('success', 'Riwayat berhasil dihapus!');
     }
 }

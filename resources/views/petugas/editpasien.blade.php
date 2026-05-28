@@ -102,19 +102,24 @@
                                 <label class="block text-sm font-semibold text-slate-700 mb-2">NIK (No. KTP) <span class="text-red-500">*</span></label>
                                 <input type="text" name="nik" value="{{ old('nik', $pasien->nik) }}" maxlength="16" required class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
                             </div>
-                            <div>
-                                <label class="block text-sm font-semibold text-slate-700 mb-2">No. Telepon</label>
-                                <input type="tel" name="no_telepon" value="{{ old('no_telp', $pasien->no_telp) }}" maxlength="13" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
+                           <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-2">No. Telepon Pasien</label>
+                                <input type="tel" name="no_telepon" value="{{ old('no_telepon', $pasien->no_telp) }}" maxlength="13" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" placeholder="08xx-xxxx-xxxx">
                             </div>
                             <div>
                                 <label class="block text-sm font-semibold text-slate-700 mb-2">Golongan Darah</label>
                                 <select name="golongan_darah" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
-                                    <option value="">Pilih</option>
-                                    <option value="A" {{ $pasien->golongan_darah == 'A' ? 'selected' : '' }}>A</option>
-                                    <option value="B" {{ $pasien->golongan_darah == 'B' ? 'selected' : '' }}>B</option>
-                                    <option value="AB" {{ $pasien->golongan_darah == 'AB' ? 'selected' : '' }}>AB</option>
-                                    <option value="O" {{ $pasien->golongan_darah == 'O' ? 'selected' : '' }}>O</option>
-                                </select>
+                                <option value="">Pilih Golongan Darah</option>
+                                <option value="A+" {{ old('golongan_darah', $pasien->golongan_darah) == 'A+' ? 'selected' : '' }}>A+</option>
+                                <option value="A-" {{ old('golongan_darah', $pasien->golongan_darah) == 'A-' ? 'selected' : '' }}>A-</option>
+                                <option value="B+" {{ old('golongan_darah', $pasien->golongan_darah) == 'B+' ? 'selected' : '' }}>B+</option>
+                                <option value="B-" {{ old('golongan_darah', $pasien->golongan_darah) == 'B-' ? 'selected' : '' }}>B-</option>
+                                <option value="AB+" {{ old('golongan_darah', $pasien->golongan_darah) == 'AB+' ? 'selected' : '' }}>AB+</option>
+                                <option value="AB-" {{ old('golongan_darah', $pasien->golongan_darah) == 'AB-' ? 'selected' : '' }}>AB-</option>
+                                <option value="O+" {{ old('golongan_darah', $pasien->golongan_darah) == 'O+' ? 'selected' : '' }}>O+</option>
+                                <option value="O-" {{ old('golongan_darah', $pasien->golongan_darah) == 'O-' ? 'selected' : '' }}>O-</option>
+                                <option value="Tidak Diketahui" {{ old('golongan_darah', $pasien->golongan_darah) == 'Tidak Diketahui' ? 'selected' : '' }}>Tidak Diketahui</option>
+                            </select>
                             </div>
                             <div class="md:col-span-2">
                                 <label class="block text-sm font-semibold text-slate-700 mb-2">Riwayat Alergi Obat</label>
