@@ -371,7 +371,7 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
                                 <div>
                                     <label class="form-label">Tanggal Appointment <span class="required">*</span></label>
-                                    <input type="date" name="tanggal" class="form-input" id="appointmentDate" value="{{ old('tanggal') }}" required>
+                                    <input type="date" name="tanggal" class="form-input" id="appointmentDate" value="{{ old('tanggal') }}" min="{{ \Carbon\Carbon::today()->format('Y-m-d') }}" required>
                                 </div>
                                 <div>
                                     <label class="form-label">Waktu yang Diinginkan <span class="required">*</span></label>
@@ -715,5 +715,52 @@
             });
         }
     </script>
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const tanggalInput = document.getElementById('appointmentDate');
+    const dokterSelect = document.querySelector('select[name="dokter"]'); // Sesuaikan name select doktermu
+    const waktuSelect = document.querySelector('select[name="waktu"]'); // Sesuaikan name select waktumu
+
+    async function updateSlots() {
+        const tanggal = tanggalInput.value;
+        const dokter = dokterSelect.value;
+
+        // Jika tanggal atau dokter belum dipilih, jangan cek dulu
+        if (!tanggal || !dokter) return;
+
+        try {
+            // Kirim request ke backend
+            const response = await fetch(`/cek-jadwal?tanggal=${tanggal}&dokter=${encodeURIComponent(dokter)}`);
+            const bookedSlots = await response.json();
+
+            // Reset semua opsi waktu (hapus tulisan Sudah Dibooking sebelumnya)
+            Array.from(waktuSelect.options).forEach(option => {
+                option.disabled = false;
+                // Hapus teks "(Sudah Dibooking)" kalau ada
+                option.text = option.text.replace(' (Sudah Dibooking)', '');
+            });
+
+            // Disable opsi yang sudah dibooking
+            bookedSlots.forEach(slot => {
+                const optionToDisable = Array.from(waktuSelect.options).find(opt => opt.value === slot);
+                if (optionToDisable) {
+                    optionToDisable.disabled = true; // Opsinya tidak bisa diklik
+                    optionToDisable.text += ' (Sudah Dibooking)'; // Tambah keterangan
+                }
+            });
+
+        } catch (error) {
+            console.error('Gagal mengambil jadwal:', error);
+        }
+    }
+
+    // Jalankan fungsi saat tanggal atau dokter berubah
+    tanggalInput.addEventListener('change', updateSlots);
+    dokterSelect.addEventListener('change', updateSlots);
+    
+    // Jalankan sekali saat halaman dibuka (kalau ada old input)
+    updateSlots();
+});
+</script>
 </body>
 </html>

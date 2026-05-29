@@ -69,11 +69,26 @@
             <div class="flex items-center gap-4 w-full md:w-auto justify-end">
                 <div class="hidden md:flex items-center bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 w-full md:w-60"><i class="fas fa-search text-slate-400 text-sm"></i><input type="text" placeholder="Cari pasien..." class="ml-2 text-sm outline-none w-full bg-transparent text-slate-600"></div>
                 <div class="relative">
-                    <button id="notif-btn" class="relative cursor-pointer p-2.5 bg-slate-50 border border-slate-200 rounded-xl hover:bg-slate-100 transition hidden md:flex items-center justify-center focus:outline-none"><i class="fas fa-bell text-slate-600"></i><span id="notif-dot" class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span></button>
+                    <button id="notif-btn" class="relative cursor-pointer p-2.5 bg-slate-50 border border-slate-200 rounded-xl hover:bg-slate-100 transition hidden md:flex items-center justify-center focus:outline-none">
+                        <i class="fas fa-bell text-slate-600"></i>
+                        <!-- Dot merah akan otomatis hilang jika tidak ada notif baru -->
+                        <span id="notif-dot" class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white hidden"></span>
+                    </button>
+
                     <div id="notif-dropdown" class="notif-dropdown absolute right-0 top-full mt-3 w-80 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
-                        <div class="px-5 py-4 flex items-center justify-between border-b border-slate-100 bg-slate-50/50"><h3 class="text-sm font-bold text-slate-800">Notifikasi</h3><button id="read-all-btn" class="text-[11px] font-semibold text-primary-600 hover:text-primary-700 transition">Tandai dibaca</button></div>
-                        <div class="max-h-72 overflow-y-auto divide-y divide-slate-50"><a href="#" class="block px-5 py-3.5 hover:bg-slate-50 transition relative"><div class="flex gap-3"><div class="w-9 h-9 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"><i class="fas fa-user-plus text-primary-600 text-xs"></i></div><div><p class="text-xs font-semibold text-slate-800">Pasien Baru Terdaftar</p><p class="text-[11px] text-slate-500 mt-0.5">Rina Wati baru saja mendaftar.</p><p class="text-[10px] text-slate-400 mt-1.5 font-medium">5 menit yang lalu</p></div></div><span class="absolute top-4 right-4 w-2 h-2 bg-primary-600 rounded-full"></span></a></div>
-                        <div class="px-5 py-3 border-t border-slate-100 bg-slate-50/50 text-center"><a href="#" class="text-xs font-bold text-primary-600 hover:text-primary-700 transition">Lihat Semua Notifikasi</a></div>
+                        <div class="px-5 py-4 flex items-center justify-between border-b border-slate-100 bg-slate-50/50">
+                            <h3 class="text-sm font-bold text-slate-800">Notifikasi</h3>
+                            <button id="read-all-btn" class="text-[11px] font-semibold text-primary-600 hover:text-primary-700 transition">Tandai dibaca</button>
+                        </div>
+                        
+                        <!-- TAMBAHKAN ID NOTIF-LIST DI SINI -->
+                        <div id="notif-list" class="max-h-72 overflow-y-auto divide-y divide-slate-50">
+                            <div class="px-5 py-6 text-center text-slate-400 text-xs">Memuat notifikasi...</div>
+                        </div>
+                        
+                        <div class="px-5 py-3 border-t border-slate-100 bg-slate-50/50 text-center">
+                            <a href="{{ route('petugas.jadwal-kontrol') }}" class="text-xs font-bold text-primary-600 hover:text-primary-700 transition">Lihat Semua Notifikasi</a>
+                        </div>
                     </div>
                 </div>
                 <a href="{{ route('petugas.pengaturan') }}" class="flex items-center gap-3 pl-4 border-l border-slate-200 hover:bg-slate-50 p-2 rounded-lg transition cursor-pointer">
@@ -156,5 +171,48 @@
         document.querySelectorAll('.table-row').forEach(row => { row.addEventListener('click', function(e) { if (e.target.closest('button') || e.target.closest('a') || e.target.closest('form')) return; document.querySelectorAll('.table-row.selected').forEach(r => r.classList.remove('selected')); this.classList.add('selected'); }); });
         document.querySelectorAll('a[href]').forEach((link) => { link.addEventListener('click', (event) => { const href = link.getAttribute('href'); if (!href || href.startsWith('#') || link.target === '_blank' || event.metaKey || event.ctrlKey) return; const targetUrl = new URL(href, window.location.origin); if (targetUrl.origin !== window.location.origin) return; event.preventDefault(); page.classList.add('is-leaving'); setTimeout(() => { window.location.href = targetUrl.href; }, 220); }); });
     </script>
+    <script>
+    // Logika Buka/Tutup Dropdown
+    const notifBtn = document.getElementById('notif-btn');
+    const notifDropdown = document.getElementById('notif-dropdown');
+    
+    if(notifBtn) {
+        notifBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            notifDropdown.classList.toggle('show');
+        });
+        document.addEventListener('click', (e) => {
+            if (!notifDropdown.contains(e.target) && !notifBtn.contains(e.target)) {
+                notifDropdown.classList.remove('show');
+            }
+        });
+    }
+
+    // Logika Polling AJAX (Cek notif tiap 10 detik)
+    function fetchNotifications() {
+        fetch('{{ route("petugas.notifikasi") }}')
+            .then(response => response.json())
+            .then(data => {
+                const dot = document.getElementById('notif-dot');
+                const list = document.getElementById('notif-list');
+                
+                if (data.count > 0) {
+                    dot.classList.remove('hidden'); // Munculin dot merah
+                    list.innerHTML = data.html;    // Isi list dengan data baru
+                } else {
+                    dot.classList.add('hidden');    // Sembunyiin dot merah
+                    list.innerHTML = '<div class="px-5 py-6 text-center text-slate-400 text-xs">Tidak ada notifikasi baru</div>';
+                }
+            });
+    }
+
+    // Panggil saat pertama kali load
+    fetchNotifications();
+    // Ulangi setiap 10 detik (10000ms)
+    setInterval(fetchNotifications, 10000);
+</script>
+@include('petugas.partials.notif-script')
+</body>
+</html>
 </body>
 </html>

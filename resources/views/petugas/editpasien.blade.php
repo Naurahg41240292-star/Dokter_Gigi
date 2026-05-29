@@ -188,5 +188,8 @@
         readAllBtn.addEventListener('click', (e) => { e.preventDefault(); document.querySelectorAll('#notif-dropdown .bg-primary-600.rounded-full.w-2').forEach(dot => dot.remove()); if(notifDot) notifDot.style.display = 'none'; });
         document.querySelectorAll('a[href]').forEach((link) => { link.addEventListener('click', (event) => { const href = link.getAttribute('href'); if (!href || href.startsWith('#') || link.target === '_blank' || event.metaKey || event.ctrlKey) return; const targetUrl = new URL(href, window.location.origin); if (targetUrl.origin !== window.location.origin) return; event.preventDefault(); page.classList.add('is-leaving'); setTimeout(() => { window.location.href = targetUrl.href; }, 220); }); });
     </script>
+    @include('petugas.partials.notif-script')
+</body>
+</html>
 </body>
 </html>

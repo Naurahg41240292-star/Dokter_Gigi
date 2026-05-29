@@ -55,6 +55,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/appointment', [AppointmentController::class, 'index'])->name('appointment.index');
     Route::post('/appointment', [AppointmentController::class, 'store'])->name('appointment.store');
     Route::put('/appointment/{id}/cancel', [AppointmentController::class, 'cancel'])->name('appointment.cancel');
+    Route::get('/cek-jadwal', [App\Http\Controllers\Pasien\AppointmentController::class, 'cekJadwal'])->name('appointment.cek-jadwal');
 
     // Riwayat Perawatan -> UBAH KE PasienController (Dinamis dari database)
     Route::get('/riwayat-perawatan', [PasienController::class, 'rekamMedis'])->name('pasien.riwayat');
@@ -103,6 +104,8 @@ Route::middleware('auth')->group(function () {
     // ==========================================
     // Dashboard Petugas
     Route::get('/dashboardpetugas', [PetugasController::class, 'dashboard'])->name('petugas.dashboard');
+    Route::get('/lihat-rekam-medis/{id}', [PetugasController::class, 'lihatRekamMedis'])->name('petugas.lihat-rekam-medis');
+    Route::get('/petugas/notifikasi', [PetugasController::class, 'getNotifikasi'])->name('petugas.notifikasi');
 
     // Input Data Pasien
     Route::get('/input-data-pasien', [PetugasController::class, 'create'])->name('petugas.input-data');

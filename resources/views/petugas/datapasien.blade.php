@@ -90,51 +90,38 @@
         </div>
     </aside>
 
-    <!-- ========== MAIN CONTENT ========== -->
+   <!-- ========== MAIN CONTENT ========== -->
     <main class="flex-1 ml-[260px] min-h-screen">
         
-        <!-- Header (Search DIPERTAHANKAN) -->
+        <!-- Header -->
         <header class="bg-white border-b border-slate-200 px-8 py-5 flex items-center justify-between gap-4 sticky top-0 z-40">
             <div>
-                <h2 class="text-xl font-bold text-slate-800">Data Pasien</h2>
-                <p class="text-sm text-slate-500">Daftar seluruh pasien yang terdaftar di sistem.</p>
+                <h2 class="text-xl font-bold text-slate-800">Pengaturan</h2>
+                <p class="text-sm text-slate-500">Kelola informasi profil, keamanan, dan preferensi akun kamu.</p>
             </div>
-            <div class="flex items-center gap-4 w-full md:w-auto justify-end">
-                <!-- Search Bar -->
-                <div class="hidden md:flex items-center bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 w-full md:w-60">
-                    <i class="fas fa-search text-slate-400 text-sm"></i>
-                    <input type="text" placeholder="Cari pasien..." class="ml-2 text-sm outline-none w-full bg-transparent text-slate-600">
-                </div>
-
-                <!-- Notifikasi -->
+            
+            <div class="flex items-center gap-4">
+                
+                <!-- NOTIFIKASI YANG SUDAH DIPERBAIKI -->
                 <div class="relative">
                     <button id="notif-btn" class="relative cursor-pointer p-2.5 bg-slate-50 border border-slate-200 rounded-xl hover:bg-slate-100 transition hidden md:flex items-center justify-center focus:outline-none">
                         <i class="fas fa-bell text-slate-600"></i>
-                        <span id="notif-dot" class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+                        <span id="notif-dot" class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white hidden"></span>
                     </button>
+
                     <div id="notif-dropdown" class="notif-dropdown absolute right-0 top-full mt-3 w-80 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
                         <div class="px-5 py-4 flex items-center justify-between border-b border-slate-100 bg-slate-50/50">
                             <h3 class="text-sm font-bold text-slate-800">Notifikasi</h3>
                             <button id="read-all-btn" class="text-[11px] font-semibold text-primary-600 hover:text-primary-700 transition">Tandai dibaca</button>
                         </div>
-                        <div class="max-h-72 overflow-y-auto divide-y divide-slate-50">
-                            <a href="#" class="block px-5 py-3.5 hover:bg-slate-50 transition relative">
-                                <div class="flex gap-3">
-                                    <div class="w-9 h-9 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"><i class="fas fa-user-plus text-primary-600 text-xs"></i></div>
-                                    <div>
-                                        <p class="text-xs font-semibold text-slate-800">Pasien Baru Terdaftar</p>
-                                        <p class="text-[11px] text-slate-500 mt-0.5">Rina Wati baru saja mendaftar secara mandiri.</p>
-                                        <p class="text-[10px] text-slate-400 mt-1.5 font-medium">5 menit yang lalu</p>
-                                    </div>
-                                </div>
-                                <span class="absolute top-4 right-4 w-2 h-2 bg-primary-600 rounded-full"></span>
-                            </a>
+                        <div id="notif-list" class="max-h-72 overflow-y-auto divide-y divide-slate-50">
+                            <div class="px-5 py-6 text-center text-slate-400 text-xs">Memuat notifikasi...</div>
                         </div>
                         <div class="px-5 py-3 border-t border-slate-100 bg-slate-50/50 text-center">
-                            <a href="#" class="text-xs font-bold text-primary-600 hover:text-primary-700 transition">Lihat Semua Notifikasi</a>
+                            <a href="{{ route('petugas.jadwal-kontrol') }}" class="text-xs font-bold text-primary-600 hover:text-primary-700 transition">Lihat Semua Notifikasi</a>
                         </div>
                     </div>
-                </div>
+                </div> <!-- INI TAMBAHAN PENUTUP DIV UNTUK NOTIFIKASI -->
 
                 <!-- Profil -->
                 <a href="{{ route('petugas.pengaturan') }}" class="flex items-center gap-3 pl-4 border-l border-slate-200 hover:bg-slate-50 p-2 rounded-lg transition cursor-pointer">
@@ -144,7 +131,8 @@
                     </div>
                     <img src="{{ auth()->user()->foto ? asset('storage/' . auth()->user()->foto) : 'https://ui-avatars.com/api/?name='.urlencode(auth()->user()->name).'&background=2563eb&color=fff' }}" alt="{{ auth()->user()->name }}" class="w-10 h-10 rounded-full border-2 border-white shadow-sm object-cover">
                 </a>
-            </div>
+                
+            </div> <!-- Penutup flex items-center gap-4 -->
         </header>
 
         <!-- Area Konten -->
@@ -285,5 +273,8 @@
             });
         });
     </script>
+    @include('petugas.partials.notif-script')
+</body>
+</html>
 </body>
 </html>

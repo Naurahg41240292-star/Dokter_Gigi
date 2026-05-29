@@ -14,19 +14,34 @@ class AppointmentController extends Controller
     // Nampilin list appointment pasien
     public function index()
     {
-        $pasien = Pasien::where('user_id', Auth::id())->first();
+        $userId = Auth::id();
 
+        // Cari appointment yang terkait dengan user yang login
+        // Baik melalui user_id di appointment (daftar sendiri)
+        // Maupun melalui pasien_id yang terhubung ke user_id di tabel pasiens (daftar oleh petugas)
+        $appointments = Appointment::where('user_id', $userId)
+            ->orWhereHas('pasien', function ($query) use ($userId) {
+                $query->where('user_id', $userId);
+            })
+            ->orderBy('tanggal', 'desc')
+            ->get();
 
-        if (!$pasien) {
-            $appointments = collect(); // Kosongkan kalau belum punya data pasien
-        } else {
-            // Cari appointment berdasarkan pasien_id
-            $appointments = Appointment::where('pasien_id', $pasien->id)
-                                        ->orderBy('tanggal', 'desc')
-                                        ->get();
-        }
-        
         return view('pasien.appointment', compact('appointments'));
+    }
+
+    public function cekJadwal(Request $request)
+    {
+        $dokter = $request->query('dokter');
+        $tanggal = $request->query('tanggal');
+
+        // Cari appointment yang sudah dibooking (status selain Dibatalkan)
+        $bookedSlots = Appointment::where('dokter', $dokter)
+            ->where('tanggal', $tanggal)
+            ->whereNotIn('status', ['Dibatalkan'])
+            ->pluck('waktu') // Ambil kolom waktu yang sudah dibooking
+            ->toArray();
+
+        return response()->json($bookedSlots);
     }
 
     // Nyimpen data form ke database (INI YANG PALING PENTING)
@@ -43,7 +58,22 @@ class AppointmentController extends Controller
             'kontak_darurat_hubungan' => 'required|string',
             'kontak_darurat_telepon' => 'required|string|max:13',
             'tanggal' => 'required|date|after_or_equal:today',
-            'waktu' => 'required|string',
+            'waktu' => [
+                'required',
+                'string',
+                function ($attribute, $value, $fail) {
+                    // Kalau tanggal yang dipilih adalah HARI INI
+                    if (request('tanggal') === now()->toDateString()) {
+                        // Pecah waktu "08:00 - 08:45" jadi ambil bagian "08:00" saja
+                        $waktuMulai = explode(' - ', $value)[0];
+                        
+                        // Bandingkan dengan jam sekarang
+                        if ($waktuMulai < now()->format('H:i')) {
+                            $fail('Tidak bisa memilih waktu yang sudah lewat untuk hari ini.');
+                        }
+                    }
+                },
+            ],
             'dokter' => 'required|string',
             'jenis_perawatan' => 'required|string',
             'keluhan' => 'nullable|string',
@@ -62,8 +92,9 @@ class AppointmentController extends Controller
             ]
         );
 
-        // Update user_id kalau pasien sudah ada tapi belum terhubung akun
-        if (!$pasien->user_id) {
+        // PASTIKAN user_id di tabel pasien SELALU terhubung ke akun yang sedang login
+        // Ini mencegah data putus kalau NIK sudah pernah diinput petugas sebelumnya
+        if ($pasien->user_id !== Auth::id()) {
             $pasien->update(['user_id' => Auth::id()]);
         }
 
@@ -72,7 +103,7 @@ class AppointmentController extends Controller
         $dokter_id = $dokterUser ? $dokterUser->id : null;
         $namaDokter = $dokterUser ? $dokterUser->name : $request->dokter;
 
-        // 3. Simpan Appointment dengan pasien_id dan dokter_id
+        // 3. Simpan Appointment dengan pasien_id ve dokter_id
         Appointment::create([
             'user_id' => Auth::id(),
             'pasien_id' => $pasien->id,       // WAJIB ADA
@@ -100,13 +131,15 @@ class AppointmentController extends Controller
     // Update status (misal pasien ngeklik batal)
     public function cancel($id)
     {
-        $pasien = Pasien::where('user_id', Auth::id())->first();
-        
-        if (!$pasien) {
-            return redirect()->back()->with('error', 'Data pasien tidak ditemukan.');
-        }
+        $userId = Auth::id();
 
-        $appointment = Appointment::where('pasien_id', $pasien->id)->findOrFail($id);
+        // Cari appointment yang terkait dengan user (aman untuk Hafiz & Aminah)
+        $appointment = Appointment::where('user_id', $userId)
+            ->orWhereHas('pasien', function ($query) use ($userId) {
+                $query->where('user_id', $userId);
+            })
+            ->findOrFail($id);
+
         $appointment->status = 'Dibatalkan';
         $appointment->save();
 

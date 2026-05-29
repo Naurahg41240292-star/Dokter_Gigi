@@ -298,5 +298,8 @@
         </div>
 
     </main>
+    @include('petugas.partials.notif-script')
+</body>
+</html>
 </body>
 </html>

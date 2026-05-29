@@ -44,38 +44,69 @@ class PetugasController extends Controller
             
         ));
     }
-       public function jadwalKontrol()
-{
-    $today = Carbon::today();
+     public function jadwalKontrol()
+    {
+        $today = Carbon::today();
 
-    $totalJanji = Appointment::whereDate('tanggal', $today)->count();
+        // Statistik HARI INI
+        $totalJanji = Appointment::whereDate('tanggal', $today)->count();
+        $menunggu = Appointment::whereDate('tanggal', $today)->where('status', 'Menunggu Konfirmasi')->count();
+        $sedangPeriksa = Appointment::whereDate('tanggal', $today)->where('status', 'Sedang Berjalan')->count();
+        $selesai = Appointment::whereDate('tanggal', $today)->where('status', 'Selesai')->count();
 
-    $menunggu = Appointment::whereDate('tanggal', $today)
-                    ->where('status', 'Menunggu Konfirmasi')
-                    ->count();
+        // Data Tabel: Tampilkan HARI INI dan MASA DEPAN (besok, lusa, dll)
+        $appointments = Appointment::whereDate('tanggal', '>=', $today) // Diubah dari == menjadi >=
+                            ->with(['pasien', 'user'])
+                            ->orderBy('tanggal', 'asc') // Urutkan berdasarkan tanggal terdekat
+                            ->orderBy('waktu', 'asc')
+                            ->paginate(15);
 
-    $sedangPeriksa = Appointment::whereDate('tanggal', $today)
-                    ->where('status', 'Sedang Berjalan')
-                    ->count();
+        return view('petugas.jadwalkontrol', compact(
+            'totalJanji', 'menunggu', 'sedangPeriksa', 'selesai', 'appointments'
+        ));
+    }
 
-    $selesai = Appointment::whereDate('tanggal', $today)
-                    ->where('status', 'Selesai')
-                    ->count();
+        // Method untuk AJAX notifikasi
+    // Method untuk AJAX Notifikasi Dropdown
+    public function getNotifikasi()
+    {
+        $today = Carbon::today();
 
-    $appointments = Appointment::whereDate('tanggal', $today)
-                        ->with(['pasien', 'user'])
-                        ->orderBy('waktu', 'asc')
-                        ->paginate(10);
+        // Ambil 5 appointment terbaru yang butuh konfirmasi
+        $pendingAppointments = Appointment::where('status', 'Menunggu Konfirmasi')
+            ->whereDate('tanggal', '>=', $today)
+            ->orderBy('created_at', 'desc')
+            ->take(5)
+            ->get();
 
-    return view('petugas.jadwalkontrol', compact(
-        'totalJanji',
-        'menunggu',
-        'sedangPeriksa',
-        'selesai',
-        'appointments'
-    ));
-}
+        $count = $pendingAppointments->count();
 
+        // Render ke HTML khusus untuk di-inject ke dropdown via AJAX
+        $html = '';
+        foreach ($pendingAppointments as $ap) {
+            $timeAgo = $ap->created_at->diffForHumans();
+            $html .= '
+                <a href="'.route('petugas.jadwal-kontrol').'" class="block px-5 py-3.5 hover:bg-slate-50 transition relative">
+                    <div class="flex gap-3">
+                        <div class="w-9 h-9 bg-yellow-50 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <i class="fas fa-clock text-yellow-600 text-xs"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-semibold text-slate-800">Appointment Baru</p>
+                            <p class="text-[11px] text-slate-500 mt-0.5"><strong>' . $ap->nama_lengkap . '</strong> mendaftar untuk periksa.</p>
+                            <p class="text-[10px] text-slate-400 mt-1.5 font-medium">' . $timeAgo . '</p>
+                        </div>
+                    </div>
+                    <span class="absolute top-4 right-4 w-2 h-2 bg-yellow-500 rounded-full"></span>
+                </a>
+            ';
+        }
+
+        return response()->json([
+            'count' => $count,
+            'html' => $html
+        ]);
+    }
 public function konfirmasiAppointment($id)
 {
     try {
@@ -252,6 +283,19 @@ public function konfirmasiAppointment($id)
         return view('petugas.editpasien', compact('pasien', 'rekamMedis'));
     }
 
+    // Petugas melihat rekam medis yang sudah diisi Dokter
+    public function lihatRekamMedis($id)
+    {
+        // Cari appointment berdasarkan ID
+        $appointment = Appointment::findOrFail($id);
+
+        // Cari rekam medis berdasarkan pasien dan tanggal appointment
+        $rekamMedis = RekamMedis::where('pasien_id', $appointment->pasien_id)
+            ->whereDate('tanggal_kunjungan', $appointment->tanggal)
+            ->first();
+
+       return view('petugas.lihat-rekam-medis', compact('appointment', 'rekamMedis'));
+    }
     // Fungsi untuk menyimpan hasil edit
     public function update(Request $request, $id)
     {

@@ -15,8 +15,9 @@ class DokterController extends Controller
         $dokterId = auth()->id();
         $today = Carbon::today();
 
-        $antrianHariIni = Appointment::where('dokter_id', $dokterId)
-            ->whereDate('tanggal', $today)
+         $antrianHariIni = Appointment::where('dokter_id', $dokterId)
+            ->whereDate('tanggal', '>=', $today) 
+            ->orderBy('tanggal', 'asc') 
             ->orderBy('waktu', 'asc')
             ->get();
 

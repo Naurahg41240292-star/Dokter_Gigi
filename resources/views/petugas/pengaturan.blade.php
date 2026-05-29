@@ -63,27 +63,46 @@
     <!-- MAIN CONTENT -->
     <main class="flex-1 ml-[260px] min-h-screen">
         
-        <!-- Header -->
-        <header class="bg-white border-b border-slate-200 px-8 py-5 flex items-center justify-between gap-4 sticky top-0 z-40">
-            <div>
-                <h2 class="text-xl font-bold text-slate-800">Pengaturan</h2>
-                <p class="text-sm text-slate-500">Kelola informasi profil, keamanan, dan preferensi akun kamu.</p>
-            </div>
-            <div class="flex items-center gap-4">
-                <div class="relative cursor-pointer p-2.5 bg-slate-50 border border-slate-200 rounded-xl hover:bg-slate-100 transition hidden md:flex items-center justify-center">
-                    <i class="fas fa-bell text-slate-600"></i>
-                    <span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+    <!-- Header (Tanpa Search, Ada Notif, Profil Klik) -->
+            <header class="bg-white border-b border-slate-200 px-8 py-5 flex items-center justify-between gap-4 sticky top-0 z-40">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-800">Pengaturan</h2>
+                    <p class="text-sm text-slate-500">Kelola pengaturan akun dan preferensi Anda.</p>
                 </div>
-                <!-- PROFIL DI HEADER -->
-                <a href="{{ route('petugas.pengaturan') }}" class="flex items-center gap-4 pl-5 border-l border-slate-200 hover:bg-slate-50 p-3 rounded-xl transition cursor-pointer">
-                    <div class="text-right hidden sm:block">
-                        <p class="text-base font-bold text-slate-800">{{ auth()->user()->name }}</p>
-                        <p class="text-sm text-primary-600 font-semibold">{{ auth()->user()->role ?? 'Petugas' }}</p>
-                    </div>
-                    <img src="{{ auth()->user()->foto ? asset('storage/' . auth()->user()->foto) : 'https://ui-avatars.com/api/?name='.urlencode(auth()->user()->name).'&background=2563eb&color=fff' }}" alt="{{ auth()->user()->name }}" class="w-12 h-12 rounded-full border-2 border-white shadow-md object-cover">
-                </a>
-            </div>
-        </header>
+                <div class="flex items-center gap-4">
+                    
+                    <!-- Notifikasi -->
+                    <div class="relative">
+                        <button id="notif-btn" class="relative cursor-pointer p-2.5 bg-slate-50 border border-slate-200 rounded-xl hover:bg-slate-100 transition hidden md:flex items-center justify-center focus:outline-none">
+                            <i class="fas fa-bell text-slate-600"></i>
+                            <span id="notif-dot" class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white hidden"></span>
+                        </button>
+
+                        <div id="notif-dropdown" class="notif-dropdown absolute right-0 top-full mt-3 w-80 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
+                            <div class="px-5 py-4 flex items-center justify-between border-b border-slate-100 bg-slate-50/50">
+                                <h3 class="text-sm font-bold text-slate-800">Notifikasi</h3>
+                                <button id="read-all-btn" class="text-[11px] font-semibold text-primary-600 hover:text-primary-700 transition">Tandai dibaca</button>
+                            </div>
+                            <div id="notif-list" class="max-h-72 overflow-y-auto divide-y divide-slate-50">
+                                <div class="px-5 py-6 text-center text-slate-400 text-xs">Memuat notifikasi...</div>
+                            </div>
+                            <div class="px-5 py-3 border-t border-slate-100 bg-slate-50/50 text-center">
+                                <a href="{{ route('petugas.jadwal-kontrol') }}" class="text-xs font-bold text-primary-600 hover:text-primary-700 transition">Lihat Semua Notifikasi</a>
+                            </div>
+                        </div>
+                    </div> <!-- INI PENUTUP DIV NOTIFIKASI YANG SEBELUMNYA HILANG -->
+
+                    <!-- Profil -->
+                    <a href="{{ route('petugas.pengaturan') }}" class="flex items-center gap-3 pl-4 border-l border-slate-200 hover:bg-slate-50 p-2 rounded-lg transition cursor-pointer">
+                        <div class="text-right hidden sm:block">
+                            <p class="text-sm font-bold text-slate-700">{{ auth()->user()->name }}</p>
+                            <p class="text-xs text-primary-600 font-medium">{{ auth()->user()->role ?? 'Petugas' }}</p>
+                        </div>
+                        <img src="{{ auth()->user()->foto ? asset('storage/' . auth()->user()->foto) : 'https://ui-avatars.com/api/?name='.urlencode(auth()->user()->name).'&background=2563eb&color=fff' }}" alt="{{ auth()->user()->name }}" class="w-10 h-10 rounded-full border-2 border-white shadow-sm object-cover">
+                    </a>
+                    
+                </div>
+            </header>
 
         <!-- Area Konten -->
         <div class="p-8">
@@ -290,5 +309,8 @@
         }
         document.querySelectorAll('a[href]').forEach((link) => { link.addEventListener('click', (event) => { const href = link.getAttribute('href'); if (!href || href.startsWith('#') || link.target === '_blank' || event.metaKey || event.ctrlKey) return; const targetUrl = new URL(href, window.location.origin); if (targetUrl.origin !== window.location.origin) return; event.preventDefault(); page.classList.add('is-leaving'); setTimeout(() => { window.location.href = targetUrl.href; }, 220); }); });
     </script>
+    @include('petugas.partials.notif-script')
+</body>
+</html>
 </body>
 </html>
