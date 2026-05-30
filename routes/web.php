@@ -12,6 +12,7 @@ use App\Http\Controllers\Pasien\PengaturanController;
 use App\Http\Controllers\Petugas\ProfileController;
 use App\Http\Controllers\DokterController;
 use App\Http\Controllers\PasienController;
+use App\Http\Controllers\Dokter\DashboardDokterController;
 
 // ==========================================
 // ROUTE PUBLIK (Tanpa Login)
@@ -50,6 +51,7 @@ Route::middleware('auth')->group(function () {
     // ==========================================
     // Dashboard Pasien -> UBAH KE PasienController
     Route::get('/dashboardpasien', [PasienController::class, 'dashboard'])->name('pasien.dashboard');
+    Route::get('/pasien/notifikasi', [PasienController::class, 'getNotifikasi'])->name('pasien.notifikasi');
 
     // Appointment (Tetap pakai AppointmentController)
     Route::get('/appointment', [AppointmentController::class, 'index'])->name('appointment.index');
@@ -81,9 +83,10 @@ Route::middleware('auth')->group(function () {
     // ROUTE DOKTER (FITUR BARU)
     // ==========================================
     // 1. Dashboard
-    Route::get('/dashboarddokter', [DokterController::class, 'dashboard'])->name('dokter.dashboard');
+    Route::get('/dashboarddokter', [DashboardDokterController::class, 'index'])->name('dokter.dashboard');
     Route::get('/dokter/rekam-medis/{id}', [DokterController::class, 'isiRekamMedis'])->name('dokter.rekam-medis.isi');
     Route::post('/dokter/rekam-medis/{id}', [DokterController::class, 'simpanRekamMedis'])->name('dokter.rekam-medis.simpan');
+    Route::get('/dokter/notifikasi', [DokterController::class, 'getNotifikasi'])->name('dokter.notifikasi');
 
     // 2. Riwayat Pasien (Diagnosa & Resep Obat)
     Route::get('/dokter/riwayat-pasien', [RiwayatPasienController::class, 'index'])->name('dokter.riwayat-pasien');
@@ -106,6 +109,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboardpetugas', [PetugasController::class, 'dashboard'])->name('petugas.dashboard');
     Route::get('/lihat-rekam-medis/{id}', [PetugasController::class, 'lihatRekamMedis'])->name('petugas.lihat-rekam-medis');
     Route::get('/petugas/notifikasi', [PetugasController::class, 'getNotifikasi'])->name('petugas.notifikasi');
+    Route::post('/petugas/notification/read/{id}', [PetugasController::class, 'markNotificationAsRead'])->name('petugas.notification.read');
 
     // Input Data Pasien
     Route::get('/input-data-pasien', [PetugasController::class, 'create'])->name('petugas.input-data');

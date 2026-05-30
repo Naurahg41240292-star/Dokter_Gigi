@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Pengaturan - D'Smile Dental Clinic</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -29,10 +30,12 @@
         .page-transition { opacity: 0; transform: translateY(8px); transition: opacity 0.28s ease, transform 0.28s ease; }
         .page-transition.is-visible { opacity: 1; transform: translateY(0); }
         .page-transition.is-leaving { opacity: 0; transform: translateY(8px); }
-        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar { width: 6px; }s
         ::-webkit-scrollbar-track { background: #f1f5f9; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .notif-dropdown { transform: translateY(-10px); opacity: 0; visibility: hidden; transition: all 0.2s ease; }
+        .notif-dropdown.show { transform: translateY(0); opacity: 1; visibility: visible; }
         .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.35s ease-out; }
         .accordion-content.open { max-height: 2000px; }
         .accordion-icon { transition: transform 0.3s ease; }
@@ -72,25 +75,21 @@
                 <div class="flex items-center gap-4">
                     
                     <!-- Notifikasi -->
-                    <div class="relative">
-                        <button id="notif-btn" class="relative cursor-pointer p-2.5 bg-slate-50 border border-slate-200 rounded-xl hover:bg-slate-100 transition hidden md:flex items-center justify-center focus:outline-none">
-                            <i class="fas fa-bell text-slate-600"></i>
-                            <span id="notif-dot" class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white hidden"></span>
-                        </button>
-
-                        <div id="notif-dropdown" class="notif-dropdown absolute right-0 top-full mt-3 w-80 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
-                            <div class="px-5 py-4 flex items-center justify-between border-b border-slate-100 bg-slate-50/50">
-                                <h3 class="text-sm font-bold text-slate-800">Notifikasi</h3>
-                                <button id="read-all-btn" class="text-[11px] font-semibold text-primary-600 hover:text-primary-700 transition">Tandai dibaca</button>
-                            </div>
-                            <div id="notif-list" class="max-h-72 overflow-y-auto divide-y divide-slate-50">
-                                <div class="px-5 py-6 text-center text-slate-400 text-xs">Memuat notifikasi...</div>
-                            </div>
-                            <div class="px-5 py-3 border-t border-slate-100 bg-slate-50/50 text-center">
-                                <a href="{{ route('petugas.jadwal-kontrol') }}" class="text-xs font-bold text-primary-600 hover:text-primary-700 transition">Lihat Semua Notifikasi</a>
-                            </div>
+                     <div class="relative">
+                    <button id="notif-btn" class="relative cursor-pointer p-2.5 bg-slate-50 border border-slate-200 rounded-xl hover:bg-slate-100 transition hidden md:flex items-center justify-center focus:outline-none">
+                        <i class="fas fa-bell text-slate-600"></i>
+                        <span id="notif-dot" class="absolute top-1.5 right-1.5 w-5 h-5 bg-red-500 rounded-full border-2 border-white text-white text-[10px] flex items-center justify-center font-bold" style="display: none;">0</span>
+                    </button>
+                    
+                    <div id="notif-dropdown" class="notif-dropdown absolute right-0 top-full mt-3 w-80 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden z-50">
+                        <div class="px-5 py-4 flex items-center justify-between border-b border-slate-100 bg-slate-50/50">
+                            <h3 class="text-sm font-bold text-slate-800">Notifikasi</h3>
                         </div>
-                    </div> <!-- INI PENUTUP DIV NOTIFIKASI YANG SEBELUMNYA HILANG -->
+                        <div id="notif-list" class="max-h-72 overflow-y-auto divide-y divide-slate-50">
+                            <div class="p-4 text-center text-slate-400 text-sm">Memuat notifikasi...</div>
+                        </div>
+                    </div>
+                </div>
 
                     <!-- Profil -->
                     <a href="{{ route('petugas.pengaturan') }}" class="flex items-center gap-3 pl-4 border-l border-slate-200 hover:bg-slate-50 p-2 rounded-lg transition cursor-pointer">
@@ -300,17 +299,43 @@
         </div> <!-- Penutup p-8 -->
     </main>
 
-    <script>
-        const page = document.body; requestAnimationFrame(() => page.classList.add('is-visible'));
+        <script>
+        // Animasi Halaman
+        const page = document.body; 
+        requestAnimationFrame(() => page.classList.add('is-visible'));
+
+        // Fungsi untuk membuka/menutup menu Pengaturan (WAJIB ADA)
         function toggleAccordion(id) {
-            const content = document.getElementById('content-' + id); const icon = document.getElementById('icon-' + id); const isOpen = content.classList.contains('open');
-            document.querySelectorAll('.accordion-content').forEach(el => el.classList.remove('open')); document.querySelectorAll('.accordion-icon').forEach(el => el.classList.remove('rotated'));
-            if (!isOpen) { content.classList.add('open'); icon.classList.add('rotated'); }
+            const content = document.getElementById('content-' + id); 
+            const icon = document.getElementById('icon-' + id); 
+            const isOpen = content.classList.contains('open');
+            
+            // Tutup semua menu lain
+            document.querySelectorAll('.accordion-content').forEach(el => el.classList.remove('open')); 
+            document.querySelectorAll('.accordion-icon').forEach(el => el.classList.remove('rotated'));
+            
+            // Buka menu yang diklik
+            if (!isOpen) { 
+                content.classList.add('open'); 
+                icon.classList.add('rotated'); 
+            }
         }
-        document.querySelectorAll('a[href]').forEach((link) => { link.addEventListener('click', (event) => { const href = link.getAttribute('href'); if (!href || href.startsWith('#') || link.target === '_blank' || event.metaKey || event.ctrlKey) return; const targetUrl = new URL(href, window.location.origin); if (targetUrl.origin !== window.location.origin) return; event.preventDefault(); page.classList.add('is-leaving'); setTimeout(() => { window.location.href = targetUrl.href; }, 220); }); });
+
+        // Animasi Pindah Halaman
+        document.querySelectorAll('a[href]').forEach((link) => { 
+            link.addEventListener('click', (event) => { 
+                const href = link.getAttribute('href'); 
+                if (!href || href.startsWith('#') || link.target === '_blank' || event.metaKey || event.ctrlKey) return; 
+                const targetUrl = new URL(href, window.location.origin); 
+                if (targetUrl.origin !== window.location.origin) return; 
+                event.preventDefault(); 
+                page.classList.add('is-leaving'); 
+                setTimeout(() => { window.location.href = targetUrl.href; }, 220); 
+            }); 
+        });
     </script>
+
+    <!-- Script Notifikasi (Jangan ditulis ulang, cukup panggil ini) -->
     @include('petugas.partials.notif-script')
-</body>
-</html>
 </body>
 </html>

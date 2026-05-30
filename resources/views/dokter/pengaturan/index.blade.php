@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Pengaturan Akun - D'Smile</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -48,6 +49,8 @@
         .accordion-icon.rotated {
             transform: rotate(180deg);
         }
+        .notif-dropdown { transform: translateY(-10px); opacity: 0; visibility: hidden; pointer-events: none; transition: all 0.2s ease; }
+        .notif-dropdown.show { transform: translateY(0); opacity: 1; visibility: visible; pointer-events: auto; }
     </style>
 </head>
 
@@ -94,10 +97,21 @@
                         <i class="fas fa-search text-gray-400 text-sm"></i>
                         <input type="text" placeholder="Cari pengaturan..." class="ml-2 text-sm outline-none w-full bg-transparent text-slate-600">
                     </div>
-                    <div class="relative cursor-pointer p-3 bg-white border border-gray-200 rounded-xl shadow-sm hover:bg-gray-50 transition">
-                        <i class="fas fa-bell text-gray-600"></i>
-                        <span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+                <div class="relative">
+                    <button id="notif-btn" class="relative cursor-pointer p-2.5 bg-slate-50 border border-slate-200 rounded-xl hover:bg-slate-100 transition hidden md:flex items-center justify-center focus:outline-none">
+                        <i class="fas fa-bell text-slate-600"></i>
+                        <span id="notif-dot" class="absolute top-1.5 right-1.5 w-5 h-5 bg-red-500 rounded-full border-2 border-white text-white text-[10px] flex items-center justify-center font-bold" style="display: none;">0</span>
+                    </button>
+                    
+                    <div id="notif-dropdown" class="notif-dropdown absolute right-0 top-full mt-3 w-80 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden z-50">
+                        <div class="px-5 py-4 flex items-center justify-between border-b border-slate-100 bg-slate-50/50">
+                            <h3 class="text-sm font-bold text-slate-800">Notifikasi Pasien</h3>
+                        </div>
+                        <div id="notif-list" class="max-h-72 overflow-y-auto divide-y divide-slate-50">
+                            <div class="p-4 text-center text-slate-400 text-sm">Memuat notifikasi...</div>
+                        </div>
                     </div>
+                </div>
                     <div class="h-8 w-px bg-gray-200 hidden md:block"></div>
                     
                     <!-- PROFILE NAVBAR DINAMIS -->
@@ -313,52 +327,108 @@
 
     </main>
 
-    <script>
-        const page = document.body;
-        requestAnimationFrame(() => { page.classList.add('is-visible'); });
+   <script>
+    // 1. ANIMASI MUNCUL HALAMAN
+    const page = document.body;
+    requestAnimationFrame(() => page.classList.add('is-visible'));
 
-        // Fungsi Accordion
-        function toggleAccordion(sectionId) {
-            const section = document.getElementById(`section-${sectionId}`);
-            const icon = document.getElementById(`icon-${sectionId}`);
+    // 2. FUNGSI ACCORDION (INI YANG TADI KURANG)
+    function toggleAccordion(id) {
+        const content = document.getElementById('section-' + id); 
+        const icon = document.getElementById('icon-' + id); 
+        const isOpen = content.classList.contains('open');
+        
+        // Tutup semua menu lain
+        document.querySelectorAll('.accordion-content').forEach(el => el.classList.remove('open')); 
+        document.querySelectorAll('.accordion-icon').forEach(el => el.classList.remove('rotated'));
+        
+        // Buka menu yang diklik
+        if (!isOpen) { 
+            content.classList.add('open'); 
+            icon.classList.add('rotated'); 
+        }
+    }
 
-            // Tutup semua section lain
-            document.querySelectorAll('.accordion-content').forEach(el => {
-                if (el.id !== `section-${sectionId}`) {
-                    el.classList.remove('open');
+    // 3. LOGIKA NOTIFIKASI
+    document.addEventListener('DOMContentLoaded', function() {
+        
+        const notifBtn = document.getElementById('notif-btn');
+        const notifDropdown = document.getElementById('notif-dropdown');
+        const notifDot = document.getElementById('notif-dot');
+        const notifList = document.getElementById('notif-list');
+
+        if(notifBtn) {
+            notifBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                notifDropdown.classList.toggle('show');
+            });
+            
+            document.addEventListener('click', (e) => {
+                if (!notifDropdown.contains(e.target) && !notifBtn.contains(e.target)) {
+                    notifDropdown.classList.remove('show');
                 }
             });
-            document.querySelectorAll('.accordion-icon').forEach(el => {
-                if (el.id !== `icon-${sectionId}`) {
-                    el.classList.remove('rotated');
+        }
+
+        function fetchNotifications() {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            fetch('{{ route("dokter.notifikasi") }}', {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest'
                 }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('HTTP status ' + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if(notifDot && notifList) {
+                    if (data.count > 0 && Array.isArray(data.notifications)) {
+                        notifDot.classList.remove('hidden'); 
+                        notifDot.style.display = 'flex';     
+                        
+                        let htmlString = '';
+                        data.notifications.forEach(item => {
+                            htmlString += `
+                                <a href="${item.url}" class="block px-5 py-3.5 hover:bg-slate-50 transition relative">
+                                    <div class="flex gap-3">
+                                        <div class="w-9 h-9 bg-emerald-50 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+                                            <i class="fas fa-stethoscope text-emerald-600 text-xs"></i>
+                                        </div>
+                                        <div>
+                                            <p class="text-xs font-semibold text-slate-800">${item.pesan}</p>
+                                            <p class="text-[10px] text-slate-400 mt-1.5 font-medium">${item.waktu}</p>
+                                        </div>
+                                    </div>
+                                    <span class="absolute top-4 right-4 w-2 h-2 bg-emerald-500 rounded-full"></span>
+                                </a>
+                            `;
+                        });
+                        notifList.innerHTML = htmlString;
+
+                    } else {
+                        notifDot.classList.add('hidden'); 
+                        notifDot.style.display = 'none';  
+                        notifList.innerHTML = '<div class="px-5 py-6 text-center text-slate-400 text-xs"><i class="fas fa-bell-slash text-2xl mb-2 block"></i>Tidak ada notifikasi baru</div>';
+                    }
+                }
+            })
+            .catch(error => {
+                console.warn('Gagal memuat notifikasi:', error.message);
             });
-
-            // Toggle section yang diklik
-            section.classList.toggle('open');
-            icon.classList.toggle('rotated');
         }
 
-        // Fungsi Preview Foto sebelum upload
-        function previewImage(input) {
-            if (input.files && input.files[0]) {
-                var reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('photoPreview').src = e.target.result;
-                }
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
+        fetchNotifications();
+        setInterval(fetchNotifications, 10000);
 
-        // ==========================================
-        // TAMBAHAN: BUKA ACCORDION OTOMATIS DARI URL
-        // ==========================================
-        const urlParams = new URLSearchParams(window.location.search);
-        const openSection = urlParams.get('open');
-        if (openSection) {
-            toggleAccordion(openSection);
-        }
-    </script>
-
+    });
+</script>
 </body>
 </html>

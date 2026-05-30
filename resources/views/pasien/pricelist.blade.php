@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Pricelist - D'Smile Dental Clinic</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -63,8 +64,15 @@
         .mobile-overlay { display:none; position:fixed; inset:0; background:rgba(30,41,59,0.4); z-index:45; backdrop-filter:blur(2px); }
         .mobile-overlay.show { display:block; }
         
-        .notif-dropdown { position: absolute; top: calc(100% + 8px); right: 0; background: #fff; border: 1px solid var(--border); opacity: 0; visibility: hidden; transform: translateY(-8px); transition: all 0.25s ease; z-index: 60; width: 340px; border-radius: 16px; box-shadow: 0 20px 50px rgba(37, 99, 235, 0.1); }
-        .notif-dropdown.open { opacity: 1; visibility: visible; transform: translateY(0); }
+        /* PERBAIKAN CSS NOTIFIKASI DI SINI (Pakai .show dan pointer-events) */
+        .notif-dropdown { 
+            position: absolute; top: calc(100% + 8px); right: 0; background: #fff; border: 1px solid var(--border); 
+            opacity: 0; visibility: hidden; transform: translateY(-8px); pointer-events: none; /* Tambahan penting */
+            transition: all 0.25s ease; z-index: 60; width: 340px; border-radius: 16px; box-shadow: 0 20px 50px rgba(37, 99, 235, 0.1); 
+        }
+        .notif-dropdown.show { /* Diubah dari .open jadi .show */
+            opacity: 1; visibility: visible; transform: translateY(0); pointer-events: auto; /* Tambahan penting */
+        }
         .online-dot { width: 8px; height: 8px; background: #22C55E; border-radius: 50%; border: 2px solid #fff; position: absolute; bottom: 0; right: 0; }
 
         @keyframes fadeUp { from{opacity:0;transform:translateY(16px);} to{opacity:1;transform:translateY(0);} }
@@ -112,17 +120,18 @@
 
                 <div class="flex items-center gap-3">
                     <div class="relative">
-                        <button class="w-10 h-10 rounded-xl bg-white border border-gray-100 flex items-center justify-center text-gray-500 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-100 transition-colors relative cursor-pointer" onclick="toggleNotif()" id="notifBtn">
-                            <i class="fas fa-bell text-[15px]"></i>
+                        <button id="notif-btn" class="relative cursor-pointer p-2.5 bg-slate-50 border border-slate-200 rounded-xl hover:bg-slate-100 transition hidden md:flex items-center justify-center focus:outline-none">
+                            <i class="fas fa-bell text-slate-600"></i>
+                            <span id="notif-dot" class="absolute top-1.5 right-1.5 w-5 h-5 bg-red-500 rounded-full border-2 border-white text-white text-[10px] flex items-center justify-center font-bold" style="display: none;">0</span>
                         </button>
-                        <div class="notif-dropdown" id="notifDropdown">
-                            <div class="p-4 border-b border-gray-100">
-                                <div class="flex items-center justify-between">
-                                    <h4 class="font-bold text-sm text-gray-900">Notifikasi</h4>
-                                    <button class="text-xs text-blue-600 font-bold hover:underline cursor-pointer">Tandai semua dibaca</button>
-                                </div>
+                        
+                        <div id="notif-dropdown" class="notif-dropdown">
+                            <div class="px-5 py-4 flex items-center justify-between border-b border-slate-100 bg-slate-50/50">
+                                <h3 class="text-sm font-bold text-slate-800">Notifikasi</h3>
                             </div>
-                            <div class="p-6 text-center text-sm text-gray-400">Belum ada notifikasi</div>
+                            <div id="notif-list" class="max-h-72 overflow-y-auto divide-y divide-slate-50">
+                                <div class="p-4 text-center text-slate-400 text-sm">Memuat notifikasi...</div>
+                            </div>
                         </div>
                     </div>
                     <div class="flex items-center gap-3 pl-3 pr-3 py-1 rounded-xl select-none">
@@ -314,21 +323,81 @@
 </div>
 
 <script>
-function toggleSidebar() {
-var sidebar = document.getElementById('sidebar');
-var overlay = document.getElementById('mobileOverlay');
-if (sidebar) sidebar.classList.toggle('open');
-if (overlay) overlay.classList.toggle('show');
-}
+    document.addEventListener('DOMContentLoaded', function() {
+        
+        const notifBtn = document.getElementById('notif-btn');
+        const notifDropdown = document.getElementById('notif-dropdown');
+        const notifDot = document.getElementById('notif-dot');
+        const notifList = document.getElementById('notif-list');
 
-function toggleNotif() {
-document.getElementById('notifDropdown').classList.toggle('open');
-}
+        if(notifBtn) {
+            notifBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                notifDropdown.classList.toggle('show'); // Sesuai dengan CSS .notif-dropdown.show
+            });
+            
+            document.addEventListener('click', (e) => {
+                if (!notifDropdown.contains(e.target) && !notifBtn.contains(e.target)) {
+                    notifDropdown.classList.remove('show');
+                }
+            });
+        }
 
-document.addEventListener('click', function(e) {
-var notifBtn = document.getElementById('notifBtn');
-var notifDrop = document.getElementById('notifDropdown');
-if (notifBtn && !notifBtn.contains(e.target) && !notifDrop.contains(e.target)) notifDrop.classList.remove('open');
-});
-</script></body>
+        function fetchNotifications() {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            fetch('{{ route("pasien.notifikasi") }}', {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('HTTP status ' + response.status);
+                return response.json();
+            })
+            .then(data => {
+                if(notifDot && notifList) {
+                    if (data.count > 0 && Array.isArray(data.notifications)) {
+                        notifDot.classList.remove('hidden'); 
+                        notifDot.style.display = 'flex';     
+                        
+                        let htmlString = '';
+                        data.notifications.forEach(item => {
+                            htmlString += `
+                                <a href="${item.url}" class="block px-5 py-3.5 hover:bg-slate-50 transition relative">
+                                    <div class="flex gap-3">
+                                        <div class="w-9 h-9 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+                                            <i class="fas fa-bell text-primary-600 text-xs"></i>
+                                        </div>
+                                        <div>
+                                            <p class="text-xs font-semibold text-slate-800">${item.pesan}</p>
+                                            <p class="text-[10px] text-slate-400 mt-1.5 font-medium">${item.waktu}</p>
+                                        </div>
+                                    </div>
+                                    <span class="absolute top-4 right-4 w-2 h-2 bg-primary-500 rounded-full"></span>
+                                </a>
+                            `;
+                        });
+                        notifList.innerHTML = htmlString;
+
+                    } else {
+                        notifDot.classList.add('hidden'); 
+                        notifDot.style.display = 'none';  
+                        notifList.innerHTML = '<div class="px-5 py-6 text-center text-slate-400 text-xs"><i class="fas fa-bell-slash text-2xl mb-2 block"></i>Tidak ada notifikasi baru</div>';
+                    }
+                }
+            })
+            .catch(error => console.warn('Gagal memuat notifikasi:', error.message));
+        }
+
+        fetchNotifications();
+        setInterval(fetchNotifications, 10000);
+
+    });
+</script>
+</body>
 </html>

@@ -10,38 +10,35 @@ use App\Models\User;
 use App\Models\Pembayaran;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use App\Notifications\NewAppointmentNotification;
+use App\Notifications\AppointmentConfirmedNotification;
 
 class PetugasController extends Controller
 {
     // ================= BERANDA =================
-    public function dashboard()
+      public function dashboard()
     {
         $today = Carbon::today();
 
-        $pasienHariIni = RekamMedis::whereDate('tanggal_kunjungan', $today)->count();
-        $antrianHariIni = RekamMedis::whereDate('tanggal_kunjungan', $today)
-                                ->where('status', 'Dalam Perawatan')
-                                ->count();
-        $sedangDiperiksa = $antrianHariIni; 
-        $selesaiHariIni = RekamMedis::whereDate('tanggal_kunjungan', $today)
-                                ->where('status', 'Selesai')
-                                ->count();
+        // STATISTIK KARTU
+        $pasienHariIni = Appointment::whereDate('tanggal', $today)->count();
+        $selesaiHariIni = Appointment::whereDate('tanggal', $today)->where('status', 'Selesai')->count();
         $totalPasien = Pasien::count();
         $dokterAktif = User::where('role', 'dokter')->count();
         
-
-        $jadwalHariIni = RekamMedis::whereDate('tanggal_kunjungan', $today)
-                                ->with('pasien')
-                                ->orderBy('created_at', 'asc')
+        // TABEL JADWAL HARI INI (5 Teratas)
+        $jadwalHariIni = Appointment::whereDate('tanggal', $today)
+                                ->with(['pasien', 'user']) // Eager load relasi
+                                ->orderBy('waktu', 'asc')
                                 ->take(5)
                                 ->get();
 
+        // PASIEN TERBARU (5 Teratas)
         $pasienTerbaru = Pasien::latest()->take(5)->get();
 
         return view('petugas.dashboard', compact(
-            'pasienHariIni', 'antrianHariIni', 'sedangDiperiksa', 'selesaiHariIni',
+            'pasienHariIni', 'selesaiHariIni',
             'totalPasien', 'dokterAktif','jadwalHariIni', 'pasienTerbaru'
-            
         ));
     }
      public function jadwalKontrol()
@@ -124,26 +121,49 @@ public function konfirmasiAppointment($id)
         $appointment->status = 'Terjadwal';
         $appointment->save();
 
-        // Sinkronkan ke rekam medis
-        $rekamMedis = RekamMedis::where('pasien_id', $appointment->pasien_id)
-                            ->whereDate('tanggal_kunjungan', $appointment->tanggal)
-                            ->first();
-
-        if ($rekamMedis) {
-            $rekamMedis->status = 'Terjadwal';
-            $rekamMedis->save();
+        // Kirim notifikasi ke Pasien
+        if ($appointment->user_id) {
+            $pasienUser = User::find($appointment->user_id);
+            if ($pasienUser) {
+                $pasienUser->notify(new AppointmentConfirmedNotification(
+                    $appointment->nama_lengkap, 
+                    $appointment->tanggal,
+                    'pasien' // Parameter ketiga untuk membedakan pesan dokter & pasien
+                ));
+            }
         }
 
-        return redirect()
-            ->route('petugas.jadwal-kontrol')
-            ->with('success', 'Janji temu berhasil dikonfirmasi dan diteruskan ke Dokter!');
+        // Kirim notifikasi ke dokter
+        if ($appointment->dokter_id) {
+                $dokter = User::find($appointment->dokter_id);
+                if ($dokter) {
+                    $dokter->notify(new AppointmentConfirmedNotification(
+                        $appointment->nama_lengkap, 
+                        $appointment->tanggal
+                    )); 
+                } 
+            } 
 
-    } catch (\Exception $e) {
-        return redirect()
-            ->route('petugas.jadwal-kontrol')
-            ->with('error', 'Gagal mengkonfirmasi: ' . $e->getMessage());
+            // 4. Sinkronkan ke rekam medis
+            $rekamMedis = RekamMedis::where('pasien_id', $appointment->pasien_id)
+                                ->whereDate('tanggal_kunjungan', $appointment->tanggal)
+                                ->first();
+
+            if ($rekamMedis) {
+                $rekamMedis->status = 'Terjadwal'; // Atau 'Sedang Berjalan' sesuaikan
+                $rekamMedis->save();
+            }
+
+            return redirect()
+                ->route('petugas.jadwal-kontrol')
+                ->with('success', 'Janji temu berhasil dikonfirmasi dan diteruskan ke Dokter!');
+
+        } catch (\Exception $e) {
+            return redirect()
+                ->route('petugas.jadwal-kontrol')
+                ->with('error', 'Gagal mengkonfirmasi: ' . $e->getMessage());
+        }
     }
-}
     
     // ================= DATA PASIEN CRUD =================
     public function create()
@@ -254,6 +274,12 @@ public function konfirmasiAppointment($id)
                 'keluhan'      => $request->keluhan,
                 'status'       => 'Menunggu Konfirmasi',
             ]);
+
+            // Kirim notifikasi ke semua user dengan role 'petugas'
+        $petugasUsers = User::where('role', 'petugas')->get();
+        foreach ($petugasUsers as $petugas) {
+            $petugas->notify(new NewAppointmentNotification($request->nama, $request->tanggal_appointment));
+        }
 
         return redirect()->route('petugas.input-data')->with('success', 'Data pasien berhasil disimpan!');
     
@@ -368,5 +394,36 @@ public function konfirmasiAppointment($id)
     public function pengaturan()
     {
         return view('petugas.pengaturan');
+    }
+    // Fungsi untuk AJAX Polling Notifikasi
+    public function getNotifications()
+    {
+        $user = auth()->user();
+        
+        // Ambil semua notifikasi yang belum dibaca
+        $notifications = $user->unreadNotifications->map(function ($notif) {
+        
+            return [
+                'id' => $notif->id,
+                'pesan' => $notif->data['pesan'] ?? 'Notifikasi baru',
+                'url' => $notif->data['url'] ?? '#',
+                'waktu' => $notif->created_at->diffForHumans(), // Contoh: "5 menit yang lalu"
+            ];
+        });
+
+        return response()->json([
+            'count' => $notifications->count(),
+            'notifications' => $notifications
+        ]);
+    }
+
+    // Fungsi untuk menandai notifikasi sudah dibaca (saat diklik)
+    public function markNotificationAsRead($id)
+    {
+        $notification = auth()->user()->notifications()->where('id', $id)->first();
+        if ($notification) {
+            $notification->markAsRead();
+        }
+        return response()->json(['success' => true]);
     }
 }

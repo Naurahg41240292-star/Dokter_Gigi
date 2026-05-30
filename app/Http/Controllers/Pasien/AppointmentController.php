@@ -8,6 +8,8 @@ use App\Models\Pasien;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Notifications\NewAppointmentNotification;
+
 
 class AppointmentController extends Controller
 {
@@ -125,6 +127,12 @@ class AppointmentController extends Controller
             'status' => 'Menunggu Konfirmasi',
         ]);
 
+        // Kirim notifikasi ke semua Petugas
+        $petugasUsers = User::where('role', 'petugas')->get();
+        foreach ($petugasUsers as $petugas) {
+            $petugas->notify(new NewAppointmentNotification($request->nama_lengkap, $request->tanggal));
+        }
+
         return redirect()->route('appointment.index')->with('success', 'Appointment berhasil dibuat! Silakan tunggu konfirmasi dari petugas.');
     }
 
@@ -145,4 +153,22 @@ class AppointmentController extends Controller
 
         return redirect()->route('appointment.index')->with('success', 'Appointment berhasil dibatalkan.');
     }
+    public function getNotifikasi()
+{
+    $user = Auth::user();
+    
+    $notifications = $user->unreadNotifications->map(function ($notif) {
+        return [
+            'id' => $notif->id,
+            'pesan' => $notif->data['pesan'] ?? 'Notifikasi baru',
+            'url' => $notif->data['url'] ?? '#',
+            'waktu' => $notif->created_at->diffForHumans(),
+        ];
+    });
+
+    return response()->json([
+        'count' => $notifications->count(),
+        'notifications' => $notifications
+    ]);
+}
 }

@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Appointment & Riwayat - D'Smile Dental Clinic</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -85,6 +86,9 @@
         .ticket-tear::before, .ticket-tear::after { content: ''; position: absolute; top: -12px; width: 24px; height: 24px; background: rgba(30, 41, 59, 0.6); border-radius: 50%; }
         .ticket-tear::before { left: -28px; }
         .ticket-tear::after { right: -28px; }
+
+        .notif-dropdown { transform: translateY(-10px); opacity: 0; visibility: hidden; pointer-events: none; transition: all 0.2s ease; }
+        .notif-dropdown.show { transform: translateY(0); opacity: 1; visibility: visible; pointer-events: auto; }
     </style>
 </head>
 <body>
@@ -119,17 +123,18 @@
                 <div class="flex items-center gap-3">
                     <!-- Notifikasi -->
                     <div class="relative">
-                        <button class="w-10 h-10 rounded-xl bg-white border border-gray-100 flex items-center justify-center text-gray-500 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-100 transition-colors relative cursor-pointer" onclick="toggleNotif()" id="notifBtn">
-                            <i class="fas fa-bell text-[15px]"></i>
+                        <button id="notif-btn" class="relative cursor-pointer p-2.5 bg-slate-50 border border-slate-200 rounded-xl hover:bg-slate-100 transition hidden md:flex items-center justify-center focus:outline-none">
+                            <i class="fas fa-bell text-slate-600"></i>
+                            <span id="notif-dot" class="absolute top-1.5 right-1.5 w-5 h-5 bg-red-500 rounded-full border-2 border-white text-white text-[10px] flex items-center justify-center font-bold" style="display: none;">0</span>
                         </button>
-                        <div class="notif-dropdown" id="notifDropdown">
-                            <div class="p-4 border-b border-gray-100">
-                                <div class="flex items-center justify-between">
-                                    <h4 class="font-bold text-sm text-gray-900">Notifikasi</h4>
-                                    <button class="text-xs text-blue-600 font-bold hover:underline cursor-pointer">Tandai semua dibaca</button>
-                                </div>
+                        
+                        <div id="notif-dropdown" class="notif-dropdown absolute right-0 top-full mt-3 w-80 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden z-50">
+                            <div class="px-5 py-4 flex items-center justify-between border-b border-slate-100 bg-slate-50/50">
+                                <h3 class="text-sm font-bold text-slate-800">Notifikasi</h3>
                             </div>
-                            <div class="p-6 text-center text-sm text-gray-400">Belum ada notifikasi</div>
+                            <div id="notif-list" class="max-h-72 overflow-y-auto divide-y divide-slate-50">
+                                <div class="p-4 text-center text-slate-400 text-sm">Memuat notifikasi...</div>
+                            </div>
                         </div>
                     </div>
 
@@ -716,51 +721,84 @@
         }
     </script>
     <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const tanggalInput = document.getElementById('appointmentDate');
-    const dokterSelect = document.querySelector('select[name="dokter"]'); // Sesuaikan name select doktermu
-    const waktuSelect = document.querySelector('select[name="waktu"]'); // Sesuaikan name select waktumu
+    document.addEventListener('DOMContentLoaded', function() {
+        
+        const page = document.body;
+        requestAnimationFrame(() => page.classList.add('is-visible'));
 
-    async function updateSlots() {
-        const tanggal = tanggalInput.value;
-        const dokter = dokterSelect.value;
+        const notifBtn = document.getElementById('notif-btn');
+        const notifDropdown = document.getElementById('notif-dropdown');
+        const notifDot = document.getElementById('notif-dot');
+        const notifList = document.getElementById('notif-list');
 
-        // Jika tanggal atau dokter belum dipilih, jangan cek dulu
-        if (!tanggal || !dokter) return;
-
-        try {
-            // Kirim request ke backend
-            const response = await fetch(`/cek-jadwal?tanggal=${tanggal}&dokter=${encodeURIComponent(dokter)}`);
-            const bookedSlots = await response.json();
-
-            // Reset semua opsi waktu (hapus tulisan Sudah Dibooking sebelumnya)
-            Array.from(waktuSelect.options).forEach(option => {
-                option.disabled = false;
-                // Hapus teks "(Sudah Dibooking)" kalau ada
-                option.text = option.text.replace(' (Sudah Dibooking)', '');
+        if(notifBtn) {
+            notifBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                notifDropdown.classList.toggle('show');
             });
-
-            // Disable opsi yang sudah dibooking
-            bookedSlots.forEach(slot => {
-                const optionToDisable = Array.from(waktuSelect.options).find(opt => opt.value === slot);
-                if (optionToDisable) {
-                    optionToDisable.disabled = true; // Opsinya tidak bisa diklik
-                    optionToDisable.text += ' (Sudah Dibooking)'; // Tambah keterangan
+            
+            document.addEventListener('click', (e) => {
+                if (!notifDropdown.contains(e.target) && !notifBtn.contains(e.target)) {
+                    notifDropdown.classList.remove('show');
                 }
             });
-
-        } catch (error) {
-            console.error('Gagal mengambil jadwal:', error);
         }
-    }
 
-    // Jalankan fungsi saat tanggal atau dokter berubah
-    tanggalInput.addEventListener('change', updateSlots);
-    dokterSelect.addEventListener('change', updateSlots);
-    
-    // Jalankan sekali saat halaman dibuka (kalau ada old input)
-    updateSlots();
-});
+        function fetchNotifications() {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            fetch('{{ route("pasien.notifikasi") }}', {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('HTTP status ' + response.status);
+                return response.json();
+            })
+            .then(data => {
+                if(notifDot && notifList) {
+                    if (data.count > 0 && Array.isArray(data.notifications)) {
+                        notifDot.classList.remove('hidden'); 
+                        notifDot.style.display = 'flex';     
+                        
+                        let htmlString = '';
+                        data.notifications.forEach(item => {
+                            htmlString += `
+                                <a href="${item.url}" class="block px-5 py-3.5 hover:bg-slate-50 transition relative">
+                                    <div class="flex gap-3">
+                                        <div class="w-9 h-9 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+                                            <i class="fas fa-bell text-primary-600 text-xs"></i>
+                                        </div>
+                                        <div>
+                                            <p class="text-xs font-semibold text-slate-800">${item.pesan}</p>
+                                            <p class="text-[10px] text-slate-400 mt-1.5 font-medium">${item.waktu}</p>
+                                        </div>
+                                    </div>
+                                    <span class="absolute top-4 right-4 w-2 h-2 bg-primary-500 rounded-full"></span>
+                                </a>
+                            `;
+                        });
+                        notifList.innerHTML = htmlString;
+
+                    } else {
+                        notifDot.classList.add('hidden'); 
+                        notifDot.style.display = 'none';  
+                        notifList.innerHTML = '<div class="px-5 py-6 text-center text-slate-400 text-xs"><i class="fas fa-bell-slash text-2xl mb-2 block"></i>Tidak ada notifikasi baru</div>';
+                    }
+                }
+            })
+            .catch(error => console.warn('Gagal memuat notifikasi:', error.message));
+        }
+
+        fetchNotifications();
+        setInterval(fetchNotifications, 10000);
+
+    });
 </script>
 </body>
 </html>

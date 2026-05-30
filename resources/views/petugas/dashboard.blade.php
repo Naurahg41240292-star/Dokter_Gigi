@@ -3,6 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- TAMBAHKAN META TOKEN INI DI SINI (Di atas style) -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    
     <title>Dashboard Petugas - D'Smile</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -38,6 +42,7 @@
         .table-row.selected { background-color: #eff6ff; }
         .notif-dropdown { transform: translateY(-10px); opacity: 0; visibility: hidden; transition: all 0.2s ease; }
         .notif-dropdown.show { transform: translateY(0); opacity: 1; visibility: visible; }
+        /* HAPUS META TOKEN DARI SINI */
     </style>
 </head>
 <body class="flex page-transition">
@@ -71,23 +76,18 @@
                 <div class="relative">
                     <button id="notif-btn" class="relative cursor-pointer p-2.5 bg-slate-50 border border-slate-200 rounded-xl hover:bg-slate-100 transition hidden md:flex items-center justify-center focus:outline-none">
                         <i class="fas fa-bell text-slate-600"></i>
-                        <!-- Dot merah akan otomatis hilang jika tidak ada notif baru -->
-                        <span id="notif-dot" class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white hidden"></span>
+                        <!-- BADGE JUMLAH NOTIFIKASI (Disembunyikan dulu kalau 0) -->
+                        <span id="notif-dot" class="absolute top-1.5 right-1.5 w-5 h-5 bg-red-500 rounded-full border-2 border-white text-white text-[10px] flex items-center justify-center font-bold" style="display: none;">0</span>
                     </button>
-
-                    <div id="notif-dropdown" class="notif-dropdown absolute right-0 top-full mt-3 w-80 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
+                    
+                    <div id="notif-dropdown" class="notif-dropdown absolute right-0 top-full mt-3 w-80 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden z-50">
                         <div class="px-5 py-4 flex items-center justify-between border-b border-slate-100 bg-slate-50/50">
                             <h3 class="text-sm font-bold text-slate-800">Notifikasi</h3>
-                            <button id="read-all-btn" class="text-[11px] font-semibold text-primary-600 hover:text-primary-700 transition">Tandai dibaca</button>
                         </div>
                         
-                        <!-- TAMBAHKAN ID NOTIF-LIST DI SINI -->
+                        <!-- CONTAINER UNTUK LIST NOTIFIKASI -->
                         <div id="notif-list" class="max-h-72 overflow-y-auto divide-y divide-slate-50">
-                            <div class="px-5 py-6 text-center text-slate-400 text-xs">Memuat notifikasi...</div>
-                        </div>
-                        
-                        <div class="px-5 py-3 border-t border-slate-100 bg-slate-50/50 text-center">
-                            <a href="{{ route('petugas.jadwal-kontrol') }}" class="text-xs font-bold text-primary-600 hover:text-primary-700 transition">Lihat Semua Notifikasi</a>
+                            <div class="p-4 text-center text-slate-400 text-sm">Memuat notifikasi...</div>
                         </div>
                     </div>
                 </div>
@@ -121,19 +121,44 @@
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse">
                             <thead><tr class="bg-slate-50/80 border-b border-slate-100"><th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Waktu</th><th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Nama Pasien</th><th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Dokter</th><th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">Status</th><th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Aksi</th></tr></thead>
-                            <tbody class="divide-y divide-slate-50 text-sm">
-                                @forelse ($jadwalHariIni as $rm)
-                                <tr class="hover:bg-slate-50/50 transition table-row">
-                                    <td class="px-6 py-4 font-medium text-slate-600 w-24">{{ $rm->created_at->format('H:i') }}</td>
-                                    <td class="px-6 py-4"><div class="flex items-center gap-3"><img src="{{ isset($rm->pasien) && $rm->pasien->foto ? asset('storage/' . $rm->pasien->foto) : 'https://ui-avatars.com/api/?name='.urlencode($rm->pasien->nama ?? 'P').'&background=2563eb&color=fff' }}" class="w-8 h-8 rounded-full shadow-sm object-cover" alt="Avatar"><span class="font-semibold text-slate-800">{{ $rm->pasien->nama ?? 'Pasien Umum' }}</span></div></td>
-                                    <td class="px-6 py-4 text-slate-600">{{ $rm->dokter }}</td>
-                                    <td class="px-6 py-4 text-center">@if($rm->status == 'Selesai')<span class="bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-md text-[11px] font-bold">Selesai</span>@else<span class="bg-amber-50 text-amber-700 px-2.5 py-1 rounded-md text-[11px] font-bold">{{ $rm->status }}</span>@endif</td>
-                                    <td class="px-6 py-4 text-right">@if(optional($rm->pasien)->id)<a href="{{ route('petugas.edit-pasien', optional($rm->pasien)->id) }}" class="inline-flex items-center gap-2 bg-primary-600 text-white px-3 py-2 rounded-lg text-[11px] font-bold hover:bg-primary-700 transition shadow-sm"><i class="fas fa-file-medical text-[10px]"></i> Rekam Medis</a>@endif</td>
-                                </tr>
-                                @empty
-                                <tr><td colspan="5" class="py-16 text-center text-slate-400"><i class="fas fa-calendar-times text-4xl mb-3 block text-slate-300"></i>Belum ada jadwal kontrol hari ini.</td></tr>
-                                @endforelse
-                            </tbody>
+                         <tbody class="divide-y divide-slate-50 text-sm">
+                            @forelse ($jadwalHariIni as $item)
+                            <tr class="hover:bg-slate-50/50 transition table-row">
+                                <td class="px-6 py-4 font-medium text-slate-600 w-24">{{ $item->waktu ?? $item->created_at->format('H:i') }}</td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <img src="{{ isset($item->pasien) && $item->pasien->foto ? asset('storage/' . $item->pasien->foto) : 'https://ui-avatars.com/api/?name='.urlencode($item->nama_lengkap ?? 'P').'&background=2563eb&color=fff' }}" class="w-8 h-8 rounded-full shadow-sm object-cover" alt="Avatar">
+                                        <span class="font-semibold text-slate-800">{{ $item->nama_lengkap ?? 'Pasien Umum' }}</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-slate-600">{{ $item->dokter }}</td>
+                                <td class="px-6 py-4 text-center">
+                                    @if($item->status == 'Selesai')
+                                        <span class="bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-md text-[11px] font-bold">Selesai</span>
+                                    @elseif($item->status == 'Sedang Berjalan')
+                                        <span class="bg-blue-50 text-blue-700 px-2.5 py-1 rounded-md text-[11px] font-bold">Sedang Berjalan</span>
+                                    @elseif($item->status == 'Dibatalkan')
+                                        <span class="bg-red-50 text-red-700 px-2.5 py-1 rounded-md text-[11px] font-bold">Dibatalkan</span>
+                                    @else
+                                        <span class="bg-amber-50 text-amber-700 px-2.5 py-1 rounded-md text-[11px] font-bold">{{ $item->status }}</span>
+                                    @endif
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    @if(optional($item->pasien)->id)
+                                        <a href="{{ route('petugas.edit-pasien', optional($item->pasien)->id) }}" class="inline-flex items-center gap-2 bg-primary-600 text-white px-3 py-2 rounded-lg text-[11px] font-bold hover:bg-primary-700 transition shadow-sm">
+                                            <i class="fas fa-file-medical text-[10px]"></i> Rekam Medis
+                                        </a>
+                                    @endif
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="5" class="py-16 text-center text-slate-400">
+                                    <i class="fas fa-calendar-times text-4xl mb-3 block text-slate-300"></i>Belum ada jadwal kontrol hari ini.
+                                </td>
+                            </tr>
+                            @endforelse
+                        </tbody>
                         </table>
                     </div>
                 </div>
@@ -163,56 +188,45 @@
     </main>
 
     <script>
-        const page = document.body; requestAnimationFrame(() => page.classList.add('is-visible'));
-        const notifBtn = document.getElementById('notif-btn'); const notifDropdown = document.getElementById('notif-dropdown'); const readAllBtn = document.getElementById('read-all-btn'); const notifDot = document.getElementById('notif-dot');
-        notifBtn.addEventListener('click', (e) => { e.stopPropagation(); notifDropdown.classList.toggle('show'); });
-        document.addEventListener('click', (e) => { if (!notifDropdown.contains(e.target) && !notifBtn.contains(e.target)) notifDropdown.classList.remove('show'); });
-        readAllBtn.addEventListener('click', (e) => { e.preventDefault(); document.querySelectorAll('#notif-dropdown .bg-primary-600.rounded-full.w-2').forEach(dot => dot.remove()); if(notifDot) notifDot.style.display = 'none'; });
-        document.querySelectorAll('.table-row').forEach(row => { row.addEventListener('click', function(e) { if (e.target.closest('button') || e.target.closest('a') || e.target.closest('form')) return; document.querySelectorAll('.table-row.selected').forEach(r => r.classList.remove('selected')); this.classList.add('selected'); }); });
-        document.querySelectorAll('a[href]').forEach((link) => { link.addEventListener('click', (event) => { const href = link.getAttribute('href'); if (!href || href.startsWith('#') || link.target === '_blank' || event.metaKey || event.ctrlKey) return; const targetUrl = new URL(href, window.location.origin); if (targetUrl.origin !== window.location.origin) return; event.preventDefault(); page.classList.add('is-leaving'); setTimeout(() => { window.location.href = targetUrl.href; }, 220); }); });
-    </script>
-    <script>
-    // Logika Buka/Tutup Dropdown
-    const notifBtn = document.getElementById('notif-btn');
-    const notifDropdown = document.getElementById('notif-dropdown');
+    // Animasi Halaman
+    const page = document.body; 
+    requestAnimationFrame(() => page.classList.add('is-visible'));
+
+    // Logika Tandai Semua Dibaca (Read All)
+    const readAllBtn = document.getElementById('read-all-btn'); 
+    const notifDotGlobal = document.getElementById('notif-dot');
     
-    if(notifBtn) {
-        notifBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            notifDropdown.classList.toggle('show');
-        });
-        document.addEventListener('click', (e) => {
-            if (!notifDropdown.contains(e.target) && !notifBtn.contains(e.target)) {
-                notifDropdown.classList.remove('show');
-            }
+    if(readAllBtn) {
+        readAllBtn.addEventListener('click', (e) => { 
+            e.preventDefault(); 
+            document.querySelectorAll('#notif-dropdown .bg-primary-600.rounded-full.w-2').forEach(dot => dot.remove()); 
+            if(notifDotGlobal) notifDotGlobal.style.display = 'none'; 
         });
     }
 
-    // Logika Polling AJAX (Cek notif tiap 10 detik)
-    function fetchNotifications() {
-        fetch('{{ route("petugas.notifikasi") }}')
-            .then(response => response.json())
-            .then(data => {
-                const dot = document.getElementById('notif-dot');
-                const list = document.getElementById('notif-list');
-                
-                if (data.count > 0) {
-                    dot.classList.remove('hidden'); // Munculin dot merah
-                    list.innerHTML = data.html;    // Isi list dengan data baru
-                } else {
-                    dot.classList.add('hidden');    // Sembunyiin dot merah
-                    list.innerHTML = '<div class="px-5 py-6 text-center text-slate-400 text-xs">Tidak ada notifikasi baru</div>';
-                }
-            });
-    }
+    // Logika Baris Tabel Terpilih
+    document.querySelectorAll('.table-row').forEach(row => { 
+        row.addEventListener('click', function(e) { 
+            if (e.target.closest('button') || e.target.closest('a') || e.target.closest('form')) return; 
+            document.querySelectorAll('.table-row.selected').forEach(r => r.classList.remove('selected')); 
+            this.classList.add('selected'); 
+        }); 
+    });
 
-    // Panggil saat pertama kali load
-    fetchNotifications();
-    // Ulangi setiap 10 detik (10000ms)
-    setInterval(fetchNotifications, 10000);
+    // Logika Animasi Pindah Halaman
+    document.querySelectorAll('a[href]').forEach((link) => { 
+        link.addEventListener('click', (event) => { 
+            const href = link.getAttribute('href'); 
+            if (!href || href.startsWith('#') || link.target === '_blank' || event.metaKey || event.ctrlKey) return; 
+            const targetUrl = new URL(href, window.location.origin); 
+            if (targetUrl.origin !== window.location.origin) return; 
+            event.preventDefault(); 
+            page.classList.add('is-leaving'); 
+            setTimeout(() => { window.location.href = targetUrl.href; }, 220); 
+        }); 
+    });
 </script>
+
 @include('petugas.partials.notif-script')
-</body>
-</html>
 </body>
 </html>
