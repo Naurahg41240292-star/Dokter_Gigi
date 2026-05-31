@@ -57,13 +57,15 @@ class PasienController extends Controller
         ));
     }
 
-    // 2. Lihat Semua Riwayat Rekam Medis
+        // 2. Lihat Semua Riwayat Rekam Medis
     public function rekamMedis()
     {
         $pasien = $this->getPasien();
 
+        // Jika data pasien belum ada di database, tetap tampilkan halaman riwayat tapi datanya kosong
         if (!$pasien) {
-            return redirect()->route('pasien.dashboard');
+            $rekamMedis = collect(); // Membuat collection kosong agar bisa di-loop di Blade
+            return view('pasien.rekam-medis', compact('rekamMedis'));
         }
 
         $rekamMedis = RekamMedis::where('pasien_id', $pasien->id)
@@ -74,10 +76,15 @@ class PasienController extends Controller
         return view('pasien.rekam-medis', compact('rekamMedis'));
     }
 
-    // 3. Detail 1 Rekam Medis
+        // 3. Detail 1 Rekam Medis
     public function showRekamMedis($id)
     {
         $pasien = $this->getPasien();
+
+        // Jika pasien tidak ditemukan, abort 404
+        if (!$pasien) {
+            abort(404, 'Data pasien tidak ditemukan.');
+        }
 
         // Pastikan rekam medis ini milik pasien yang login (keamanan)
         $rekamMedis = RekamMedis::where('pasien_id', $pasien->id)

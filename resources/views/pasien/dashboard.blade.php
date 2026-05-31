@@ -77,6 +77,7 @@
 
         .online-dot { width:8px; height:8px; background:#22C55E; border-radius:50%; border:2px solid #fff; position:absolute; bottom:0; right:0; }
 
+        .promo-card { cursor:pointer; }
         .promo-card img { transition:transform 0.4s ease; }
         .promo-card:hover img { transform:scale(1.04); }
 
@@ -84,6 +85,7 @@
         .mobile-overlay.show { display:block; }
         @media (max-width:1024px) { .main-content { margin-left:0; } }
 
+        /* MODAL STYLES */
         .article-modal-overlay { position:fixed; inset:0; background:rgba(15,23,42,0.6); backdrop-filter:blur(4px); z-index:200; display:none; }
         .article-modal-overlay.open { display:block; }
         .article-modal-sticky-bar { position:sticky; top:0; z-index:210; display:flex; justify-content:flex-end; padding:16px 16px 0 0; pointer-events:none; }
@@ -101,8 +103,9 @@
         .article-modal-content .article-text p { margin-bottom:16px; }
         .article-modal-content .article-text ul, .article-modal-content .article-text ol { margin-bottom:16px; padding-left:20px; }
         .article-modal-content .article-text li { margin-bottom:10px; line-height:1.75; }
+
         .notif-dropdown { transform: translateY(-10px); opacity: 0; visibility: hidden; pointer-events: none; transition: all 0.2s ease; }
-.notif-dropdown.show { transform: translateY(0); opacity: 1; visibility: visible; pointer-events: auto; }
+        .notif-dropdown.show { transform: translateY(0); opacity: 1; visibility: visible; pointer-events: auto; }
     </style>
 </head>
 <body>
@@ -197,7 +200,7 @@
                 </div>
             </div>
 
-            <!-- CTA + PROMO (KONDISIONAL BERDASARKAN $upcomingAppointment) -->
+            <!-- CTA + PROMO -->
             <div class="grid lg:grid-cols-5 gap-5 mb-8">
                 
                 @if($upcomingAppointment)
@@ -250,8 +253,9 @@
                 </div>
                 @endif
 
+                <!-- PROMO CARD (BISA DIKLIK) -->
                 <div class="lg:col-span-2 fade-up" style="animation-delay:0.3s">
-                    <div class="card overflow-hidden h-full promo-card">
+                    <div class="card overflow-hidden h-full promo-card" onclick="openPromo()">
                         <div class="overflow-hidden h-44">
                             <img src="{{ asset('images/scaling.jpeg') }}" alt="Promo" class="w-full h-full object-cover">
                         </div>
@@ -259,7 +263,7 @@
                             <span class="tag bg-red-50 text-red-600 mb-2">Promo Spesial</span>
                             <h4 class="font-bold text-sm text-gray-900 mt-2 leading-snug">Diskon 20% Scaling Pertama</h4>
                             <p class="text-xs text-gray-500 mt-2 leading-relaxed">Berlaku hingga 30 April 2025 untuk pasien baru D'Smile.</p>
-                            <button class="mt-4 text-xs font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1 cursor-pointer transition-colors group">Gunakan Promo <i class="fas fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i></button>
+                            <span class="mt-4 text-xs font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1 cursor-pointer transition-colors group">Lihat Detail <i class="fas fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i></span>
                         </div>
                     </div>
                 </div>
@@ -273,28 +277,46 @@
                 </div>
 
                 <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                    <div class="card article-card group" onclick="openArticle('Cara Menyikat Gigi yang Benar','{{ asset('images/sikatgigi.jpeg') }}','<p>Menyikat gigi adalah fondasi utama kesehatan mulut. Namun, banyak orang yang melakukannya dengan cara yang kurang tepat. Berikut adalah panduan lengkap:</p><ul><li><strong>Sikat selama 2 menit:</strong> Bagi mulut menjadi 4 kuadran dan habiskan 30 detik untuk setiap bagian.</li><li><strong>Teknik 45 derajat:</strong> Arahkan bulu sikat pada sudut 45 derajat ke garis gusi.</li><li><strong>Gerakan memutar:</strong> Hindari menyikat dari kiri ke kanan dengan keras. Gunakan gerakan memutar yang lembut.</li><li><strong>Jangan lupakan lidah:</strong> Bakteri juga menempel di lidah.</li></ul><p>Gunakan pasta gigi berfluoride dan ganti sikat gigi setiap 3 bulan.</p>','dr. Rina Sari','12 Apr 2025','5 min baca')">
-                        <div class="overflow-hidden h-48"><img src="{{ asset('images/sikatgigi.jpeg') }}" alt="Tips sikat gigi" class="w-full h-full object-cover article-img"></div>
+                    <!-- Artikel 1 -->
+                    <div class="card article-card group" onclick="openArticle(0)">
+                        <div class="overflow-hidden h-48">
+                            <img src="{{ asset('images/sikatgigi.jpeg') }}" alt="Tips sikat gigi" class="w-full h-full object-cover article-img">
+                        </div>
                         <div class="p-5">
-                            <div class="flex items-center gap-2 mb-3"><span class="tag bg-blue-50 text-blue-700">Gigi Sehat</span><span class="text-[11px] text-gray-400">5 min baca</span></div>
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="tag bg-blue-50 text-blue-700">Gigi Sehat</span>
+                                <span class="text-[11px] text-gray-400">5 min baca</span>
+                            </div>
                             <h4 class="font-bold text-sm text-gray-800 leading-snug article-title transition-colors">Cara Menyikat Gigi yang Benar</h4>
                             <p class="text-xs text-gray-500 mt-2 leading-relaxed line-clamp-2">Panduan lengkap langkah demi langkah untuk membersihkan gigi dan mulut secara efektif.</p>
                         </div>
                     </div>
 
-                    <div class="card article-card group" onclick="openArticle('Makanan yang Baik untuk Gigi','{{ asset('images/makanan.jpeg') }}','<p>Apa yang Anda makan berpengaruh besar pada kesehatan gigi dan gusi.</p><ol><li><strong>Apel dan Wortel:</strong> Makanan renyah ini merangsang produksi air liur.</li><li><strong>Keju dan Yogurt:</strong> Kaya akan kalsium dan fosfat.</li><li><strong>Brokoli:</strong> Mengandung zat besi yang membantu membentuk penghalang asam.</li><li><strong>Teh Hijau:</strong> Mengandung polifenol yang membantu membunuh bakteri.</li></ol><p>Pastikan untuk minum air putih yang cukup setelah makan.</p>','dr. Budi Prasetyo','10 Apr 2025','7 min baca')">
-                        <div class="overflow-hidden h-48"><img src="{{ asset('images/makanan.jpeg') }}" alt="Makanan untuk gigi" class="w-full h-full object-cover article-img"></div>
+                    <!-- Artikel 2 -->
+                    <div class="card article-card group" onclick="openArticle(1)">
+                        <div class="overflow-hidden h-48">
+                            <img src="{{ asset('images/makanan.jpeg') }}" alt="Makanan untuk gigi" class="w-full h-full object-cover article-img">
+                        </div>
                         <div class="p-5">
-                            <div class="flex items-center gap-2 mb-3"><span class="tag bg-amber-50 text-amber-700">Nutrisi</span><span class="text-[11px] text-gray-400">7 min baca</span></div>
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="tag bg-amber-50 text-amber-700">Nutrisi</span>
+                                <span class="text-[11px] text-gray-400">7 min baca</span>
+                            </div>
                             <h4 class="font-bold text-sm text-gray-800 leading-snug article-title transition-colors">Makanan yang Baik untuk Kesehatan Gigi</h4>
                             <p class="text-xs text-gray-500 mt-2 leading-relaxed line-clamp-2">Daftar makanan sehat yang membantu memperkuat enamel gigi dan menjaga kesehatan gusi.</p>
                         </div>
                     </div>
 
-                    <div class="card article-card group sm:col-span-2 lg:col-span-1" onclick="openArticle('Benarkah Veneer Aman untuk Gigi?','{{ asset('images/veener.jpeg') }}','<p>Veneer menjadi salah satu prosedur kosmetik gigi paling populer saat ini. Namun, apakah prosedur ini aman?</p><p><strong>Apa itu Veneer?</strong><br>Veneer adalah cangkang tipis berwarna gigi yang menutupi permukaan depan gigi.</p><p><strong>Keamanan:</strong><br>Secara medis, veneer sangat aman jika dilakukan oleh dokter gigi profesional. Material yang digunakan biocompatible.</p><p><strong>Perawatan:</strong><br>Veneer porselen tahan noda dan bisa bertahan hingga 10-15 tahun dengan perawatan yang baik.</p>','drg. Andi Wijaya','8 Apr 2025','4 min baca')">
-                        <div class="overflow-hidden h-48"><img src="{{ asset('images/veener.jpeg') }}" alt="Gigi putih" class="w-full h-full object-cover article-img"></div>
+                    <!-- Artikel 3 -->
+                    <div class="card article-card group sm:col-span-2 lg:col-span-1" onclick="openArticle(2)">
+                        <div class="overflow-hidden h-48">
+                            <img src="{{ asset('images/veener.jpeg') }}" alt="Gigi putih" class="w-full h-full object-cover article-img">
+                        </div>
                         <div class="p-5">
-                            <div class="flex items-center gap-2 mb-3"><span class="tag bg-purple-50 text-purple-700">Perawatan</span><span class="text-[11px] text-gray-400">4 min baca</span></div>
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="tag bg-purple-50 text-purple-700">Perawatan</span>
+                                <span class="text-[11px] text-gray-400">4 min baca</span>
+                            </div>
                             <h4 class="font-bold text-sm text-gray-800 leading-snug article-title transition-colors">Benarkah Veneer Aman untuk Gigi?</h4>
                             <p class="text-xs text-gray-500 mt-2 leading-relaxed line-clamp-2">Veneer menjadi tren perawatan gigi. Simak fakta medis sebelum Anda memutuskan.</p>
                         </div>
@@ -307,9 +329,9 @@
 
     <!-- MODAL ARTIKEL -->
     <div class="article-modal-overlay" id="articleModal">
-        <div class="article-modal-scroll" id="articleModalScroll">
+        <div class="article-modal-scroll" onclick="closeArticle()">
             <div class="article-modal-sticky-bar">
-                <button class="article-modal-close-btn" onclick="closeArticle()">
+                <button class="article-modal-close-btn" onclick="event.stopPropagation(); closeArticle();">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -330,24 +352,136 @@
         </div>
     </div>
 
-   <script>
+    <!-- MODAL PROMO -->
+    <div class="article-modal-overlay" id="promoModal">
+        <div class="article-modal-scroll" onclick="closePromo()">
+            <div class="article-modal-sticky-bar">
+                <button class="article-modal-close-btn" onclick="event.stopPropagation(); closePromo();">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="article-modal-content" onclick="event.stopPropagation()">
+                <img src="{{ asset('images/scaling.jpeg') }}" alt="Promo Scaling" class="article-modal-img">
+                <div class="article-modal-body">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="tag bg-red-50 text-red-600">Promo Spesial</span>
+                        <span class="tag bg-blue-50 text-blue-700">Pasien Baru</span>
+                    </div>
+                    <h2>Diskon 20% Scaling Gigi Pertama</h2>
+                    <div class="article-modal-meta">
+                        <span class="font-medium text-gray-600">D'Smile Dental Clinic</span>
+                        <span class="dot"></span>
+                        <span>Berlaku hingga 30 Apr 2025</span>
+                    </div>
+                    <div class="article-text">
+                        <p>Selamat datang di D'Smile Dental Clinic! Kami memberikan <strong>diskon 20%</strong> untuk perawatan <strong>Scaling Gigi</strong> pertama Anda bersama kami.</p>
+                        <p><strong>Apa itu Scaling?</strong></p>
+                        <p>Scaling adalah prosedur pembersihan karang gigi dan plak yang tidak bisa dihilangkan hanya dengan menyikat gigi biasa. Prosedur ini penting untuk:</p>
+                        <ul>
+                            <li>Mencegah penyakit gusi (gingivitis & periodontitis)</li>
+                            <li>Menghilangkan noda dan karang gigi yang membandel</li>
+                            <li>Mencegah bau mulut yang tidak sedap</li>
+                            <li>Menjaga kesehatan gigi dan gusi secara keseluruhan</li>
+                        </ul>
+                        <p><strong>Syarat & Ketentuan:</strong></p>
+                        <ul>
+                            <li>Berlaku untuk pasien baru yang belum pernah melakukan perawatan di D'Smile</li>
+                            <li>Wajib membuat janji temu terlebih dahulu</li>
+                            <li>Promo tidak dapat digabungkan dengan promo lainnya</li>
+                            <li>Berlaku hingga 30 April 2025</li>
+                        </ul>
+                        <div class="mt-6 p-4 bg-blue-50 rounded-xl border border-blue-100 text-center">
+                            <p class="text-sm font-bold text-blue-700 mb-1">Tertarik? Buat janji temu sekarang!</p>
+                            <a href="{{ route('appointment.index') }}" class="inline-block mt-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-2.5 rounded-xl text-sm font-bold hover:shadow-lg hover:shadow-blue-200 transition-all">
+                                Buat Janji Temu
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // ===== DATA ARTIKEL =====
+    const articles = [
+        {
+            title: 'Cara Menyikat Gigi yang Benar',
+            img: '{{ asset("images/sikatgigi.jpeg") }}',
+            body: '<p>Menyikat gigi adalah fondasi utama kesehatan mulut. Namun, banyak orang yang melakukannya dengan cara yang kurang tepat. Berikut adalah panduan lengkap:</p><ul><li><strong>Sikat selama 2 menit:</strong> Bagi mulut menjadi 4 kuadran dan habiskan 30 detik untuk setiap bagian.</li><li><strong>Teknik 45 derajat:</strong> Arahkan bulu sikat pada sudut 45 derajat ke garis gusi.</li><li><strong>Gerakan memutar:</strong> Hindari menyikat dari kiri ke kanan dengan keras. Gunakan gerakan memutar yang lembut.</li><li><strong>Jangan lupakan lidah:</strong> Bakteri juga menempel di lidah.</li></ul><p>Gunakan pasta gigi berfluoride dan ganti sikat gigi setiap 3 bulan.</p>',
+            author: 'dr. Rina Sari',
+            date: '12 Apr 2025',
+            readTime: '5 min baca'
+        },
+        {
+            title: 'Makanan yang Baik untuk Kesehatan Gigi',
+            img: '{{ asset("images/makanan.jpeg") }}',
+            body: '<p>Apa yang Anda makan berpengaruh besar pada kesehatan gigi dan gusi.</p><ol><li><strong>Apel dan Wortel:</strong> Makanan renyah ini merangsang produksi air liur.</li><li><strong>Keju dan Yogurt:</strong> Kaya akan kalsium dan fosfat.</li><li><strong>Brokoli:</strong> Mengandung zat besi yang membantu membentuk penghalang asam.</li><li><strong>Teh Hijau:</strong> Mengandung polifenol yang membantu membunuh bakteri.</li></ol><p>Pastikan untuk minum air putih yang cukup setelah makan.</p>',
+            author: 'dr. Budi Prasetyo',
+            date: '10 Apr 2025',
+            readTime: '7 min baca'
+        },
+        {
+            title: 'Benarkah Veneer Aman untuk Gigi?',
+            img: '{{ asset("images/veener.jpeg") }}',
+            body: '<p>Veneer menjadi salah satu prosedur kosmetik gigi paling populer saat ini. Namun, apakah prosedur ini aman?</p><p><strong>Apa itu Veneer?</strong><br>Veneer adalah cangkang tipis berwarna gigi yang menutupi permukaan depan gigi.</p><p><strong>Keamanan:</strong><br>Secara medis, veneer sangat aman jika dilakukan oleh dokter gigi profesional. Material yang digunakan biocompatible.</p><p><strong>Perawatan:</strong><br>Veneer porselen tahan noda dan bisa bertahan hingga 10-15 tahun dengan perawatan yang baik.</p>',
+            author: 'drg. Andi Wijaya',
+            date: '8 Apr 2025',
+            readTime: '4 min baca'
+        }
+    ];
+
+    // ===== FUNGSI MODAL (HARUS GLOBAL, DI LUAR DOMContentLoaded) =====
+    function openArticle(index) {
+        const a = articles[index];
+        document.getElementById('modalTitle').textContent = a.title;
+        document.getElementById('modalImg').src = a.img;
+        document.getElementById('modalBody').innerHTML = a.body;
+        document.getElementById('modalAuthor').textContent = a.author;
+        document.getElementById('modalDate').textContent = a.date;
+        document.getElementById('modalReadTime').textContent = a.readTime;
+        document.getElementById('articleModal').classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeArticle() {
+        document.getElementById('articleModal').classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    function openPromo() {
+        document.getElementById('promoModal').classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closePromo() {
+        document.getElementById('promoModal').classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    // Tutup modal dengan tombol ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeArticle();
+            closePromo();
+        }
+    });
+
+    // ===== NOTIFIKASI & INIT =====
     document.addEventListener('DOMContentLoaded', function() {
-        
-        const page = document.body;
-        requestAnimationFrame(() => page.classList.add('is-visible'));
 
         const notifBtn = document.getElementById('notif-btn');
         const notifDropdown = document.getElementById('notif-dropdown');
         const notifDot = document.getElementById('notif-dot');
         const notifList = document.getElementById('notif-list');
 
-        if(notifBtn) {
-            notifBtn.addEventListener('click', (e) => {
+        if (notifBtn) {
+            notifBtn.addEventListener('click', function(e) {
                 e.stopPropagation();
                 notifDropdown.classList.toggle('show');
             });
-            
-            document.addEventListener('click', (e) => {
+
+            document.addEventListener('click', function(e) {
                 if (!notifDropdown.contains(e.target) && !notifBtn.contains(e.target)) {
                     notifDropdown.classList.remove('show');
                 }
@@ -366,49 +500,42 @@
                     'X-Requested-With': 'XMLHttpRequest'
                 }
             })
-            .then(response => {
+            .then(function(response) {
                 if (!response.ok) throw new Error('HTTP status ' + response.status);
                 return response.json();
             })
-            .then(data => {
-                if(notifDot && notifList) {
+            .then(function(data) {
+                if (notifDot && notifList) {
                     if (data.count > 0 && Array.isArray(data.notifications)) {
-                        notifDot.classList.remove('hidden'); 
-                        notifDot.style.display = 'flex';     
-                        
-                        let htmlString = '';
-                        data.notifications.forEach(item => {
-                            htmlString += `
-                                <a href="${item.url}" class="block px-5 py-3.5 hover:bg-slate-50 transition relative">
-                                    <div class="flex gap-3">
-                                        <div class="w-9 h-9 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
-                                            <i class="fas fa-bell text-primary-600 text-xs"></i>
-                                        </div>
-                                        <div>
-                                            <p class="text-xs font-semibold text-slate-800">${item.pesan}</p>
-                                            <p class="text-[10px] text-slate-400 mt-1.5 font-medium">${item.waktu}</p>
-                                        </div>
-                                    </div>
-                                    <span class="absolute top-4 right-4 w-2 h-2 bg-primary-500 rounded-full"></span>
-                                </a>
-                            `;
+                        notifDot.classList.remove('hidden');
+                        notifDot.style.display = 'flex';
+
+                        var htmlString = '';
+                        data.notifications.forEach(function(item) {
+                            htmlString += '<a href="' + item.url + '" class="block px-5 py-3.5 hover:bg-slate-50 transition relative">' +
+                                '<div class="flex gap-3">' +
+                                '<div class="w-9 h-9 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">' +
+                                '<i class="fas fa-bell text-primary-600 text-xs"></i></div>' +
+                                '<div><p class="text-xs font-semibold text-slate-800">' + item.pesan + '</p>' +
+                                '<p class="text-[10px] text-slate-400 mt-1.5 font-medium">' + item.waktu + '</p></div>' +
+                                '</div><span class="absolute top-4 right-4 w-2 h-2 bg-primary-500 rounded-full"></span></a>';
                         });
                         notifList.innerHTML = htmlString;
-
                     } else {
-                        notifDot.classList.add('hidden'); 
-                        notifDot.style.display = 'none';  
+                        notifDot.classList.add('hidden');
+                        notifDot.style.display = 'none';
                         notifList.innerHTML = '<div class="px-5 py-6 text-center text-slate-400 text-xs"><i class="fas fa-bell-slash text-2xl mb-2 block"></i>Tidak ada notifikasi baru</div>';
                     }
                 }
             })
-            .catch(error => console.warn('Gagal memuat notifikasi:', error.message));
+            .catch(function(error) {
+                console.warn('Gagal memuat notifikasi:', error.message);
+            });
         }
 
         fetchNotifications();
         setInterval(fetchNotifications, 10000);
-
     });
-</script>
+    </script>
 </body>
 </html>
