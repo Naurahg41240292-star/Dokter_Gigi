@@ -466,7 +466,6 @@
                 <div class="col-lg-2 mb-4 mb-lg-0">
                     <h5>Quick Links</h5>
                     <a href="#layanan">Layanan</a>
-                    <a href="#tentang">Tentang Kami</a>
                     <a href="#dokter">Dokter</a>
                 </div>
                 <div class="col-lg-3 mb-4 mb-lg-0">

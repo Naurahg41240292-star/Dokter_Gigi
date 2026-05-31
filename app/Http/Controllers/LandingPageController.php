@@ -41,25 +41,25 @@ class LandingPageController extends Controller
             'title' => 'Veneer Gigi',
             'icon' => 'fas fa-gem',
             'description' => 'Lapisan tipis berbahan porselen atau resin yang ditempelkan pada permukaan depan gigi. Solusi cepat untuk gigi rusak, menguning, atau bentuk tidak rata.',
-            'image' => 'https://images.unsplash.com/photo-1606811841689-23dfddce3e95?q=80&w=800&auto=format&fit=crop'
+            'image' => asset('images/vener.jpeg') // SUDAH DIGANTI
         ],
         'tambal-gigi' => [
             'title' => 'Tambal Gigi (Restorasi)',
             'icon' => 'fas fa-tooth',
             'description' => 'Perbaikan gigi yang berlubang atau rusak dengan material tambal berkualitas tinggi yang warnanya menyerupai gigi asli sehingga terlihat natural.',
-            'image' => 'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?q=80&w=800&auto=format&fit=crop'
+            'image' => asset('images/tambal.jpeg') // SUDAH DIGANTI
         ],
         'pencabutan-gigi' => [
             'title' => 'Pencabutan Gigi (Ekstraksi)',
             'icon' => 'fas fa-hand-scissors',
             'description' => 'Prosedur pencabutan gigi yang bermasalah (seperti gigi bungsu) dengan teknik modern, minim rasa sakit, dan proses penyembuhan yang cepat.',
-            'image' => 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?q=80&w=800&auto=format&fit=crop'
+            'image' => asset('images/cabutg.jpeg') // SUDAH DIGANTI
         ],
         'scaling-gigi' => [
             'title' => 'Scaling Gigi (Pembersihan)',
             'icon' => 'fas fa-broom',
             'description' => 'Pembersihan karang gigi dan plak secara menyeluruh menggunakan alat ultrasonik. Penting untuk mencegah penyakit gusi dan bau mulut.',
-            'image' => 'https://images.unsplash.com/photo-1606811971618-4486d14f3f99?q=80&w=800&auto=format&fit=crop'
+            'image' => asset('images/ccalingg.jpeg') // SUDAH DIGANTI
         ]
     ];
 
