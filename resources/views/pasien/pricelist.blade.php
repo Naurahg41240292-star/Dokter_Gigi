@@ -237,7 +237,7 @@
                 <!-- 5. Veneer -->
                 <div class="card-price animate-fade-up delay-5">
                     <div class="card-img-wrapper">
-                        <img src="https://images.unsplash.com/photo-1598256989800-fe5f95da9787?w=600&h=400&fit=crop" alt="Veneer">
+                        <img src="{{ asset('images/vener.jpeg') }}" alt="Veneer">
                     </div>
                     <div class="p-5 flex flex-col flex-1">
                         <h3 class="font-bold text-gray-900 text-[17px] mb-1">Veneer</h3>
@@ -255,7 +255,7 @@
                 <!-- 6. Tambal Gigi -->
                 <div class="card-price animate-fade-up delay-6">
                     <div class="card-img-wrapper">
-                        <img src="https://images.unsplash.com/photo-1606265752439-1f18756aa5fc?w=600&h=400&fit=crop" alt="Tambal Gigi">
+                        <img src="{{ asset('images/tambal.jpeg') }}" alt="Tambal Gigi">
                     </div>
                     <div class="p-5 flex flex-col flex-1">
                         <h3 class="font-bold text-gray-900 text-[17px] mb-1">Tambal Gigi</h3>
@@ -273,7 +273,7 @@
                 <!-- 7. Cabut Gigi -->
                 <div class="card-price animate-fade-up delay-7">
                     <div class="card-img-wrapper">
-                        <img src="https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=600&h=400&fit=crop" alt="Cabut Gigi">
+                        <img src="{{ asset('images/cabutg.jpeg') }}" alt="Cabut Gigi">
                     </div>
                     <div class="p-5 flex flex-col flex-1">
                         <h3 class="font-bold text-gray-900 text-[17px] mb-1">Cabut Gigi</h3>
@@ -291,7 +291,7 @@
                 <!-- 8. Scaling Gigi -->
                 <div class="card-price animate-fade-up delay-8">
                     <div class="card-img-wrapper">
-                        <img src="https://images.unsplash.com/photo-1606811971618-4486d14f3f99?w=600&h=400&fit=crop" alt="Scaling Gigi">
+                        <img src="{{ asset('images/ccalingg.jpeg') }}" alt="Scaling Gigi">
                         <span class="badge-promo">Promo</span>
                     </div>
                     <div class="p-5 flex flex-col flex-1">
